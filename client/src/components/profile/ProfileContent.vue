@@ -5,24 +5,22 @@
             <div class="profile-media">
                 <div class="menu_inner">
                     <router-link to="/table-view">
-                        <div class="menu_item">Видео</div>
+                        <stroke-icon-button icon-name="image">Фото</stroke-icon-button>
                     </router-link>
                     <router-link to="/graphics-view">
-                        <div class="menu_item">Фото</div>
+                        <stroke-icon-button icon-name="video">Видео</stroke-icon-button>
                     </router-link>
                     <router-link to="/table-view">
-                        <div class="menu_item">Музыка</div>
+                        <stroke-icon-button icon-name="music">Музыка</stroke-icon-button>
                     </router-link>
                     <router-link to="/graphics-view">
-                        <div class="menu_item">Контент</div>
+                        <stroke-icon-button icon-name="book">Книги</stroke-icon-button>
+                    </router-link>
+                    <router-link to="/graphics-view">
+                        <stroke-icon-button icon-name="code">Программы</stroke-icon-button>
                     </router-link>
                 </div>
                 <router-view></router-view>
-                <!-- <content-block-title>О себе</content-block-title>
-                <content-block-text>
-                    <p>Указывать свои данные необязательно.</p>
-                    <p>Здесь вы можете добавить описание вашего профиля</p>
-                </content-block-text> -->
             </div>
         </div>
     </div>
@@ -68,10 +66,16 @@ export default {
 }
 
 .menu_inner {
-    height: 40px;
+    margin-top: 10px;
+    /* height: 40px; */
     display: flex;
-    justify-content: center;
-    font-size: 13px;
+    justify-content: flex-start;
+    /* font-size: 13px; */
+}
+
+.menu_inner .stroke-icon-button {
+    margin-right: 20px;
+    color: white;
 }
 
 .menu_item {

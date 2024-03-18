@@ -11,12 +11,12 @@
             <div class="user_info">
                 <div class="user_top">
                     <div class="user_icons">
-                        <img class="icon logout" src="../../../assets/icons/logout.png" alt="" v-on:click="logoutUser">
-                        <img class="icon" src="../../../assets/icons/notifications.png" alt="">
-                        <img class="icon" src="../../../assets/icons/rating.png" alt="">
+                        <icon-button icon-name="chart-simple"></icon-button>
+                        <icon-button icon-name="bell"></icon-button>
+                        <icon-button icon-name="right-from-bracket"></icon-button>
                     </div>
 
-                    <router-link to="/" class="user_name">{{ user.username ? user.username : "-" }}</router-link>
+                    <router-link to="/" class="username">{{ user.username ? user.username : "FirstName LastName" }}</router-link>
                 </div>
 
                 <div class="profile_photo" style="background: #555555 center no-repeat; background-size: cover">
@@ -77,33 +77,13 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-left: 20px;
+    margin-right: 20px;
+    text-align: right;
 }
 
 .user_icons {
     display: flex;
-    justify-content: left;
-    margin: 5px 0;
-}
-
-.user_icons .icon {
-    margin-right: 20px;
-}
-
-.icon {
-    -webkit-filter: sepia(1) saturate(0);
-    filter: sepia(1) saturate(0);
-    width: 15px;
-    height: 15px;
-}
-
-.icon:hover {
-    -webkit-filter: sepia(1) hue-rotate(70deg) saturate(100);
-    filter: sepia(1) hue-rotate(70deg) saturate(100);
-}
-
-.logout_btn {
-    line-height: 0;
+    justify-content: right;
 }
 
 .profile_photo {
@@ -118,15 +98,18 @@ export default {
     border-radius: 50%;
 }
 
-.user_name {
-    margin-top: 7px;
+.username {
+    margin-right: 10px;
+    margin-bottom: 7px;
     line-height: 20px;
     color: #ffffff;
     text-transform: none;
+    transition: color .2s linear;
 }
 
-.user_name:hover {
+.username:hover {
     color: #6dff72;
+    transition: color .2s linear;
 }
 
 .button {

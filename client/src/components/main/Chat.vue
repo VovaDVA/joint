@@ -1,7 +1,18 @@
 <template>
+    <div class="icon-container">
+        <filled-icon-button icon-name="user-group">Друзья</filled-icon-button>
+        <filled-icon-button icon-name="message">Мессенджер</filled-icon-button>
+        <filled-icon-button icon-name="code">Ресурсы</filled-icon-button>
+        <filled-icon-button icon-name="search">Поиск</filled-icon-button>
+        <filled-icon-button icon-name="envelope">Почта</filled-icon-button>
+        <filled-icon-button icon-name="wallet">Кошелек</filled-icon-button>
+        <filled-icon-button icon-name="suitcase">Работа</filled-icon-button>
+    </div>
     <div class="chat">
         <div class="chat-inner">
-
+            <div class="chat-block search-bar"></div>
+            <div class="chat-block chat-content"></div>
+            <div class="chat-block chat-input"></div>
         </div>
     </div>
 </template>
@@ -27,13 +38,46 @@ export default {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* .chat {
-    position: fixed;
-    top: 0;
-    right: -300px;
-    width: 300px;
+.chat-inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     height: 100%;
-    background-color: #3f3f3f;
-    transition: right 0.3s ease;
-} */
+    padding: 10px;
+}
+
+.chat-block {
+    border: 1px #ffffff7c solid;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.search-bar {
+    flex: 0 0 50px;
+    margin-bottom: 10px;
+}
+
+.chat-content {
+    flex: 1;
+}
+
+.chat-input{
+    flex: 0 0 100px;
+    margin-top: 10px;
+}
+
+.icon-container {
+    position: fixed;
+    top: 80px;
+    right: calc(30vw + 20px);
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items:end;
+    flex-direction: column;
+}
+
+.icon-container .filled-icon-button {
+    margin-bottom: 10px;
+}
 </style>

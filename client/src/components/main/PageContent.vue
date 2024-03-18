@@ -15,15 +15,12 @@ export default {
 .page-content {
     font-family: 'Montserrat', sans-serif;
     position: relative;
-    margin: 0 auto;
-    /* margin-left: 360px; */
-    margin-top: -50px;
 
-    width: 800px;
     height: fit-content;
     padding: 10px 20px 50px;
 
-    border-radius: 30px;
+    /* border: 1px #ffffff7c solid; */
+    border-radius: 20px;
     color: #FFFFFF;
     background: rgba(0, 0, 0, 0.5);
 }

@@ -26,7 +26,10 @@ import PageHeader from "@/components/main/page/PageHeader.vue";
 import UserAvatar from "@/components/profile/UserAvatar.vue";
 import Chat from "@/components/main/Chat.vue";
 import ProfileContent from "./profile/ProfileContent.vue";
-import IconButton from "./main/IconButton.vue";
+import IconButton from "./main/buttons/IconButton.vue";
+import FilledIconButton from "./main/buttons/FilledIconButton.vue";
+import StrokeIconButton from "./main/buttons/StrokeIconButton.vue";
+import FeedBlock from "./news/FeedBlock.vue";
 
 export default [
     PageHeader,
@@ -38,5 +41,6 @@ export default [
     TokenCheck,
     ProfileBanner, UserAvatar, ProfileContent,
     Chat,
-    IconButton,
+    IconButton, FilledIconButton, StrokeIconButton,
+    FeedBlock,
 ]

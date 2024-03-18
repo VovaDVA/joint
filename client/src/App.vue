@@ -57,8 +57,10 @@ export default {
 .page {
     position: relative;
     display: flex;
-    height: 100vh;
-    margin-bottom: 200px;
+    height: auto;
+    min-height: 200px;
+    margin-bottom: 500px;
+    padding-left: 10px;
 }
 
 .container {
@@ -137,7 +139,7 @@ export default {
     display: flex;
     margin-top: 10px;
     /* flex: 0.7; */
-    width: calc(100vw - 30vw - 25px);
+    width: calc(100vw - 30vw - 90px);
     /* overflow-y: auto; */
     /* margin-top: 200px;
     padding: 50px 0 100px;

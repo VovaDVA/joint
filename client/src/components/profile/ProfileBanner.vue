@@ -1,38 +1,31 @@
 <template>
     <div class="banner">
         <div class="profile-icon-container">
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
+            <router-link to="/profile-settings">
+                <filled-icon-button icon-name="house"></filled-icon-button>
+            </router-link>
+            <router-link to="/profile-settings">
+                <filled-icon-button icon-name="user"></filled-icon-button>
+            </router-link>
+            <router-link to="/profile-settings">
+                <filled-icon-button icon-name="star"></filled-icon-button>
+            </router-link>
+            <router-link to="/profile-settings">
+                <filled-icon-button icon-name="calendar"></filled-icon-button>
+            </router-link>
+            <router-link to="/profile-settings">
+                <filled-icon-button icon-name="phone-volume"></filled-icon-button>
+            </router-link>
+            <router-link to="/profile-settings">
+                <filled-icon-button icon-name="gear"></filled-icon-button>
+            </router-link>
         </div>
         <div class="banner-inner">
             <div class="banner-content">
-                <icon-button>Изменить обложку</icon-button>
+                <filled-icon-button>Изменить обложку</filled-icon-button>
             </div>
             <user-avatar></user-avatar>
             <profile-content></profile-content>
-        </div>
-
-        <div class="profile-icon-container">
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
-            <div class="profile-icon"></div>
         </div>
     </div>
 </template>
@@ -58,7 +51,6 @@ export default {
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
-    /* background: #003c81; */
 }
 
 .banner-content {
@@ -85,8 +77,12 @@ export default {
     margin-top: 10px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    flex: 0 0 60px;
+    align-items: start;
+    flex: 0 0 45px;
+}
+
+.profile-icon-container .filled-icon-button {
+    margin-bottom: 10px;
 }
 
 .profile-icon {
@@ -96,5 +92,9 @@ export default {
     margin-bottom: 10px;
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 50%;
+}
+
+a {
+    color: white;
 }
 </style>
