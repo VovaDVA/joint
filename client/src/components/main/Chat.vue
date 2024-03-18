@@ -22,6 +22,7 @@ export default {
     height: calc(100vh - 90px);
     margin: 10px;
 
+    border: 1px #ffffff7c solid;
     border-radius: 20px;
     background-color: rgba(0, 0, 0, 0.5);
 }

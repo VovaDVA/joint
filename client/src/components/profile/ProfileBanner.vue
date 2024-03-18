@@ -10,10 +10,7 @@
         </div>
         <div class="banner-inner">
             <div class="banner-content">
-                <div class="icon_btn change_banner">
-                    <span>Изменить обложку</span>
-                    <i class="fas fa-pen"></i>
-                </div>
+                <icon-button>Изменить обложку</icon-button>
             </div>
             <user-avatar></user-avatar>
             <profile-content></profile-content>
@@ -58,7 +55,7 @@ export default {
     height: 0;
     border: none;
     padding-top: 22%;
-    /* border: 1px #ffffff solid; */
+    border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
     /* background: #003c81; */
@@ -68,8 +65,7 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    bottom: 0;
-    left: 0;
+    padding: 10px;
 }
 
 .banner img {

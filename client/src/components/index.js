@@ -26,6 +26,7 @@ import PageHeader from "@/components/main/page/PageHeader.vue";
 import UserAvatar from "@/components/profile/UserAvatar.vue";
 import Chat from "@/components/main/Chat.vue";
 import ProfileContent from "./profile/ProfileContent.vue";
+import IconButton from "./main/IconButton.vue";
 
 export default [
     PageHeader,
@@ -37,4 +38,5 @@ export default [
     TokenCheck,
     ProfileBanner, UserAvatar, ProfileContent,
     Chat,
+    IconButton,
 ]
