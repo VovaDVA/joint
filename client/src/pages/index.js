@@ -5,5 +5,6 @@ import ProfileSettingsPage from "@/pages/ProfileSettingsPage.vue";
 import AboutPage from "@/pages/AboutPage.vue";
 import GuidePage from "@/pages/GuidePage.vue";
 import NewsPage from "@/pages/NewsPage.vue";
+import FeedPage from "@/pages/FeedPage.vue";
 
-export default [HomePage, LoginPage, RegistrationPage, ProfileSettingsPage, AboutPage, GuidePage, NewsPage]
+export default [HomePage, LoginPage, RegistrationPage, ProfileSettingsPage, AboutPage, GuidePage, NewsPage, FeedPage]

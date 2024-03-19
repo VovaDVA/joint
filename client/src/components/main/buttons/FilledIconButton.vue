@@ -1,11 +1,11 @@
 <template>
     <div class="filled-icon-button">
-        <div class="icon-button-text">
-            <slot></slot>
-        </div>
         <div class="icon">
             <font-awesome-icon :icon="iconName" />
         </div>
+        <span class="icon-button-text">
+            <slot></slot>
+        </span>
     </div>
 </template>
 
@@ -49,6 +49,7 @@ export default {
 
 .icon-button-text {
     display: none;
+    white-space: nowrap;
     margin: 10px;
 }
 

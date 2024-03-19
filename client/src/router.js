@@ -6,6 +6,7 @@ import AboutPage from './pages/AboutPage.vue';
 import GuidePage from './pages/GuidePage.vue';
 import NewsPage from './pages/NewsPage.vue';
 import ProfilePage from './pages/ProfilePage.vue';
+import FeedPage from './pages/FeedPage.vue';
 
 // import SidebarStatsTab from './components/main/sidebarMenuTabs/SidebarStatsTab.vue';
 // import StatsTabTable from './components/main/sidebarMenuTabs/StatsTabTable.vue';
@@ -14,24 +15,26 @@ import ProfilePage from './pages/ProfilePage.vue';
 import SidebarCalendarTab from './components/main/sidebarMenuTabs/SidebarCalendarTab.vue';
 import SidebarAddExpenseTab from './components/main/sidebarMenuTabs/SidebarAddExpenseTab.vue';
 
+import ProfileContentImages from './components/profile/content/ProfileContentImages.vue';
+
 import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
   { path: '/register', component: RegistrationPage },
   { path: '/login', component: LoginPage },
-  { path: '/profile', component: ProfilePage },
+
   { path: '/profile-settings', component: ProfileSettingsPage },
   { path: '/about', component: AboutPage },
   { path: '/guide', component: GuidePage },
   { path: '/news', component: NewsPage },
+  { path: '/feed', component: FeedPage },
   {
     path: '/', component: ProfilePage, children: [
-      // {
-      //   path: '/', component: SidebarStatsTab, redirect: '/table-view', children: [
-      //     { path: '/table-view', component: StatsTabTable },
-      //     { path: '/graphics-view', component: StatsTabGraphics }
-      //   ]
-      // },
+      { path: '/', component: ProfileContentImages },
+      { path: '/images', component: ProfileContentImages },
+      { path: '/videos', component: ProfileContentImages },
+      { path: '/music', component: ProfileContentImages },
+      { path: '/books', component: ProfileContentImages },
       { path: '/calendar', component: SidebarCalendarTab },
       { path: '/add-expense', component: SidebarAddExpenseTab }
     ]

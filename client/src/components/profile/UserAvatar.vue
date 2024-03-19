@@ -5,7 +5,6 @@
             <div class="username">Username</div>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -16,6 +15,7 @@ export default {
 
 <style scoped>
 .user-info {
+    margin-left: -20px;
     display: flex;
 }
 

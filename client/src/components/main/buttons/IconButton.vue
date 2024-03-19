@@ -33,6 +33,7 @@ export default {
 }
 
 .icon-button:hover {
+    /* color: #ffd900; */
     color: rgb(0, 255, 42);
     transition: color .2s linear;
 }
