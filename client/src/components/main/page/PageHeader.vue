@@ -4,9 +4,11 @@
 
             <div class="nav" id="nav">
                 <router-link to="/" class="logo"></router-link>
+                <router-link to="/news" class="nav_item">?</router-link>
                 <router-link to="/about" class="nav_item">О нас</router-link>
                 <router-link to="/news" class="nav_item">Новости</router-link>
                 <router-link to="/news" class="nav_item">Сервисы</router-link>
+                <router-link to="/news" class="nav_item">Сотрудничество</router-link>
             </div>
 
             <div class="user_info">
