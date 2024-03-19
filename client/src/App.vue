@@ -10,7 +10,7 @@
                 <router-view></router-view>
             </div>
         </div>
-        <side-chat></side-chat>
+        <side-chat v-if="!isLoginPage && !isRegisterPage"></side-chat>
     </div>
 
     <div class="intro">
@@ -59,16 +59,12 @@ export default {
     display: flex;
     height: auto;
     min-height: 200px;
-    margin-bottom: 500px;
-    padding-left: 10px;
+    margin-bottom: 200px;
+    padding-left: 55px;
 }
 
 .container {
-    /* display: flex; */
     flex: 1;
-    /* justify-content: center; */
-    /* max-width: 1200px; */
-    /* padding: 0 20px; */
     margin: 0 auto;
     font-family: 'Montserrat', sans-serif;
 }
@@ -106,7 +102,6 @@ export default {
 .nav_item {
     padding: 0 15px;
 
-    /* font-weight: 700; */
     color: #FFFFFF;
     text-decoration: none;
 
@@ -139,7 +134,7 @@ export default {
     display: flex;
     margin-top: 10px;
     /* flex: 0.7; */
-    width: calc(100vw - 30vw - 90px);
+    width: calc(100vw - 30vw - 135px);
     /* overflow-y: auto; */
     /* margin-top: 200px;
     padding: 50px 0 100px;

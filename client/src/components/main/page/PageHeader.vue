@@ -3,20 +3,33 @@
         <div class="header_inner">
 
             <div class="nav" id="nav">
-                <a class="logo" href="index.html" target="_self"></a>
+                <router-link to="/" class="logo"></router-link>
+                <router-link to="/news" class="nav_item">?</router-link>
                 <router-link to="/about" class="nav_item">О нас</router-link>
                 <router-link to="/news" class="nav_item">Новости</router-link>
+                <router-link to="/news" class="nav_item">Сервисы</router-link>
+                <router-link to="/news" class="nav_item">Сотрудничество</router-link>
             </div>
 
             <div class="user_info">
                 <div class="user_top">
                     <div class="user_icons">
-                        <icon-button icon-name="chart-simple"></icon-button>
-                        <icon-button icon-name="bell"></icon-button>
-                        <icon-button icon-name="right-from-bracket"></icon-button>
+                        <router-link to="/profile-settings">
+                            <icon-button icon-name="gear"></icon-button>
+                        </router-link>
+                        <router-link to="/profile-settings">
+                            <icon-button icon-name="chart-simple"></icon-button>
+                        </router-link>
+                        <router-link to="/profile-settings">
+                            <icon-button icon-name="bell"></icon-button>
+                        </router-link>
+                        <router-link to="/profile-settings">
+                            <icon-button icon-name="right-from-bracket"></icon-button>
+                        </router-link>
                     </div>
 
-                    <router-link to="/" class="username">{{ user.username ? user.username : "FirstName LastName" }}</router-link>
+                    <router-link to="/" class="username">{{ user.username ? user.username : "FirstName LastName"
+                        }}</router-link>
                 </div>
 
                 <div class="profile_photo" style="background: #555555 center no-repeat; background-size: cover">
@@ -145,13 +158,13 @@ export default {
     background: url(../../../assets/logo.png) center no-repeat;
     background-size: contain;
 
-    filter: drop-shadow(0 0 0 #000000) brightness(150%);
-    transition: filter .3s linear;
+    /* filter: drop-shadow(0 0 0 #000000) brightness(150%); */
+    transition: filter .2s linear;
 }
 
 .logo:hover {
-    filter: drop-shadow(0 0 30px #003971) brightness(200%);
-    transition: filter .3s linear;
+    filter: brightness(150%);
+    transition: filter .2s linear;
 }
 
 .nav {
@@ -186,5 +199,9 @@ export default {
     top: 0;
     left: 0;
     z-index: 90;
+}
+
+a {
+    color: white;
 }
 </style>

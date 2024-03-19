@@ -1,27 +1,7 @@
 <template>
     <div class='profile-content'>
+        <router-view></router-view>
         <div class="profile-inner">
-            <div class="profile-info"></div>
-            <div class="profile-media">
-                <div class="menu_inner">
-                    <router-link to="/table-view">
-                        <stroke-icon-button icon-name="image">Фото</stroke-icon-button>
-                    </router-link>
-                    <router-link to="/graphics-view">
-                        <stroke-icon-button icon-name="video">Видео</stroke-icon-button>
-                    </router-link>
-                    <router-link to="/table-view">
-                        <stroke-icon-button icon-name="music">Музыка</stroke-icon-button>
-                    </router-link>
-                    <router-link to="/graphics-view">
-                        <stroke-icon-button icon-name="book">Книги</stroke-icon-button>
-                    </router-link>
-                    <router-link to="/graphics-view">
-                        <stroke-icon-button icon-name="code">Программы</stroke-icon-button>
-                    </router-link>
-                </div>
-                <router-view></router-view>
-            </div>
         </div>
     </div>
 </template>
@@ -35,12 +15,21 @@ export default {
 <style scoped>
 .profile-content {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 70px;
 }
 
 .profile-inner {
     display: flex;
     justify-content: space-between;
+}
+
+.profile-about {
+    padding: 20px;
+    min-height: 70px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px #ffffff7c solid;
+    border-radius: 20px;
+    margin-bottom: 20px;
 }
 
 .profile-info {
@@ -50,7 +39,7 @@ export default {
     height: 300px;
     min-height: 200px;
     background: rgba(0, 0, 0, 0.5);
-    border-radius: 30px;
+    border-radius: 20px;
 }
 
 .profile-media {
@@ -59,7 +48,7 @@ export default {
     min-height: 500px;
     padding: 10px 20px 50px;
 
-    border-radius: 30px;
+    border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
 
     position: relative;
