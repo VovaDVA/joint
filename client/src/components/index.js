@@ -24,12 +24,17 @@ import TokenCheck from "@/components/account/TokenCheck.vue";
 import ProfileBanner from "@/components/profile/ProfileBanner.vue";
 import PageHeader from "@/components/main/page/PageHeader.vue";
 import UserAvatar from "@/components/profile/UserAvatar.vue";
-import Chat from "@/components/main/Chat.vue";
 import ProfileContent from "./profile/ProfileContent.vue";
 import IconButton from "./main/buttons/IconButton.vue";
 import FilledIconButton from "./main/buttons/FilledIconButton.vue";
+import ContentStatsButton from "./main/buttons/ContentStatsButton.vue";
 import StrokeIconButton from "./main/buttons/StrokeIconButton.vue";
-import FeedBlock from "./news/FeedBlock.vue";
+import FeedBlock from "./feed/FeedBlock.vue";
+
+// Chat
+import Chat from "@/components/main/static_panel/Chat.vue";
+import MessengerActionIcon from "@/components/main/static_panel/content/messenger/MessengerActionIcon.vue";
+import FeedBlockMusic from "@/components/feed/FeedBlockMusic.vue";
 
 export default [
     PageHeader,
@@ -40,7 +45,7 @@ export default [
     BarChart, CalendarBlock,
     TokenCheck,
     ProfileBanner, UserAvatar, ProfileContent,
-    Chat,
-    IconButton, FilledIconButton, StrokeIconButton,
-    FeedBlock,
+    Chat, MessengerActionIcon,
+    IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton,
+    FeedBlock, FeedBlockMusic
 ]

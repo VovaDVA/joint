@@ -1,9 +1,10 @@
 <template>
     <div class="chat">
         <div class="chat-inner">
-            <div class="chat-block search-bar"></div>
+            <component :is="currentSectionComponent" :key="currentSection" />
+            <!-- <div class="chat-block search-bar"></div>
             <div class="chat-block chat-content"></div>
-            <div class="chat-block chat-input"></div>
+            <div class="chat-block chat-input"></div> -->
         </div>
     </div>
     <div class="icon-container left">
@@ -35,8 +36,8 @@
         </router-link>
     </div>
     <div class="icon-container">
-        <filled-icon-button icon-name="user-group">Люди</filled-icon-button>
-        <filled-icon-button icon-name="message">Мессенджер</filled-icon-button>
+        <filled-icon-button icon-name="user-group" @click="changeSection('people')">Люди</filled-icon-button>
+        <filled-icon-button icon-name="message" @click="changeSection('chat')">Мессенджер</filled-icon-button>
         <filled-icon-button icon-name="image">Изображения</filled-icon-button>
         <filled-icon-button icon-name="video">Видео</filled-icon-button>
         <filled-icon-button icon-name="music">Музыка</filled-icon-button>
@@ -45,13 +46,42 @@
 </template>
 
 <script>
+import StaticPanelPeople from './content/StaticPanelPeople.vue';
+import StaticPanelMessenger from './content/StaticPanelMessenger.vue';
+
 export default {
     name: 'side-chat',
+    components: {
+        StaticPanelPeople,
+        StaticPanelMessenger,
+    },
+    data() {
+        return {
+            currentSection: 'chat'
+        }
+    },
     computed: {
         isProfilePage() {
             return ['/', '/user-about', '/images', '/videos', '/music', '/books'].includes(this.$route.path);
         },
+
+        currentSectionComponent() {
+            // Возвращаем компонент для текущего выбранного раздела
+            switch (this.currentSection) {
+                case 'people':
+                    return 'StaticPanelPeople';
+                case 'chat':
+                    return 'StaticPanelMessenger';
+                default:
+                    return 'StaticPanelMessenger';
+            }
+        }
     },
+    methods: {
+        changeSection(section) {
+            this.currentSection = section;
+        }
+    }
 }
 </script>
 
@@ -75,26 +105,6 @@ export default {
     width: 100%;
     height: 100%;
     padding: 10px;
-}
-
-.chat-block {
-    border: 1px #ffffff7c solid;
-    border-radius: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.search-bar {
-    flex: 0 0 50px;
-    margin-bottom: 10px;
-}
-
-.chat-content {
-    flex: 1;
-}
-
-.chat-input {
-    flex: 0 0 100px;
-    margin-top: 10px;
 }
 
 .icon-container {
