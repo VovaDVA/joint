@@ -20,11 +20,11 @@ export default {
 }
 
 .avatar {
-    width: 100px;
-    height: 100px;
+    width: 5.5vw;
+    height: 5.5vw;
 
-    margin-top: -50px;
-    margin-left: 40px;
+    margin-top: -2.75vw;
+    margin-left: 2.2vw;
 
     border: 1px #ffffff7c solid;
     border-radius: 50%;

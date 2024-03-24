@@ -18,6 +18,7 @@ import SidebarAddExpenseTab from './components/main/sidebarMenuTabs/SidebarAddEx
 import ProfileContentImages from './components/profile/content/ProfileContentImages.vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
+import ProfileContentMusic from './components/profile/content/ProfileContentMusic.vue';
 
 const routes = [
   { path: '/register', component: RegistrationPage },
@@ -33,7 +34,7 @@ const routes = [
       { path: '/', component: ProfileContentImages },
       { path: '/images', component: ProfileContentImages },
       { path: '/videos', component: ProfileContentImages },
-      { path: '/music', component: ProfileContentImages },
+      { path: '/music', component: ProfileContentMusic },
       { path: '/books', component: ProfileContentImages },
       { path: '/calendar', component: SidebarCalendarTab },
       { path: '/add-expense', component: SidebarAddExpenseTab }
