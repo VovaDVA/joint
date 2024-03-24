@@ -34,7 +34,12 @@ import FeedBlock from "./feed/FeedBlock.vue";
 // Chat
 import Chat from "@/components/main/static_panel/Chat.vue";
 import MessengerActionIcon from "@/components/main/static_panel/content/messenger/MessengerActionIcon.vue";
+
+// Feed
 import FeedBlockMusic from "@/components/feed/FeedBlockMusic.vue";
+
+// News
+import NewsBlock from "@/components/news/NewsBlock.vue";
 
 export default [
     PageHeader,
@@ -47,5 +52,6 @@ export default [
     ProfileBanner, UserAvatar, ProfileContent,
     Chat, MessengerActionIcon,
     IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton,
-    FeedBlock, FeedBlockMusic
+    FeedBlock, FeedBlockMusic,
+    NewsBlock,
 ]
