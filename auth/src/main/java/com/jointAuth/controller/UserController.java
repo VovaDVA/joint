@@ -1,7 +1,10 @@
 package com.jointAuth.controller;
 
+import com.jointAuth.model.JwtResponse;
+import com.jointAuth.model.LoginRequest;
 import com.jointAuth.model.User;
 import com.jointAuth.service.UserService;
+import com.jointAuth.util.JwtTokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtTokenUtils jwtTokenUtils;
+
     //Регистрация
     @PostMapping(path = "/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
@@ -31,11 +37,12 @@ public class UserController {
 
     //Вход
     @PostMapping(path = "/login")
-    public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
-        User user = userService.login(email,password);
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+        User user = userService.login(loginRequest.getEmail(),loginRequest.getPassword());
 
-        if (user != null && userService.passwordsMatch(user.getPassword(), password)) {
-            return ResponseEntity.ok(user);
+        if (user != null && userService.passwordsMatch(user.getPassword(), loginRequest.getPassword())) {
+            String token = jwtTokenUtils.generateToken(user);
+            return ResponseEntity.ok(new JwtResponse(token));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");

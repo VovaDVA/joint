@@ -2,7 +2,7 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.User;
 import com.jointAuth.repository.UserRepository;
-import com.jointAuth.security.PasswordEncoderConfig;
+import com.jointAuth.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
