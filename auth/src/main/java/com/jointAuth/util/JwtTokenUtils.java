@@ -1,9 +1,7 @@
 package com.jointAuth.util;
 
 import com.jointAuth.model.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.lang.String;
@@ -22,8 +20,10 @@ public class JwtTokenUtils {
 
     public String generateToken(User user) {
         String email = user.getEmail();
+        Long userId = user.getId();
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", email);
+        claims.put("id", userId);
 
         String fullName = user.getFirstName() + " " + user.getLastName();
         Date issuedDate = new Date();
@@ -40,6 +40,31 @@ public class JwtTokenUtils {
 
     public String getFullName(String token) {
         return getAllClaimsFromToken(token).getSubject();
+    }
+
+
+    public boolean validateToken(String authToken) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(authToken);
+            return true;
+        } catch (ExpiredJwtException e) {
+            // Токен истек
+            return false;
+        } catch (MalformedJwtException e) {
+            // Неверный формат токена
+            return false;
+        } catch (UnsupportedJwtException e) {
+            // Токен не поддерживается
+            return false;
+        } catch (SignatureException e) {
+            // Ошибка проверки подписи
+            return false;
+        } catch (Exception e) {
+            // Другие ошибки
+            return false;
+        }
     }
 
     private Claims getAllClaimsFromToken(String token) {

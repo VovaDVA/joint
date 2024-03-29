@@ -38,7 +38,7 @@ public class UserController {
     //Вход
     @PostMapping(path = "/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
-        User user = userService.login(loginRequest.getEmail(),loginRequest.getPassword());
+        User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
         if (user != null && userService.passwordsMatch(user.getPassword(), loginRequest.getPassword())) {
             String token = jwtTokenUtils.generateToken(user);
@@ -90,6 +90,4 @@ public class UserController {
 
         return ResponseEntity.notFound().build();
     }
-
-
 }
