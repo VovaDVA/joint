@@ -2,11 +2,11 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.User;
 import com.jointAuth.repository.UserRepository;
-import com.jointAuth.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +25,9 @@ public class UserService {
         if (existingUser != null) {
             throw new IllegalArgumentException("User with this email already exists");
         }
+
+        user.setRegistrationDate(new Date());
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -32,8 +35,12 @@ public class UserService {
     public User login(String email, String password) {
         User user = userRepository.findByEmail(email);
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            user.setLastLogin(new Date());
+            userRepository.save(user);
+
             return user;
         }
+
         throw new IllegalArgumentException("Invalid email or password");
     }
 

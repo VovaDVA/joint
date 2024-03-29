@@ -3,6 +3,8 @@ package com.jointAuth.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Entity
 @Data
 @Table(name = "users")
@@ -19,6 +21,8 @@ public class User {
     private String email;
     @Column(name = "password")
     private String password;
-
-
+    @Column(name = "registration_date")
+    private Date registrationDate;
+    @Column(name = "last_login")
+    private Date lastLogin;
 }
