@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: jointProfile
+
+  flyway:
+    locations: resources/db/migration
+    baseline-on-migrate: true # подключение предыдущего пункта, включение его в работу
+    enabled: true # включение зависимости в работу в целом
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1234567
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+
+
+
+server:
+  port: 8081
