@@ -19,27 +19,35 @@ import ContentBlockText from "@/components/main/ContentBlockText.vue";
 import BarChart from "@/components/main/BarChart.vue";
 import CalendarBlock from "@/components/main/CalendarBlock.vue";
 import TokenCheck from "@/components/account/TokenCheck.vue";
-
+// Buttons
+import IconButton from "./main/buttons/IconButton.vue";
+import SingleIcon from "./main/buttons/SingleIcon.vue";
+import FilledIconButton from "./main/buttons/FilledIconButton.vue";
+import ContentStatsButton from "./main/buttons/ContentStatsButton.vue";
+import StrokeIconButton from "./main/buttons/StrokeIconButton.vue";
 // Profile
 import ProfileBanner from "@/components/profile/ProfileBanner.vue";
 import PageHeader from "@/components/main/page/PageHeader.vue";
 import UserAvatar from "@/components/profile/UserAvatar.vue";
 import ProfileContent from "./profile/ProfileContent.vue";
-import IconButton from "./main/buttons/IconButton.vue";
-import FilledIconButton from "./main/buttons/FilledIconButton.vue";
-import ContentStatsButton from "./main/buttons/ContentStatsButton.vue";
-import StrokeIconButton from "./main/buttons/StrokeIconButton.vue";
-import FeedBlock from "./feed/FeedBlock.vue";
-
-// Chat
-import Chat from "@/components/main/static_panel/Chat.vue";
-import MessengerActionIcon from "@/components/main/static_panel/content/messenger/MessengerActionIcon.vue";
-
 // Feed
+import FeedBlock from "./feed/FeedBlock.vue";
 import FeedBlockMusic from "@/components/feed/FeedBlockMusic.vue";
-
 // News
 import NewsBlock from "@/components/news/NewsBlock.vue";
+// Static Panel
+import StaticPanel from "@/components/main/static_panel/StaticPanel.vue";
+import StaticPanelHeader from "./main/static_panel/components/StaticPanelHeader.vue";
+import StaticPanelSearchBar from "./main/static_panel/components/StaticPanelSearchBar.vue";
+import StaticPanelContent from "./main/static_panel/components/StaticPanelContent.vue";
+// Chat
+import ChatPreviewBlock from "@/components/main/static_panel/content/chat/ChatPreviewBlock.vue";
+// Messenger
+import MessengerActionIcon from "@/components/main/static_panel/content/messenger/MessengerActionIcon.vue";
+import Message from "@/components/main/static_panel/content/messenger/Message.vue";
+import ChatTitle from "@/components/main/static_panel/content/messenger/ChatTitle.vue";
+// People
+import AccountPreviewBlock from "@/components/main/static_panel/content/people/AccountPreviewBlock.vue";
 
 export default [
     PageHeader,
@@ -49,9 +57,20 @@ export default [
     PageTitle, PageContent, ContentBlockTitle, ContentBlockText,
     BarChart, CalendarBlock,
     TokenCheck,
+    // Buttons
+    SingleIcon, IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton,
+    // Profile
     ProfileBanner, UserAvatar, ProfileContent,
-    Chat, MessengerActionIcon,
-    IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton,
+    // Feed
     FeedBlock, FeedBlockMusic,
+    // News
     NewsBlock,
+    // Static Panel
+    StaticPanel, StaticPanelSearchBar, StaticPanelContent, StaticPanelHeader,
+    // Chat
+    ChatPreviewBlock,
+    // Messenger
+    MessengerActionIcon, Message, ChatTitle,
+    // People
+    AccountPreviewBlock,
 ]

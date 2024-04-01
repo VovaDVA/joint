@@ -1,5 +1,5 @@
 <template>
-    <div class="icon-button">
+    <div class="icon">
         <font-awesome-icon :icon="iconName" />
     </div>
 </template>
@@ -8,7 +8,7 @@
 import { FontAwesomeIcon } from '@/fontawesome';
 
 export default {
-    name: 'icon-button',
+    name: 'single-icon',
     components: {
         FontAwesomeIcon
     },
@@ -22,18 +22,10 @@ export default {
 </script>
 
 <style scoped>
-.icon-button {
-    padding: 10px;
+.icon {
     font-size: 15px;
     line-height: 15px;
 
     user-select: none;
-    transition: color .2s linear;
-}
-
-.icon-button:hover {
-    /* color: #ffd900; */
-    color: rgb(0, 255, 42);
-    transition: color .2s linear;
 }
 </style>

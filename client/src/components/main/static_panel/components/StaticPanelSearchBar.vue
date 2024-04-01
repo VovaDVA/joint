@@ -1,8 +1,9 @@
 <template>
-    <div class="messenger-action-icon">
+    <div class="search-bar">
         <div class="icon">
-            <font-awesome-icon :icon="iconName" />
+            <font-awesome-icon icon="search" />
         </div>
+        <input class="message-input" type="text" placeholder="Поиск...">
     </div>
 </template>
 
@@ -10,7 +11,7 @@
 import { FontAwesomeIcon } from '@/fontawesome';
 
 export default {
-    name: 'messenger-action-icon',
+    name: 'static-panel-search-bar',
     components: {
         FontAwesomeIcon
     },
@@ -24,38 +25,38 @@ export default {
 </script>
 
 <style scoped>
-.messenger-action-icon {
+.search-bar {
     display: flex;
-    /* height: auto; */
-    aspect-ratio: 1/1;
-    border-radius: 30px;
-    margin-right: 10px;
+    flex: 1;
+    padding: 12px;
 
+    line-height: 14px;
+    color: #aaaaaa;
     align-items: center;
-    justify-content: center;
 
+    border: 1px #ffffff4f solid;
+    border-radius: 30px;
     background-color: rgba(0, 0, 0, 0.5);
-    user-select: none;
-    transition: color, background .3s linear;
-}
-
-.messenger-action-icon.right {
-    margin-right: 0;
-    margin-left: 10px;
-}
-
-.messenger-action-icon:hover {
-    color: black;
-    background-color: white;
-    transition: color, background .3s linear;
 }
 
 .icon {
-    display: flex;
-    height: 20px;
+    width: 14px;
+    height: 14px;
+    margin-right: 10px;
 }
 
 .svg-inline--fa {
     height: auto;
+    vertical-align: 0;
+}
+
+input {
+    padding: 0;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    flex: 1;
+
+    font-size: 14px;
 }
 </style>
