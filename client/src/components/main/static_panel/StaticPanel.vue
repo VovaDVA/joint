@@ -1,11 +1,6 @@
 <template>
-    <div class="chat">
-        <div class="chat-inner">
-            <component :is="currentSectionComponent" :key="currentSection" />
-            <!-- <div class="chat-block search-bar"></div>
-            <div class="chat-block chat-content"></div>
-            <div class="chat-block chat-input"></div> -->
-        </div>
+    <div class="static-panel">
+        <component :is="currentSectionComponent" :key="currentSection" />
     </div>
     <div class="icon-container left">
         <router-link to="/">
@@ -38,7 +33,7 @@
     <div class="icon-container">
         <filled-icon-button icon-name="user-group" @click="changeSection('people')">Люди</filled-icon-button>
         <filled-icon-button icon-name="message" @click="changeSection('chat')">Мессенджер</filled-icon-button>
-        <filled-icon-button icon-name="image">Изображения</filled-icon-button>
+        <filled-icon-button icon-name="image" @click="changeSection('messenger')">Изображения</filled-icon-button>
         <filled-icon-button icon-name="video">Видео</filled-icon-button>
         <filled-icon-button icon-name="music">Музыка</filled-icon-button>
         <filled-icon-button icon-name="book">Книги</filled-icon-button>
@@ -47,12 +42,14 @@
 
 <script>
 import StaticPanelPeople from './content/StaticPanelPeople.vue';
+import StaticPanelChat from './content/StaticPanelChat.vue';
 import StaticPanelMessenger from './content/StaticPanelMessenger.vue';
 
 export default {
     name: 'side-chat',
     components: {
         StaticPanelPeople,
+        StaticPanelChat,
         StaticPanelMessenger,
     },
     data() {
@@ -71,7 +68,7 @@ export default {
                 case 'people':
                     return 'StaticPanelPeople';
                 case 'chat':
-                    return 'StaticPanelMessenger';
+                    return 'StaticPanelChat';
                 default:
                     return 'StaticPanelMessenger';
             }
@@ -86,7 +83,11 @@ export default {
 </script>
 
 <style scoped>
-.chat {
+.static-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+
     position: fixed;
     top: 70px;
     right: 0;
@@ -97,14 +98,6 @@ export default {
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background-color: rgba(0, 0, 0, 0.5);
-}
-
-.chat-inner {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    padding: 10px;
 }
 
 .icon-container {

@@ -8,11 +8,15 @@
                     захотели посвятить свое свободное время созданию чего-то нового и интересного.</div>
             </div>
             <div class="feed-stats">
-                <content-stats-button icon-name="eye">1.4k</content-stats-button>
-                <content-stats-button icon-name="heart">15k</content-stats-button>
-                <content-stats-button icon-name="comment">234</content-stats-button>
-                <content-stats-button icon-name="share">93</content-stats-button>
-                <content-stats-button icon-name="plus">Бесплатно</content-stats-button>
+                <div class="feed-stats-container">
+                    <content-stats-button icon-name="eye">1.4k</content-stats-button>
+                    <content-stats-button icon-name="heart">15k</content-stats-button>
+                    <content-stats-button icon-name="comment">234</content-stats-button>
+                    <content-stats-button icon-name="share">93</content-stats-button>
+                </div>
+                <div class="feed-stats-container right">
+                    <content-stats-button icon-name="plus">Бесплатно</content-stats-button>
+                </div>
             </div>
         </div>
     </div>
@@ -70,10 +74,18 @@ export default {
 
 .feed-stats {
     display: flex;
-    /* justify-content: flex-end; */
+    justify-content: space-between;
 }
 
-.feed-stats * {
+.feed-stats-container {
+    display: flex;
+}
+
+.feed-stats-container * {
     margin-right: 10px;
+}
+
+.feed-stats-container.right * {
+    margin-right: 0;
 }
 </style>

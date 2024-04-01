@@ -1,21 +1,16 @@
 <template>
-    <div class="chat-block search-bar"></div>
-    <div class="chat-block chat-content"></div>
+    <static-panel-header>
+        <messenger-action-icon icon-name="user"></messenger-action-icon>
+        <messenger-action-icon icon-name="user-tag"></messenger-action-icon>
+        <messenger-action-icon icon-name="wallet"></messenger-action-icon>
+    </static-panel-header>
+    <static-panel-content>
+        <account-preview-block></account-preview-block>
+        <account-preview-block></account-preview-block>
+        <account-preview-block></account-preview-block>
+        <account-preview-block></account-preview-block>
+        <account-preview-block></account-preview-block>
+    </static-panel-content>
 </template>
 
-<style scoped>
-.chat-block {
-    border: 1px #ffffff7c solid;
-    border-radius: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.search-bar {
-    flex: 0 0 50px;
-    margin-bottom: 10px;
-}
-
-.chat-content {
-    flex: 1;
-}
-</style>
+<style scoped></style>

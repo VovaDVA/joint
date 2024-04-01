@@ -9,6 +9,7 @@
                 <router-link to="/news" class="nav_item">Новости</router-link>
                 <router-link to="/news" class="nav_item">Сервисы</router-link>
                 <router-link to="/news" class="nav_item">Сотрудничество</router-link>
+                <router-link to="/news" class="nav_item">Реклама</router-link>
             </div>
 
             <div class="user_info">
