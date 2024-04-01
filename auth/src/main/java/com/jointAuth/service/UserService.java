@@ -1,6 +1,7 @@
 package com.jointAuth.service;
 
 import com.jointAuth.model.User;
+import com.jointAuth.model.UserDTO;
 import com.jointAuth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,6 +49,17 @@ public class UserService {
         return passwordEncoder.matches(plainPassword, hashedPassword);
     }
 
+    public UserDTO convertToDto(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        dto.setRegistrationDate(user.getRegistrationDate());
+        dto.setLastLogin(user.getLastLogin());
+        return dto;
+    }
+
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
@@ -60,7 +72,7 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setPassword(newPassword);
+            user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
         } else {
             throw new IllegalArgumentException("User not found");

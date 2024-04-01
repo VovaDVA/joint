@@ -21,9 +21,14 @@ public class JwtTokenUtils {
     public String generateToken(User user) {
         String email = user.getEmail();
         Long userId = user.getId();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", email);
         claims.put("id", userId);
+        claims.put("firstName", firstName);
+        claims.put("lastName", lastName);
 
         String fullName = user.getFirstName() + " " + user.getLastName();
         Date issuedDate = new Date();
@@ -31,7 +36,6 @@ public class JwtTokenUtils {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(fullName)
                 .setIssuedAt(issuedDate)
                 .setExpiration(expiredDate)
                 .signWith(SignatureAlgorithm.HS256, secret)
@@ -72,5 +76,11 @@ public class JwtTokenUtils {
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public Long getCurrentUserId(String token) {
+        token = token.substring(7);
+        Claims claims = getAllClaimsFromToken(token);
+        return claims.get("id", Long.class);
     }
 }
