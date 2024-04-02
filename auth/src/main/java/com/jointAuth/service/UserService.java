@@ -6,6 +6,7 @@ import com.jointAuth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.regex.Pattern;
 
 import java.util.Date;
 import java.util.List;
@@ -19,18 +20,31 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Регулярное выражение для проверки пароля
+    private static final String PASSWORD_PATTERN =
+            "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+
+    private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
     public User register(User user) {
-        //проверка пользователя на уникальность почты
+        // проверка пользователя на уникальность почты
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null) {
             throw new IllegalArgumentException("User with this email already exists");
+        }
+
+        if (!validatePassword(user.getPassword())) {
+            throw new IllegalArgumentException("Password does not meet the complexity requirements");
         }
 
         user.setRegistrationDate(new Date());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    private boolean validatePassword(String password) {
+        return pattern.matcher(password).matches();
     }
 
     public User login(String email, String password) {
