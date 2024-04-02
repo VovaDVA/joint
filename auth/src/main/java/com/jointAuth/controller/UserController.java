@@ -3,8 +3,10 @@ package com.jointAuth.controller;
 import com.jointAuth.model.JwtResponse;
 import com.jointAuth.model.LoginRequest;
 import com.jointAuth.model.User;
+import com.jointAuth.model.UserDTO;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "auth")
@@ -29,7 +32,8 @@ public class UserController {
         User registeredUser = userService.register(user);
 
         if (registeredUser != null) {
-            return ResponseEntity.ok(registeredUser);
+            UserDTO userDTO = userService.convertToDto(registeredUser);
+            return ResponseEntity.ok(userDTO);
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user.");
@@ -49,9 +53,12 @@ public class UserController {
     }
 
     // Получение пользователя по ID
-    @GetMapping(path = "/get/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
-        Optional<User> user = userService.getUserById(id);
+    @GetMapping(path = "/get-id")
+    public ResponseEntity<?> getUserById(@RequestHeader("Authorization") String token) {
+
+        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+
+        Optional<User> user = userService.getUserById(currentUserId);
 
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
@@ -60,31 +67,46 @@ public class UserController {
         }
     }
 
-    //Получение всех пользователей
     @GetMapping(path = "/get-all")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        List<UserDTO> userDTOs = users.stream()
+                .map(user -> {
+                    UserDTO dto = new UserDTO();
+                    BeanUtils.copyProperties(user, dto); // или любой другой метод копирования свойств
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userDTOs);
     }
 
     //Обновление пароля
-    @PutMapping(path = "/{id}/password")
-    public ResponseEntity<?> changePassword(@PathVariable Long id, @RequestParam String password) {
-        try {
-            userService.changePassword(id, password);
+    @PutMapping(path = "/change-password")
+    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token, @RequestBody String password) {
+
+        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+
+        Optional<User> existingUser = userService.getUserById(currentUserId);
+
+        if (existingUser.isPresent()) {
+            userService.changePassword(currentUserId, password);
             return ResponseEntity.ok("Password changed successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
         }
+
+        return ResponseEntity.notFound().build();
+
     }
 
     //Удаление
-    @DeleteMapping(path = "/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        Optional<User> existingUser = userService.getUserById(id);
+    @DeleteMapping(path = "/delete")
+    public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
+
+        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+
+        Optional<User> existingUser = userService.getUserById(currentUserId);
 
         if (existingUser.isPresent()) {
-            userService.deleteUser(id);
+            userService.deleteUser(currentUserId);
             return ResponseEntity.ok().build();
         }
 
