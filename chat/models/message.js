@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema({
     chat_id: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'Chat',
+        type: String,//mongoose.Schema.Types.ObjectId, ref: 'Chat',
         required: true
     },
     sender_id: {
@@ -12,7 +12,8 @@ const messageSchema = new mongoose.Schema({
     text: {
         type: String,
         minlength: 1,
-        maxlength: 10000
+        maxlength: 10000,
+        required: true
     },
     created_at: {
         type: Date,
