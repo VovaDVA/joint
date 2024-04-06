@@ -13,7 +13,7 @@ export default {
 
 <style scoped>
 .static-panel-header {
-    flex: 0 0 43px;
+    flex: 0 0 45px;
     display: flex;
     margin-bottom: 10px;
 }

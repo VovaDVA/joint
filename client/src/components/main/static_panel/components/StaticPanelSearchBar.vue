@@ -57,6 +57,7 @@ input {
     background-color: transparent;
     flex: 1;
 
+    font-family: 'Montserrat', sans-serif;
     font-size: 14px;
 }
 </style>

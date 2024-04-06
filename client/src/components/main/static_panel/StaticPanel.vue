@@ -9,7 +9,7 @@
         <router-link to="/feed">
             <filled-icon-button icon-name="newspaper">Лента</filled-icon-button>
         </router-link>
-        <router-link to="/profile-settings">
+        <router-link to="/calendar">
             <filled-icon-button icon-name="calendar">Календарь</filled-icon-button>
         </router-link>
     </div>
@@ -33,10 +33,10 @@
     <div class="icon-container">
         <filled-icon-button icon-name="user-group" @click="changeSection('people')">Люди</filled-icon-button>
         <filled-icon-button icon-name="message" @click="changeSection('chat')">Мессенджер</filled-icon-button>
-        <filled-icon-button icon-name="image" @click="changeSection('messenger')">Изображения</filled-icon-button>
-        <filled-icon-button icon-name="video">Видео</filled-icon-button>
-        <filled-icon-button icon-name="music">Музыка</filled-icon-button>
-        <filled-icon-button icon-name="book">Книги</filled-icon-button>
+        <filled-icon-button icon-name="image" @click="changeSection('images')">Изображения</filled-icon-button>
+        <filled-icon-button icon-name="video" @click="changeSection('videos')">Видео</filled-icon-button>
+        <filled-icon-button icon-name="music" @click="changeSection('music')">Музыка</filled-icon-button>
+        <filled-icon-button icon-name="book" @click="changeSection('books')">Книги</filled-icon-button>
     </div>
 </template>
 
@@ -44,6 +44,8 @@
 import StaticPanelPeople from './content/StaticPanelPeople.vue';
 import StaticPanelChat from './content/StaticPanelChat.vue';
 import StaticPanelMessenger from './content/StaticPanelMessenger.vue';
+import StaticPanelImages from './content/StaticPanelImages.vue';
+import StaticPanelMusic from './content/StaticPanelMusic.vue';
 
 export default {
     name: 'side-chat',
@@ -51,10 +53,15 @@ export default {
         StaticPanelPeople,
         StaticPanelChat,
         StaticPanelMessenger,
+        StaticPanelImages,
+        StaticPanelMusic,
     },
     data() {
         return {
-            currentSection: 'chat'
+            currentSection: 'chat',
+            socket: null,
+            messages: [],
+            newMessage: ''
         }
     },
     computed: {
@@ -69,10 +76,24 @@ export default {
                     return 'StaticPanelPeople';
                 case 'chat':
                     return 'StaticPanelChat';
+                case 'images':
+                    return 'StaticPanelImages';
+                case 'videos':
+                    return 'StaticPanelImages';
+                case 'music':
+                    return 'StaticPanelMusic';
+                case 'books':
+                    return 'StaticPanelImages';
                 default:
                     return 'StaticPanelMessenger';
             }
         }
+    },
+    mounted() {
+        // this.socket = io('http://127.0.0.1:3000');
+        // this.socket.on('chat message', (msg) => {
+        //     this.messages.push({ id: this.messages.length + 1, text: msg });
+        // });
     },
     methods: {
         changeSection(section) {

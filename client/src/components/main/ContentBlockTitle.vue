@@ -5,18 +5,21 @@ export default {
 </script>
 
 <template>
-    <div class="content-block-title"><slot></slot></div>
+  <div class="content-block-title">
+    <slot></slot>
+  </div>
 </template>
 
 <style scoped>
-
 .content-block-title {
   text-align: center;
-  text-transform: uppercase;
-  padding: 10px 0 10px;
+  color: #ffbf6c;
+  font-size: 22px;
+  margin-bottom: 10px;
+  padding: 10px;
 
   border-bottom: 1px solid transparent;
-  border-image: radial-gradient(#FFFFFF 60%, transparent);
+  border-image: radial-gradient(#ffbf6c 50%, transparent);
   border-image-slice: 1;
 }
 </style>
