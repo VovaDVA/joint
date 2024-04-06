@@ -53,7 +53,7 @@ public class UserController {
     }
 
     // Получение пользователя по ID
-    @GetMapping(path = "/get-id")
+    @GetMapping(path = "/user")
     public ResponseEntity<?> getUserById(@RequestHeader("Authorization") String token) {
 
         Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
