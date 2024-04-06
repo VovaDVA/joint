@@ -1,6 +1,6 @@
 <template>
     <div class="calendar-title"><slot></slot></div>
-    <Calendar class="calendar" v-model="date" showIcon showButtonBar />
+    <Calendar class="calendar" v-model="date" inline showWeek showButtonBar />
 </template>
 
 <script>

@@ -23,7 +23,7 @@ export function checkToken() {
 
 async function isTokenValid(token) {
     try {
-        const response = await fetch('/auth/getUserByToken', {
+        const response = await fetch('/auth/user', {
             headers: {
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'  // Пример добавления других заголовков
@@ -31,11 +31,12 @@ async function isTokenValid(token) {
         });
 
         const data = await response.json();
+        console.log(data);
 
-        if (data['status'] == '200') {
+        if (data['id']) {
             saveUserData(data);
         } else {
-            alert(data['message']);
+            // alert(data['message']);
         }
 
     } catch (error) {
@@ -48,7 +49,8 @@ export function removeToken() {
 }
 
 function saveUserData(data) {
-    localStorage.setItem('user', JSON.stringify({username: data['username'], role: data['role']}));
+    console.log(data);
+    localStorage.setItem('user', JSON.stringify({firstName: data['firstName'], lastName: data['lastName']}));
 }
 
 export function deleteSession() {

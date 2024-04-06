@@ -19,16 +19,8 @@
 </template>
 
 <script>
-import { deleteSession } from './modules/auth';
-
 export default {
     name: 'App',
-    mounted() {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            this.user = JSON.parse(userData);
-        }
-    },
     computed: {
         isLoginPage() {
             return this.$route.path === '/login'; // Проверка текущего маршрута на страницу входа (login)
@@ -37,11 +29,6 @@ export default {
             return this.$route.path === '/register'; // Проверка текущего маршрута на страницу регистрации (register)
         }
     },
-    methods: {
-        logoutUser() {
-            deleteSession();
-        }
-    }
 }
 </script>
 

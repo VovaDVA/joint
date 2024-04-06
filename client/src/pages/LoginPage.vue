@@ -1,20 +1,15 @@
 <template>
-    <div class='signup_form'>
-        <form id="login" @submit.prevent="login">
-
-            <page-title>Вход на сайт</page-title>
-            <form-block>
-                <username-text-field :value="username" @input="username = $event" inputId="username"/>
-            </form-block>
-            <form-block>
-                <password-text-field :value="password" @input="password = $event" inputId="password">Пароль</password-text-field>
-            </form-block>
-            <input id="submit" class="submit_btn" type="submit" name="submit" value="Войти">
-
-        </form>
-        <div class="no_account">Нет аккаунта? - <router-link to="/register">Зарегистрироваться</router-link></div>
-        <div class="lost_password"><a href="">Забыли пароль?</a></div>
-    </div>
+	<auth-block>
+		<content-block-title>Авторизация</content-block-title>
+		<form id="login" @submit.prevent="login">
+			<email-input v-model="email">Почта</email-input>
+			<password-input v-model="password">Пароль</password-input>
+			
+			<input id="submit" class="submit_btn" type="submit" name="submit" value="Войти">
+		</form>
+		<div class="no_account">Нет аккаунта? - <router-link to="/register">Зарегистрироваться</router-link></div>
+		<div class="lost_password"><a href="">Забыли пароль?</a></div>
+	</auth-block>
 </template>
 
 <script>
@@ -23,7 +18,7 @@ import { saveToken, checkToken } from '../modules/auth';
 export default {
 	data() {
 		return {
-			username: '',
+			email: '',
 			password: '',
 		};
 	},
@@ -33,15 +28,14 @@ export default {
 	methods: {
 		async login(event) {
 			event.preventDefault();
-
 			try {
-				const response = await fetch('/auth/authorize', {
+				const response = await fetch('/auth/login', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						username: this.username,
+						email: this.email,
 						password: this.password
 					})
 				});
@@ -49,11 +43,9 @@ export default {
 				const data = await response.json();
 				console.log(data);
 
-				if (data['status'] == '200') {
+				if (data['token']) {
 					saveToken(data['token']);
 					this.$router.push('/');
-				} else {
-					alert(data['message']);
 				}
 
 			} catch (error) {
@@ -63,8 +55,19 @@ export default {
 	}
 };
 </script>
-  
-<style scoped></style>
-  
-  
-  
+
+<style scoped>
+input {
+	line-height: 28px;
+	font-size: 17px;
+	border: 1px #ffffff solid;
+	border-radius: 30px;
+	margin: 20px auto;
+	padding: 5px;
+	width: 100%;
+	text-align: center;
+	color: #ffffff;
+
+	transition: color, background .3s linear;
+}
+</style>
