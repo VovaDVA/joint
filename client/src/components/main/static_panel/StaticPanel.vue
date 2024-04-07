@@ -31,6 +31,7 @@
         </router-link>
     </div>
     <div class="icon-container">
+        <filled-icon-button icon-name="bell" @click="changeSection('notifications')">Уведомления</filled-icon-button>
         <filled-icon-button icon-name="user-group" @click="changeSection('people')">Люди</filled-icon-button>
         <filled-icon-button icon-name="message" @click="changeSection('chat')">Мессенджер</filled-icon-button>
         <filled-icon-button icon-name="image" @click="changeSection('images')">Изображения</filled-icon-button>
@@ -46,6 +47,7 @@ import StaticPanelChat from './content/StaticPanelChat.vue';
 import StaticPanelMessenger from './content/StaticPanelMessenger.vue';
 import StaticPanelImages from './content/StaticPanelImages.vue';
 import StaticPanelMusic from './content/StaticPanelMusic.vue';
+import StaticPanelNotifications from './content/StaticPanelNotifications.vue';
 
 export default {
     name: 'side-chat',
@@ -55,6 +57,7 @@ export default {
         StaticPanelMessenger,
         StaticPanelImages,
         StaticPanelMusic,
+        StaticPanelNotifications,
     },
     data() {
         return {
@@ -72,6 +75,8 @@ export default {
         currentSectionComponent() {
             // Возвращаем компонент для текущего выбранного раздела
             switch (this.currentSection) {
+                case 'notifications':
+                    return 'StaticPanelNotifications';
                 case 'people':
                     return 'StaticPanelPeople';
                 case 'chat':

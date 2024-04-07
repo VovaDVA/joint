@@ -52,6 +52,8 @@ import AccountPreviewBlock from "@/components/main/static_panel/content/people/A
 import ContentPreviewBlock from "./main/static_panel/content/common/ContentPreviewBlock.vue";
 // Music
 import MusicPreviewBlock from "./main/static_panel/content/music/MusicPreviewBlock.vue";
+// Notifications
+import NotificationPreviewBlock from "./main/static_panel/content/notifications/NotificationPreviewBlock.vue";
 
 export default [
     PageHeader,
@@ -81,4 +83,6 @@ export default [
     MusicPreviewBlock,
     // Content
     ContentPreviewBlock,
+    // Notifications
+    NotificationPreviewBlock,
 ]

@@ -31,7 +31,7 @@ export default {
     transition: background .2s linear;
 }
 
-.vodeo-preview-block:hover {
+.video-preview-block:hover {
     background: rgba(255, 255, 255, 0.1);
     transition: background .2s linear;
 }

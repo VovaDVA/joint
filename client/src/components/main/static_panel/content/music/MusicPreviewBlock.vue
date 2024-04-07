@@ -40,6 +40,7 @@ export default {
 
 .music-cover {
     width: 60px;
+    flex: 0 0 60px;
     height: 60px;
     margin-right: 20px;
     border: 1px #ffffff2f solid;
@@ -75,6 +76,8 @@ export default {
 }
 
 .music-block {
+    margin-right: 20px;
+    flex: 1;
     display: flex;
     justify-content: start;
     align-items: center;
@@ -84,7 +87,7 @@ export default {
     margin-right: 10px;
 }
 .music-scale {
-    width: 270px;
+    flex: 1;
     height: 4px;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 2px;
