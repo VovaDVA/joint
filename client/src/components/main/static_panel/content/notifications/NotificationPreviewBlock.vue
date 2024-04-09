@@ -3,7 +3,7 @@
         <div class="avatar"></div>
         <div class="notification-info">
             <div class="notification-description">
-                <div class="notification-text">Сообщество <div class="sourse">ТОПы ПИ</div> опубликовало новую запись <div class="sourse">Как манипулировать женщинами...</div></div>
+                <div class="notification-text">Сообщество <div class="sourse">ТОПы ПИ</div> опубликовало новую запись  <div class="sourse">КАКВСЕЗАДОЛБАЛО</div></div>
             </div>
             <div class="notification-params">
                 <div class="date">31 марта в 5:00</div>
