@@ -21,7 +21,7 @@ export default {
 
 <style scoped>
 .notification-preview-block {
-    display: flex;
+    display: flex; 
     flex: 0 0 100px;
     width: auto;
     margin: 10px;
