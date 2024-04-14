@@ -3,7 +3,7 @@
         <div class="avatar"></div>
         <div class="chat-info">
             <div class="chat-header">
-                <div class="chat-title">Владимир Двойнишников</div>
+                <div class="chat-title">{{ chatName }}</div>
                 <div class="chat-last-changed">21:00</div>
             </div>
             <div class="last-message">
@@ -17,6 +17,7 @@
 <script>
 export default {
     name: 'chat-preview-block',
+    props: ['chatName'],
 }
 </script>
 

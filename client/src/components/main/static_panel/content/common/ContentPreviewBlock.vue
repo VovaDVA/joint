@@ -3,8 +3,8 @@
         <div class="content-block"></div>
         <div class="content-info">
             <div class="content-description">
-                <div class="content-title">Перфекционизм - зло!</div>
-                <div class="content-autor">Nastya</div>
+                <div class="content-title">{{ name }}</div>
+                <div class="content-autor">{{ author }}</div>
             </div>
             <div class="content-params">
                 <div class="views">121 543 просмотров</div>
@@ -17,6 +17,7 @@
 <script>
 export default {
     name: 'content-preview-block',
+    props: ['name', 'author'],
 }
 </script>
 
@@ -56,7 +57,7 @@ export default {
 }
 .content-title {
     font-size: 17px;
-    color: rgb(255, 164, 54);
+    color: #ffbf6c;
 }
 .content-autor {
     display: flex;

@@ -3,7 +3,9 @@
         <div class="avatar"></div>
         <div class="notification-info">
             <div class="notification-description">
-                <div class="notification-text">Сообщество <div class="sourse">ТОПы ПИ</div> опубликовало новую запись <div class="sourse">Как манипулировать женщинами...</div></div>
+                <div class="notification-text">Сообщество <div class="sourse">ТОПы ПИ</div> опубликовало новую запись
+                    <div class="sourse">{{ name }}</div>
+                </div>
             </div>
             <div class="notification-params">
                 <div class="date">31 марта в 5:00</div>
@@ -16,6 +18,7 @@
 <script>
 export default {
     name: 'notification-preview-block',
+    props: ['name'],
 }
 </script>
 
@@ -34,7 +37,8 @@ export default {
     background: rgba(255, 255, 255, 0.1);
     transition: background .2s linear;
 }
-.avatar{
+
+.avatar {
     width: 60px;
     flex: 0 0 60px;
     height: 60px;
@@ -43,31 +47,38 @@ export default {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
 }
+
 .notification-info {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
+
 .notification-description {
     margin-top: 5px;
 }
+
 .notification-text {
     font-size: 15px;
 }
+
 .sourse {
-    color:rgb(96, 99, 186);
+    color: #ffbf6c;
     display: inline;
 }
+
 .sourse:hover {
     text-decoration: underline;
     transition: text-decoration;
 }
+
 .notification-params {
     display: flex;
     justify-content: space-between;
     margin-bottom: 5px;
 }
+
 .content {
     width: 60px;
     flex: 0 0 60px;
@@ -76,6 +87,7 @@ export default {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
 }
+
 .date {
     display: flex;
     font-size: 13px;
