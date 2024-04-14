@@ -1,6 +1,7 @@
 <template>
     <static-panel-header>
-        <messenger-action-icon icon-name="arrow-left"></messenger-action-icon>
+        <messenger-action-icon icon-name="arrow-left" @click="openChatList"></messenger-action-icon>
+        <static-panel-search-bar></static-panel-search-bar>
     </static-panel-header>
     <chat-title>Владимир Двойнишников</chat-title>
     <static-panel-content>
@@ -57,6 +58,9 @@ export default {
                 this.socket.emit('chat message', this.newMessage);
                 this.newMessage = '';
             }
+        },
+        openChatList() {
+            this.$emit('open-chat-list');
         }
     }
 }

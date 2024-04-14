@@ -43,17 +43,17 @@
 
 <script>
 import StaticPanelPeople from './content/StaticPanelPeople.vue';
-import StaticPanelChat from './content/StaticPanelChat.vue';
 import StaticPanelMessenger from './content/StaticPanelMessenger.vue';
 import StaticPanelImages from './content/StaticPanelImages.vue';
 import StaticPanelMusic from './content/StaticPanelMusic.vue';
 import StaticPanelNotifications from './content/StaticPanelNotifications.vue';
+import StaticPanelChatContainer from './content/StaticPanelChatContainer.vue';
 
 export default {
     name: 'side-chat',
     components: {
         StaticPanelPeople,
-        StaticPanelChat,
+        StaticPanelChatContainer,
         StaticPanelMessenger,
         StaticPanelImages,
         StaticPanelMusic,
@@ -80,7 +80,7 @@ export default {
                 case 'people':
                     return 'StaticPanelPeople';
                 case 'chat':
-                    return 'StaticPanelChat';
+                    return 'StaticPanelChatContainer';
                 case 'images':
                     return 'StaticPanelImages';
                 case 'videos':
