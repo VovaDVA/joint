@@ -24,7 +24,7 @@ export default {
                     return 'StaticPanelMessenger';
                 default:
                     return 'StaticPanelChats';
-            }
+            } 
         }
     },
     methods: {
