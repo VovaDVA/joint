@@ -113,4 +113,27 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findByEmail(email);
         verify(passwordEncoder, times(1)).matches(password, encodedPassword);
     }
+
+    //соответствие пароля и его же, но в хэшированном виде
+    @Test
+    public void testPasswordsMatchValidPasswordsReturnsTrue() {
+        String plainPassword = "PasswordMatch123@";
+        String hashedPassword = passwordEncoder.encode(plainPassword);
+
+        when(passwordEncoder.matches(plainPassword, hashedPassword)).thenReturn(true);
+
+        assertTrue(userService.passwordsMatch(hashedPassword, plainPassword));
+    }
+
+    @Test
+    public void testPasswordsMatchInvalidPasswordsReturnsFalse() {
+        String correctPassword = "correctPassword123@";
+        String incorrectPassword = "incorrectPassword123@";
+
+        String hashedPassword = passwordEncoder.encode(correctPassword);
+
+        when(passwordEncoder.matches(incorrectPassword, hashedPassword)).thenReturn(false);
+
+        assertFalse(userService.passwordsMatch(hashedPassword, incorrectPassword));
+    }
 }
