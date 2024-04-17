@@ -27,31 +27,56 @@ public class UserServiceTest {
     //регистрация
     @Test
     public void testRegisterUserExistingEmailThrowsException() {
-        User existingUser = new User("Dan", "Dorin", "testing@gmail.com", "password");
+        User existingUser = new User(
+                "Dan",
+                "Dorin",
+                   "testing@gmail.com",
+                "password");
 
-        when(userRepository.findByEmail(existingUser.getEmail())).thenReturn(existingUser);
+        when(userRepository
+                .findByEmail(existingUser
+                .getEmail()))
+                .thenReturn(existingUser);
 
-        User newUser = new User("Vladimir", "Proven", "testing@gmail.com", "newpassword");
+        User newUser = new User(
+                "Vladimir",
+                "Proven",
+                   "testing@gmail.com",
+                "newpassword");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
 
     @Test
     public void testRegisterUserInvalidPasswordThrowsException() {
-        User newUser = new User("Vladimir", "Proven", "vlprovin@gmail.com", "password");
+        User newUser = new User(
+                "Vladimir",
+                "Proven",
+                   "vlprovin@gmail.com",
+                "password");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
 
     @Test
     public void testRegisterUserValidUserReturnsRegisteredUser() {
-        User newUser = new User("Vladimir", "Proven", "vlprovin@gmail.com", "PasswordTest123@");
+        User newUser = new User(
+                "Vladimir",
+                "Proven",
+                   "vlprovin@gmail.com",
+                "PasswordTest123@");
 
-        when(userRepository.findByEmail(anyString())).thenReturn(null);
+        when(userRepository
+                .findByEmail(anyString()))
+                .thenReturn(null);
 
-        when(userRepository.save(any())).thenReturn(newUser);
+        when(userRepository
+                .save(any()))
+                .thenReturn(newUser);
 
-        when(passwordEncoder.encode(newUser.getPassword())).thenReturn("encodedPassword");
+        when(passwordEncoder.encode(newUser
+                .getPassword()))
+                .thenReturn("encodedPassword");
 
         User registeredUser = userService.register(newUser);
 
@@ -71,10 +96,18 @@ public class UserServiceTest {
         String email = "provin@gmail.com";
         String password = "PasswordVit123@";
         String encodedPassword = "encodedPassword";
-        User user = new User("Vitally", "Provin", email, encodedPassword);
+        User user = new User(
+                "Vitally",
+                "Provin",
+                         email,
+                         encodedPassword);
 
-        when(userRepository.findByEmail(email)).thenReturn(user);
-        when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(user);
+        when(passwordEncoder
+                .matches(password, encodedPassword))
+                .thenReturn(true);
 
         User loggedInUser = userService.login(email, password);
 
@@ -90,7 +123,9 @@ public class UserServiceTest {
     public void testLoginInvalidEmailThrowsException() {
         String email = "maxim2001@gmail.com";
         String password = "PasswordMax123@";
-        when(userRepository.findByEmail(email)).thenReturn(null);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(null);
 
         assertThrows(IllegalArgumentException.class, () -> userService.login(email, password));
 
@@ -103,10 +138,18 @@ public class UserServiceTest {
         String email = "kostya01@example.com";
         String password = "badPassword";
         String encodedPassword = "encodedPassword";
-        User user = new User("Konstantin", "Molin", email, encodedPassword);
+        User user = new User(
+                "Konstantin",
+                "Molin",
+                         email,
+                         encodedPassword);
 
-        when(userRepository.findByEmail(email)).thenReturn(user);
-        when(passwordEncoder.matches(password, encodedPassword)).thenReturn(false);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(user);
+        when(passwordEncoder
+                .matches(password, encodedPassword))
+                .thenReturn(false);
 
         assertThrows(IllegalArgumentException.class, () -> userService.login(email, password));
 
@@ -120,7 +163,9 @@ public class UserServiceTest {
         String plainPassword = "PasswordMatch123@";
         String hashedPassword = passwordEncoder.encode(plainPassword);
 
-        when(passwordEncoder.matches(plainPassword, hashedPassword)).thenReturn(true);
+        when(passwordEncoder
+                .matches(plainPassword, hashedPassword))
+                .thenReturn(true);
 
         assertTrue(userService.passwordsMatch(hashedPassword, plainPassword));
     }
@@ -132,7 +177,9 @@ public class UserServiceTest {
 
         String hashedPassword = passwordEncoder.encode(correctPassword);
 
-        when(passwordEncoder.matches(incorrectPassword, hashedPassword)).thenReturn(false);
+        when(passwordEncoder
+                .matches(incorrectPassword, hashedPassword))
+                .thenReturn(false);
 
         assertFalse(userService.passwordsMatch(hashedPassword, incorrectPassword));
     }
