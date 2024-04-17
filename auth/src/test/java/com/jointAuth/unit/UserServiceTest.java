@@ -1,6 +1,7 @@
 package com.jointAuth.unit;
 
 import com.jointAuth.model.User;
+import com.jointAuth.model.UserDTO;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -182,5 +185,48 @@ public class UserServiceTest {
                 .thenReturn(false);
 
         assertFalse(userService.passwordsMatch(hashedPassword, incorrectPassword));
+    }
+
+    //конвертация в модель DTO
+    @Test
+    public void testConvertToDtoConvertsUserToUserDTO() {
+        User user = new User(
+                "Viktor",
+                "Doramov",
+                   "vidor@gmail.com",
+                "PassViktor123=");
+        user.setId(1L);
+        user.setRegistrationDate(new Date());
+        user.setLastLogin(new Date());
+
+        UserDTO dto = userService.convertToDto(user);
+
+        assertEquals(user.getId(), dto.getId());
+        assertEquals(user.getFirstName(), dto.getFirstName());
+        assertEquals(user.getLastName(), dto.getLastName());
+        assertEquals(user.getEmail(), dto.getEmail());
+        assertEquals(user.getRegistrationDate(), dto.getRegistrationDate());
+        assertEquals(user.getLastLogin(), dto.getLastLogin());
+    }
+
+    @Test
+    public void testConvertToDtoNullFieldsInUserReturnsDtoWithNullFields() {
+        User user = new User(
+                "Alexander",
+                null,
+                   "Sanya24@example.com",
+                "passForTest1+");
+        user.setId(1L);
+        user.setRegistrationDate(new Date());
+        user.setLastLogin(null);
+
+        UserDTO dto = userService.convertToDto(user);
+
+        assertEquals(user.getId(), dto.getId());
+        assertEquals(user.getFirstName(), dto.getFirstName());
+        assertNull(dto.getLastName());
+        assertEquals(user.getEmail(), dto.getEmail());
+        assertEquals(user.getRegistrationDate(), dto.getRegistrationDate());
+        assertNull(dto.getLastLogin());
     }
 }
