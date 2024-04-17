@@ -25,4 +25,12 @@ public class User {
     private Date registrationDate;
     @Column(name = "last_login")
     private Date lastLogin;
+
+    public User(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
+
 }
