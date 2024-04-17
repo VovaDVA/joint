@@ -30,7 +30,6 @@ public class JwtTokenUtils {
         claims.put("firstName", firstName);
         claims.put("lastName", lastName);
 
-        String fullName = user.getFirstName() + " " + user.getLastName();
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
 
@@ -44,31 +43,6 @@ public class JwtTokenUtils {
 
     public String getFullName(String token) {
         return getAllClaimsFromToken(token).getSubject();
-    }
-
-
-    public boolean validateToken(String authToken) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(secret)
-                    .parseClaimsJws(authToken);
-            return true;
-        } catch (ExpiredJwtException e) {
-            // Токен истек
-            return false;
-        } catch (MalformedJwtException e) {
-            // Неверный формат токена
-            return false;
-        } catch (UnsupportedJwtException e) {
-            // Токен не поддерживается
-            return false;
-        } catch (SignatureException e) {
-            // Ошибка проверки подписи
-            return false;
-        } catch (Exception e) {
-            // Другие ошибки
-            return false;
-        }
     }
 
     private Claims getAllClaimsFromToken(String token) {

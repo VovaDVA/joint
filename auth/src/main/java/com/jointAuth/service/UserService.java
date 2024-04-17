@@ -20,14 +20,12 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Регулярное выражение для проверки пароля
     private static final String PASSWORD_PATTERN =
             "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_])(?=\\S+$).{8,}$";
 
     private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
     public User register(User user) {
-        // проверка пользователя на уникальность почты
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null) {
             throw new IllegalArgumentException("User with this email already exists");
