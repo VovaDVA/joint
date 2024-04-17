@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -228,5 +229,43 @@ public class UserServiceTest {
         assertEquals(user.getEmail(), dto.getEmail());
         assertEquals(user.getRegistrationDate(), dto.getRegistrationDate());
         assertNull(dto.getLastLogin());
+    }
+
+    //получение пользователя по Id
+    @Test
+    public void testGetUserByIdUserExistsReturnsUser() {
+        User user = new User(
+                "John",
+                "Doe",
+                   "johndoe@example.com",
+                "password");
+        user.setId(1L);
+
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.of(user));
+
+        Optional<User> result = userService.getUserById(1L);
+
+        assertTrue(result.isPresent());
+        assertEquals(user, result.get());
+    }
+
+    @Test
+    public void testGetUserByIdUserDoesNotExistReturnsEmptyOptional() {
+        when(userRepository
+                .findById(2L))
+                .thenReturn(Optional.empty());
+
+        Optional<User> result = userService.getUserById(2L);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testGetUserByIdNegativeIdReturnsEmptyOptional() {
+        Optional<User> result = userService.getUserById(-1L);
+
+        assertFalse(result.isPresent());
     }
 }
