@@ -10,7 +10,9 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,18 +36,18 @@ public class UserServiceTest {
         User existingUser = new User(
                 "Dan",
                 "Dorin",
-                   "testing@gmail.com",
+                "testing@gmail.com",
                 "password");
 
         when(userRepository
                 .findByEmail(existingUser
-                .getEmail()))
+                        .getEmail()))
                 .thenReturn(existingUser);
 
         User newUser = new User(
                 "Vladimir",
                 "Proven",
-                   "testing@gmail.com",
+                "testing@gmail.com",
                 "newpassword");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
@@ -56,7 +58,7 @@ public class UserServiceTest {
         User newUser = new User(
                 "Vladimir",
                 "Proven",
-                   "vlprovin@gmail.com",
+                "vlprovin@gmail.com",
                 "password");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
@@ -67,7 +69,7 @@ public class UserServiceTest {
         User newUser = new User(
                 "Vladimir",
                 "Proven",
-                   "vlprovin@gmail.com",
+                "vlprovin@gmail.com",
                 "PasswordTest123@");
 
         when(userRepository
@@ -103,8 +105,8 @@ public class UserServiceTest {
         User user = new User(
                 "Vitally",
                 "Provin",
-                         email,
-                         encodedPassword);
+                email,
+                encodedPassword);
 
         when(userRepository
                 .findByEmail(email))
@@ -145,8 +147,8 @@ public class UserServiceTest {
         User user = new User(
                 "Konstantin",
                 "Molin",
-                         email,
-                         encodedPassword);
+                email,
+                encodedPassword);
 
         when(userRepository
                 .findByEmail(email))
@@ -194,7 +196,7 @@ public class UserServiceTest {
         User user = new User(
                 "Viktor",
                 "Doramov",
-                   "vidor@gmail.com",
+                "vidor@gmail.com",
                 "PassViktor123=");
         user.setId(1L);
         user.setRegistrationDate(new Date());
@@ -215,7 +217,7 @@ public class UserServiceTest {
         User user = new User(
                 "Alexander",
                 null,
-                   "Sanya24@example.com",
+                "Sanya24@example.com",
                 "passForTest1+");
         user.setId(1L);
         user.setRegistrationDate(new Date());
@@ -237,7 +239,7 @@ public class UserServiceTest {
         User user = new User(
                 "John",
                 "Doe",
-                   "johndoe@example.com",
+                "johndoe@example.com",
                 "password");
         user.setId(1L);
 
@@ -267,5 +269,43 @@ public class UserServiceTest {
         Optional<User> result = userService.getUserById(-1L);
 
         assertFalse(result.isPresent());
+    }
+
+    //получение всех пользователей
+    @Test
+    public void getAllUsersEmptyListReturnsEmpty() {
+        when(userRepository
+                .findAll())
+                .thenReturn(Collections.emptyList());
+
+        List<User> result = userService.getAllUsers();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void getAllUsersNonEmptyListReturnsListWithUsers() {
+        List<User> users = List.of(
+                new User(
+                        "Jennie",
+                        "Farina",
+                           "JennieEm@gmail.com",
+                        "PassEm123+"),
+                new User(
+                        "Jane",
+                        "Smith",
+                           "janeSmith@gmail.com",
+                        "PassJane12@")
+        );
+
+        when(userRepository
+                .findAll())
+                .thenReturn(users);
+
+        List<User> result = userService.getAllUsers();
+
+        assertFalse(result.isEmpty());
+        assertEquals(users.size(), result.size());
+        assertTrue(result.containsAll(users));
     }
 }
