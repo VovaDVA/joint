@@ -1,9 +1,15 @@
 package com.jointAuth.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "users")
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,40 +23,16 @@ public class User {
     private String email;
     @Column(name = "password")
     private String password;
+    @Column(name = "registration_date")
+    private Date registrationDate;
+    @Column(name = "last_login")
+    private Date lastLogin;
 
-    public long getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setFirstName(String firstName) {
+    public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
     }
+
 }

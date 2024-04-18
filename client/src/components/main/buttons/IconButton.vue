@@ -26,7 +26,6 @@ export default {
     padding: 10px;
     font-size: 15px;
     line-height: 15px;
-    border-radius: 30px;
 
     user-select: none;
     transition: color .2s linear;
@@ -37,5 +36,4 @@ export default {
     color: rgb(0, 255, 42);
     transition: color .2s linear;
 }
-
 </style>

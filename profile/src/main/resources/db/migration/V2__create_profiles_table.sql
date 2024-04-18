@@ -1,4 +1,4 @@
-UPDATE TABLE "profiles"
+CREATE TABLE "profiles"
 (
     id BIGINT PRIMARY KEY,
 	user_id BIGINT NOT NULL,
@@ -14,5 +14,3 @@ UPDATE TABLE "profiles"
 	ON DELETE CASCADE
     	ON UPDATE CASCADE
 );
-
-

@@ -1,10 +1,10 @@
 <template>
     <token-check></token-check>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
+    <news-block></news-block>
+    <news-block></news-block>
+    <news-block></news-block>
+    <news-block></news-block>
+    <news-block></news-block>
 </template>
 
 <script></script>
