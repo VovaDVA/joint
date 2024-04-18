@@ -14,14 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class UserConverterTest {
     @Test
     public void testConvertToDtoConvertsUserToUserDTO() {
-        User user = new User(
-                "Viktor",
-                "Doramov",
-                "vidor@gmail.com",
-                "PassViktor123=");
+        User user = new User();
+
+        user.setFirstName("Viktor");
+        user.setLastName("Doramov");
+        user.setEmail("vidor@gmail.com");
+        user.setPassword("PassViktor123=");
         user.setId(1L);
         user.setRegistrationDate(new Date());
-        user.setLastLogin(new Date());
+        user.setLastLogin(null);
 
         UserDTO dto = UserConverter.convertToDto(user);
 
@@ -35,11 +36,12 @@ public class UserConverterTest {
 
     @Test
     public void testConvertToDtoNullFieldsInUserReturnsDtoWithNullFields() {
-        User user = new User(
-                "Alexander",
-                null,
-                "Sanya24@example.com",
-                "passForTest1+");
+        User user = new User();
+
+        user.setFirstName("Alexander");
+        user.setLastName(null);
+        user.setEmail("Sanya24@example.com");
+        user.setPassword("passForTest1+");
         user.setId(1L);
         user.setRegistrationDate(new Date());
         user.setLastLogin(null);
