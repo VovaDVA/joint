@@ -1,13 +1,16 @@
-package entity;
+package com.jointProfile.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Date;
 
- @Entity
- @Table(name = "profiles")
+@Data // эта аннотация вместо геттеров и сеттеров
+@Entity
+@Table(name = "profiles")
 public class Profile {
 
   @Id
@@ -23,8 +26,11 @@ public class Profile {
   @Column(name = "banner")
   private String banner;
 
+  @Column(name = "description")
+  private String description;
+
   @Column(name = "birthday")
-  @Temporal(TemporalType.DATE)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
   private Date birthday;
 
   @Column(name = "country")
@@ -39,5 +45,6 @@ public class Profile {
   @Column(name = "last_edited")
   @Temporal(TemporalType.TIMESTAMP)
   private Date lastEdited;
+
 
 }

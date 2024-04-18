@@ -1,9 +1,10 @@
-CREATE TABLE "profiles"
+UPDATE TABLE "profiles"
 (
     id BIGINT PRIMARY KEY,
 	user_id BIGINT NOT NULL,
 	avatar VARCHAR(255),
 	banner VARCHAR(255),
+    description VARCHAR(255),
 	birthday TIMESTAMP,
 	country VARCHAR(255),
 	city VARCHAR(255),
