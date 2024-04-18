@@ -311,12 +311,20 @@ public class UserServiceTest {
     //Изменение пароля
     @Test
     public void testChangePasswordUserFoundPasswordChanged() {
-        User user = new User("John", "Doe", "johndoe@example.com", "oldPass123@");
+        User user = new User(
+                "Vita",
+                "Erina",
+                   "ViEr@example.com",
+                "oldPass123@");
         user.setId(1L);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.of(user));
 
-        when(passwordEncoder.encode("newPass123@")).thenReturn("encodedPassword");
+        when(passwordEncoder
+                .encode("newPass123@"))
+                .thenReturn("encodedPassword");
 
         userService.changePassword(1L, "newPass123@");
 
@@ -325,7 +333,9 @@ public class UserServiceTest {
 
     @Test
     public void testChangePasswordUserNotFoundThrowsException() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> userService.changePassword(1L, "newPassword"));
@@ -335,18 +345,24 @@ public class UserServiceTest {
 
     @Test
     public void testChangePasswordInvalidPasswordThrowsException() {
-        User user = new User("John", "Doe", "johndoe@example.com", "oldPassword");
+        User user = new User(
+                "Nasty",
+                "Doina",
+                   "NasDo@example.com",
+                "oldPass123@");
         user.setId(1L);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.of(user));
 
-        String invalidPassword = "weak";
+        String invalidPassword = "newPass!";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> userService.changePassword(1L, invalidPassword));
 
         assertEquals("Password does not meet the complexity requirements", exception.getMessage());
 
-        assertEquals("oldPassword", user.getPassword());
+        assertEquals("oldPass123@", user.getPassword());
     }
 }
