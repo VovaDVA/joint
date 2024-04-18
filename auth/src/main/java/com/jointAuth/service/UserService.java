@@ -1,7 +1,6 @@
 package com.jointAuth.service;
 
 import com.jointAuth.model.User;
-import com.jointAuth.model.UserDTO;
 import com.jointAuth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,9 +22,25 @@ public class UserService {
     private static final String PASSWORD_PATTERN =
             "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_])(?=\\S+$).{8,}$";
 
+    private static final String EMAIL_REGEX =
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
     private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
     public User register(User user) {
+        if (user.getFirstName() == null || user.getFirstName().isBlank()) {
+            throw new IllegalArgumentException("First name cannot be empty or contain only whitespace");
+        }
+
+        if (user.getLastName() == null || user.getLastName().isBlank()) {
+            throw new IllegalArgumentException("Last name cannot be empty or contain only whitespace");
+        }
+
+        String email = user.getEmail();
+        if (email == null || !isValidEmail(email)) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null) {
             throw new IllegalArgumentException("User with this email already exists");
@@ -43,6 +58,10 @@ public class UserService {
 
     private boolean validatePassword(String password) {
         return !pattern.matcher(password).matches();
+    }
+
+    private  boolean isValidEmail(String email) {
+        return email.matches(EMAIL_REGEX);
     }
 
     public User login(String email, String password) {
