@@ -61,17 +61,6 @@ public class UserService {
         return passwordEncoder.matches(plainPassword, hashedPassword);
     }
 
-    public UserDTO convertToDto(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setEmail(user.getEmail());
-        dto.setRegistrationDate(user.getRegistrationDate());
-        dto.setLastLogin(user.getLastLogin());
-        return dto;
-    }
-
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
