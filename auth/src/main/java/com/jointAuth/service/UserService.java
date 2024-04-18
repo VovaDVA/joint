@@ -97,6 +97,11 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            userRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 }

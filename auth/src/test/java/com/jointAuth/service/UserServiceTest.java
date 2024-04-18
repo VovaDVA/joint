@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -314,7 +315,7 @@ public class UserServiceTest {
         User user = new User(
                 "Vita",
                 "Erina",
-                   "ViEr@example.com",
+                   "ViEr@gmail.com",
                 "oldPass123@");
         user.setId(1L);
 
@@ -338,7 +339,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> userService.changePassword(1L, "newPassword"));
+                () -> userService.changePassword(1L, "newPassword123@"));
 
         assertEquals("User not found", exception.getMessage());
     }
@@ -348,7 +349,7 @@ public class UserServiceTest {
         User user = new User(
                 "Nasty",
                 "Doina",
-                   "NasDo@example.com",
+                   "NasDo@gmail.com",
                 "oldPass123@");
         user.setId(1L);
 
@@ -364,5 +365,63 @@ public class UserServiceTest {
         assertEquals("Password does not meet the complexity requirements", exception.getMessage());
 
         assertEquals("oldPass123@", user.getPassword());
+    }
+
+    //удаление пользователя
+    @Test
+    public void testDeleteUserSuccessfulDeletion() {
+        User user = new User(
+                "Vanya",
+                "Fiji",
+                   "vano123@gmail.com",
+                "testPassword123@");
+        user.setId(1L);
+
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.of(user));
+
+        assertDoesNotThrow(() -> userService.deleteUser(1L));
+
+        verify(userRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void testDeleteUserUserNotFound() {
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> userService.deleteUser(1L));
+
+        assertEquals("User not found", exception.getMessage());
+
+        verify(userRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    public void testDeleteUserDatabaseError() {
+        User user = new User(
+                "Karim",
+                "Sonos",
+                   "figureBest@example.com",
+                "myPass12345@");
+        user.setId(1L);
+
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.of(user));
+
+        doThrow(new DataAccessException("Database error") {})
+                .when(userRepository)
+                .deleteById(1L);
+
+        DataAccessException exception = assertThrows(DataAccessException.class,
+                () -> userService.deleteUser(1L));
+
+        assertEquals("Database error", exception.getMessage());
+
+        verify(userRepository, times(1)).deleteById(1L);
     }
 }
