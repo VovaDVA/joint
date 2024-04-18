@@ -108,5 +108,51 @@ public class JwtTokenUtilsTest {
             assertNull(fullName);
         }
     }
+
+    @Test
+    public void testGetCurrentUserIdSuccessful() {
+        Claims claims = Jwts.claims();
+        claims.put("id", 190L);
+
+        String token = "Bearer " + Jwts.builder()
+                .setClaims(claims)
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret)
+                .compact();
+
+        Long userId = jwtTokenUtils.getCurrentUserId(token);
+
+        assertEquals(123L, userId);
+    }
+
+    @Test
+    public void testGetCurrentUserIdNullToken() {
+        Long userId = jwtTokenUtils.getCurrentUserId(null);
+
+        assertNull(userId);
+    }
+
+    @Test
+    public void testGetCurrentUserIdInvalidToken() {
+        String invalidToken = "invalid.token.string";
+
+        Long userId = jwtTokenUtils.getCurrentUserId(invalidToken);
+
+        assertNull(userId);
+    }
+
+    @Test
+    public void testGetCurrentUserIdMissingId() {
+        Claims claims = Jwts.claims();
+        claims.put("username", "Evelina_Matveeva");
+
+        String token = "Bearer " + Jwts.builder()
+                .setClaims(claims)
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret)
+                .compact();
+
+        Long userId = jwtTokenUtils.getCurrentUserId(token);
+
+        assertNull(userId);
+    }
 }
 

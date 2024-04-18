@@ -2,6 +2,8 @@ package com.jointAuth.util;
 
 import com.jointAuth.model.User;
 import io.jsonwebtoken.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.lang.String;
@@ -58,8 +60,23 @@ public class JwtTokenUtils {
     }
 
     public Long getCurrentUserId(String token) {
-        token = token.substring(7);
-        Claims claims = getAllClaimsFromToken(token);
-        return claims.get("id", Long.class);
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+
+        Logger logger = LoggerFactory.getLogger(JwtTokenUtils.class);
+
+        try {
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            Claims claims = getAllClaimsFromToken(token);
+
+            return claims.get("id", Long.class);
+        } catch (MalformedJwtException e) {
+            logger.error("Error parsing JWT token: {}", e.getMessage());
+            return null;
+        }
     }
 }
