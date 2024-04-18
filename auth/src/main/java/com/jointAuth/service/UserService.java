@@ -82,13 +82,17 @@ public class UserService {
 
     public void changePassword(Long userId, String newPassword) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-        } else {
-            throw new IllegalArgumentException("User not found");
+
+        User existingProfile = optionalUser.orElseThrow(() ->
+                new IllegalArgumentException("User not found"));
+
+        if (!validatePassword(existingProfile.getPassword())) {
+            throw new IllegalArgumentException("Password does not meet the complexity requirements");
         }
+
+        User user = optionalUser.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     public void deleteUser(Long id) {

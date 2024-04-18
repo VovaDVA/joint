@@ -307,4 +307,46 @@ public class UserServiceTest {
         assertEquals(users.size(), result.size());
         assertTrue(result.containsAll(users));
     }
+
+    //Изменение пароля
+    @Test
+    public void testChangePasswordUserFoundPasswordChanged() {
+        User user = new User("John", "Doe", "johndoe@example.com", "oldPass123@");
+        user.setId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        when(passwordEncoder.encode("newPass123@")).thenReturn("encodedPassword");
+
+        userService.changePassword(1L, "newPass123@");
+
+        assertEquals("encodedPassword", user.getPassword());
+    }
+
+    @Test
+    public void testChangePasswordUserNotFoundThrowsException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> userService.changePassword(1L, "newPassword"));
+
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
+    public void testChangePasswordInvalidPasswordThrowsException() {
+        User user = new User("John", "Doe", "johndoe@example.com", "oldPassword");
+        user.setId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        String invalidPassword = "weak";
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> userService.changePassword(1L, invalidPassword));
+
+        assertEquals("Password does not meet the complexity requirements", exception.getMessage());
+
+        assertEquals("oldPassword", user.getPassword());
+    }
 }
