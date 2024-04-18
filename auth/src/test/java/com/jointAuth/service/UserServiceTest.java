@@ -31,44 +31,48 @@ public class UserServiceTest {
     //регистрация
     @Test
     public void testRegisterUserExistingEmailThrowsException() {
-        User existingUser = new User(
-                "Dan",
-                "Dorin",
-                "testing@gmail.com",
-                "password");
+        User existingUser = new User();
+
+        existingUser.setFirstName("Dan");
+        existingUser.setLastName("Dorin");
+        existingUser.setEmail("testing@gmail.com");
+        existingUser.setPassword("TestPassword123@");
 
         when(userRepository
                 .findByEmail(existingUser
                         .getEmail()))
                 .thenReturn(existingUser);
 
-        User newUser = new User(
-                "Vladimir",
-                "Proven",
-                "testing@gmail.com",
-                "newpassword");
+        User newUser = new User();
+
+        existingUser.setFirstName("Vladimir");
+        existingUser.setLastName("Proven");
+        existingUser.setEmail("testing@gmail.com");
+        existingUser.setPassword("NewTestPassword123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
 
     @Test
     public void testRegisterUserInvalidPasswordThrowsException() {
-        User newUser = new User(
-                "Vladimir",
-                "Proven",
-                "vlprovin@gmail.com",
-                "password");
+        User newUser = new User();
+
+        newUser.setFirstName("Vladimir");
+        newUser.setLastName("Proven");
+        newUser.setEmail("vlprovin@gmail.com");
+        newUser.setPassword("pass");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
 
     @Test
     public void testRegisterUserValidUserReturnsRegisteredUser() {
-        User newUser = new User(
-                "Vladimir",
-                "Proven",
-                "vlprovin@gmail.com",
-                "PasswordTest123@");
+        User newUser = new User();
+
+        newUser.setFirstName("Vladimir");
+        newUser.setLastName("Proven");
+        newUser.setEmail("vlprovin@gmail.com");
+        newUser.setPassword("PasswordTest123@");
 
         when(userRepository
                 .findByEmail(anyString()))
@@ -96,21 +100,36 @@ public class UserServiceTest {
 
     @Test
     public void testRegisterUserWithEmptyFirstNameThrowsException() {
-        User newUser = new User("", "Simple", "simpleemail@gmail.com", "PasswordTest123@");
+        User newUser = new User();
+
+        newUser.setFirstName("");
+        newUser.setLastName("Simple");
+        newUser.setEmail("simpleemail@gmail.com");
+        newUser.setPassword("PasswordTest123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
 
     @Test
     public void testRegisterUserWithEmptyEmailThrowsException() {
-        User newUser = new User("Danil", "korovin", "", "PasswordTest123@");
+        User newUser = new User();
+
+        newUser.setFirstName("Danil");
+        newUser.setLastName("Korovin");
+        newUser.setEmail("");
+        newUser.setPassword("PasswordTest123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
 
     @Test
     public void testRegisterUserWithInvalidEmailThrowsException() {
-        User newUser = new User("Kolya", "Vinilov", "invalid_email", "PasswordTest123@");
+        User newUser = new User();
+
+        newUser.setFirstName("Kolya");
+        newUser.setLastName("Vinilov");
+        newUser.setEmail("invalid_email");
+        newUser.setPassword("PasswordTest123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
@@ -121,11 +140,12 @@ public class UserServiceTest {
         String email = "provin@gmail.com";
         String password = "PasswordVit123@";
         String encodedPassword = "encodedPassword";
-        User user = new User(
-                "Vitally",
-                "Provin",
-                email,
-                encodedPassword);
+        User user = new User();
+
+        user.setFirstName("Vitally");
+        user.setLastName("Provin");
+        user.setEmail(email);
+        user.setPassword(encodedPassword);
 
         when(userRepository
                 .findByEmail(email))
@@ -163,11 +183,12 @@ public class UserServiceTest {
         String email = "kostya01@example.com";
         String password = "badPassword";
         String encodedPassword = "encodedPassword";
-        User user = new User(
-                "Konstantin",
-                "Molin",
-                email,
-                encodedPassword);
+        User user = new User();
+
+        user.setFirstName("Konstantin");
+        user.setLastName("Molin");
+        user.setEmail(email);
+        user.setPassword(encodedPassword);
 
         when(userRepository
                 .findByEmail(email))
@@ -212,12 +233,13 @@ public class UserServiceTest {
     //получение пользователя по Id
     @Test
     public void testGetUserByIdUserExistsReturnsUser() {
-        User user = new User(
-                "John",
-                "Doe",
-                "johndoe@example.com",
-                "password");
+        User user = new User();
+
         user.setId(1L);
+        user.setFirstName("Volodymyr");
+        user.setLastName("Sovin");
+        user.setEmail("volSol1093@gmail.com");
+        user.setPassword("Password123+");
 
         when(userRepository
                 .findById(1L))
@@ -261,17 +283,22 @@ public class UserServiceTest {
 
     @Test
     public void getAllUsersNonEmptyListReturnsListWithUsers() {
+        User firstUser = new User();
+        User secondUser = new User();
+
+        firstUser.setFirstName("Jennie");
+        firstUser.setLastName("Farina");
+        firstUser.setEmail("JennieEm@gmail.com");
+        firstUser.setPassword("PassEm123+");
+
+        secondUser.setFirstName("Jane");
+        secondUser.setLastName("janeSmith@gmail.com");
+        secondUser.setEmail("janeSmith@gmail.com");
+        secondUser.setPassword("PassJane12@");
+
         List<User> users = List.of(
-                new User(
-                        "Jennie",
-                        "Farina",
-                           "JennieEm@gmail.com",
-                        "PassEm123+"),
-                new User(
-                        "Jane",
-                        "Smith",
-                           "janeSmith@gmail.com",
-                        "PassJane12@")
+                firstUser,
+                secondUser
         );
 
         when(userRepository
@@ -288,12 +315,13 @@ public class UserServiceTest {
     //Изменение пароля
     @Test
     public void testChangePasswordUserFoundPasswordChanged() {
-        User user = new User(
-                "Vita",
-                "Erina",
-                   "ViEr@gmail.com",
-                "oldPass123@");
+        User user = new User();
+
         user.setId(1L);
+        user.setFirstName("Vita");
+        user.setLastName("Erina");
+        user.setEmail("ViEr@gmail.com");
+        user.setPassword("oldPass123@");
 
         when(userRepository
                 .findById(1L))
@@ -322,12 +350,13 @@ public class UserServiceTest {
 
     @Test
     public void testChangePasswordInvalidPasswordThrowsException() {
-        User user = new User(
-                "Nasty",
-                "Doina",
-                   "NasDo@gmail.com",
-                "oldPass123@");
+        User user = new User();
+
         user.setId(1L);
+        user.setFirstName("Nasty");
+        user.setLastName("Doina");
+        user.setEmail("NasDo@gmail.com");
+        user.setPassword("oldPass123@");
 
         when(userRepository
                 .findById(1L))
@@ -346,12 +375,13 @@ public class UserServiceTest {
     //удаление пользователя
     @Test
     public void testDeleteUserSuccessfulDeletion() {
-        User user = new User(
-                "Vanya",
-                "Fiji",
-                   "vano123@gmail.com",
-                "testPassword123@");
+        User user = new User();
+
         user.setId(1L);
+        user.setFirstName("Vanya");
+        user.setLastName("Fiji");
+        user.setEmail("vano123@gmail.com");
+        user.setPassword("testPassword123@");
 
         when(userRepository
                 .findById(1L))
@@ -378,12 +408,13 @@ public class UserServiceTest {
 
     @Test
     public void testDeleteUserDatabaseError() {
-        User user = new User(
-                "Karim",
-                "Sonos",
-                   "figureBest@example.com",
-                "myPass12345@");
+        User user = new User();
+
         user.setId(1L);
+        user.setFirstName("Karim");
+        user.setLastName("Sonos");
+        user.setEmail("figureBest@example.com");
+        user.setPassword("myPass12345@");
 
         when(userRepository
                 .findById(1L))
