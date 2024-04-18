@@ -31,7 +31,7 @@ public class UserService {
             throw new IllegalArgumentException("User with this email already exists");
         }
 
-        if (!validatePassword(user.getPassword())) {
+        if (validatePassword(user.getPassword())) {
             throw new IllegalArgumentException("Password does not meet the complexity requirements");
         }
 
@@ -42,7 +42,7 @@ public class UserService {
     }
 
     private boolean validatePassword(String password) {
-        return pattern.matcher(password).matches();
+        return !pattern.matcher(password).matches();
     }
 
     public User login(String email, String password) {
@@ -82,6 +82,11 @@ public class UserService {
 
     public void changePassword(Long userId, String newPassword) {
         Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (validatePassword(newPassword)) {
+            throw new IllegalArgumentException("Password does not meet the complexity requirements");
+        }
+
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setPassword(passwordEncoder.encode(newPassword));
