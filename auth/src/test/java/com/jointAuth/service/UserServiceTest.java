@@ -1,9 +1,8 @@
-package com.jointAuth.unit;
+package com.jointAuth.service;
 
 import com.jointAuth.model.User;
 import com.jointAuth.model.UserDTO;
 import com.jointAuth.repository.UserRepository;
-import com.jointAuth.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
