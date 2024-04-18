@@ -1,5 +1,6 @@
 package com.jointAuth.controller;
 
+import com.jointAuth.converter.UserConverter;
 import com.jointAuth.model.JwtResponse;
 import com.jointAuth.model.LoginRequest;
 import com.jointAuth.model.User;
@@ -31,7 +32,7 @@ public class UserController {
         User registeredUser = userService.register(user);
 
         if (registeredUser != null) {
-            UserDTO userDTO = userService.convertToDto(registeredUser);
+            UserDTO userDTO = UserConverter.convertToDto(registeredUser);
             return ResponseEntity.ok(userDTO);
         }
 
