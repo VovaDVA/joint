@@ -94,6 +94,27 @@ public class UserServiceTest {
         assertNotNull(registeredUser.getRegistrationDate());
     }
 
+    @Test
+    public void testRegisterUserWithEmptyFirstNameThrowsException() {
+        User newUser = new User("", "Simple", "simpleemail@gmail.com", "PasswordTest123@");
+
+        assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+    }
+
+    @Test
+    public void testRegisterUserWithEmptyEmailThrowsException() {
+        User newUser = new User("Danil", "korovin", "", "PasswordTest123@");
+
+        assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+    }
+
+    @Test
+    public void testRegisterUserWithInvalidEmailThrowsException() {
+        User newUser = new User("Kolya", "Vinilov", "invalid_email", "PasswordTest123@");
+
+        assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+    }
+
     //авторизация
     @Test
     public void testLoginValidCredentialsReturnsUser() {
