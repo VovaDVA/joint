@@ -42,7 +42,12 @@ public class JwtTokenUtils {
     }
 
     public String getFullName(String token) {
-        return getAllClaimsFromToken(token).getSubject();
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+
+        Claims claims = getAllClaimsFromToken(token);
+        return claims != null ? claims.getSubject() : null;
     }
 
     private Claims getAllClaimsFromToken(String token) {
