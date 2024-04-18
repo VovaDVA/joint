@@ -4,6 +4,7 @@ import com.jointAuth.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -73,5 +74,39 @@ public class JwtTokenUtilsTest {
         assertNotNull(exception);
     }
 
+
+    @Test
+    public void testGetFullNameSuccessful() {
+        Claims claims = Jwts.claims().setSubject("Vitally Novikov");
+
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret)
+                .compact();
+
+        String fullName = jwtTokenUtils.getFullName(token);
+
+        assertEquals("Vitally Novikov", fullName);
+    }
+
+    @Test
+    public void testGetFullNameNullToken() {
+        String fullName = jwtTokenUtils.getFullName(null);
+
+        assertNull(fullName);
+    }
+
+    @Test
+    public void testGetFullNameInvalidToken() {
+        String invalidToken = "invalid.token.string";
+
+        String fullName = null;
+        try {
+            fullName = jwtTokenUtils.getFullName(invalidToken);
+            fail("Expected MalformedJwtException to be thrown");
+        } catch (MalformedJwtException e) {
+            assertNull(fullName);
+        }
+    }
 }
 
