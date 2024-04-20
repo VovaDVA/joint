@@ -3,7 +3,7 @@
         <div class="avatar"></div>
         <div class="chat-info">
             <div class="chat-header">
-                <div class="chat-title">Владимир Двойнишников</div>
+                <div class="chat-title">{{ name }}</div>
                 <div class="buttons">
                     <icon-button icon-name="phone"></icon-button>
                     <icon-button icon-name="message"></icon-button>
@@ -19,6 +19,7 @@
 <script>
 export default {
     name: 'account-preview-block',
+    props: ['name'],
 }
 </script>
 

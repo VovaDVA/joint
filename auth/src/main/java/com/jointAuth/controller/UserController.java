@@ -1,5 +1,6 @@
 package com.jointAuth.controller;
 
+import com.jointAuth.converter.UserConverter;
 import com.jointAuth.model.JwtResponse;
 import com.jointAuth.model.LoginRequest;
 import com.jointAuth.model.User;
@@ -26,20 +27,18 @@ public class UserController {
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
 
-    //Регистрация
     @PostMapping(path = "/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         User registeredUser = userService.register(user);
 
         if (registeredUser != null) {
-            UserDTO userDTO = userService.convertToDto(registeredUser);
+            UserDTO userDTO = UserConverter.convertToDto(registeredUser);
             return ResponseEntity.ok(userDTO);
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user.");
     }
 
-    //Вход
     @PostMapping(path = "/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
@@ -52,8 +51,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
     }
 
-    // Получение пользователя по ID
-    @GetMapping(path = "/get-id")
+    @GetMapping(path = "/user")
     public ResponseEntity<?> getUserById(@RequestHeader("Authorization") String token) {
 
         Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
@@ -73,14 +71,13 @@ public class UserController {
         List<UserDTO> userDTOs = users.stream()
                 .map(user -> {
                     UserDTO dto = new UserDTO();
-                    BeanUtils.copyProperties(user, dto); // или любой другой метод копирования свойств
+                    BeanUtils.copyProperties(user, dto);
                     return dto;
                 })
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userDTOs);
     }
 
-    //Обновление пароля
     @PutMapping(path = "/change-password")
     public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token, @RequestBody String password) {
 
@@ -97,7 +94,6 @@ public class UserController {
 
     }
 
-    //Удаление
     @DeleteMapping(path = "/delete")
     public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
 

@@ -18,6 +18,6 @@ export default {
   font-weight: 500;
   font-size: 17px;
   line-height: 25px;
-  user-select: none;
+  text-align: justify;
 }
 </style>

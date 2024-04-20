@@ -1,14 +1,15 @@
 const Chat = require('../models/chat');
+const Message = require('../models/message');
 
 class chatService {
     constructor(Chat){
         this.Chat = Chat;
     }
 // Функция для создания и записи нового чата в базу данных 
-    async createChat(participitans){
+    async createChat(members){
         let today = new Date();
         const chat = new Chat({
-            "participitans": participitans,
+            "members": members,
             "created_at": today,
             "last_message_at": null
         });
@@ -16,12 +17,26 @@ class chatService {
         return chat;
     }
 
+    async getMessages(chatId){
+        const chat = await this.getChatById(chatId);
+        //console.log(chat._id);
+        return await Message.find({ 
+            chat_id: chat._id 
+        });
+    }
+
     async getChatById(chatId){
         return await Chat.findById(chatId);
     }
 
-    async getChatByPrts(participitans){
-        return await Chat.find({"participitans": participitans});
+    async getChatByPrts(members){
+        console.log(await Chat.findOne({"members": {$all: members}}));
+        return await Chat.findOne({"members": {$all: members}});
+    }
+
+    async getUserChats(user_id){
+        return await Chat.find({"members": user_id
+    });
     }
 
     // Функция для обновления даты последнего сообщения 

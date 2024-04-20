@@ -2,7 +2,7 @@
     <div class="user-info">
         <div class="avatar"></div>
         <div class="user-info-text">
-            <div class="username">Username</div>
+            <div class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) : '-'}}</div>
         </div>
     </div>
 </template>
@@ -10,6 +10,21 @@
 <script>
 export default {
     name: 'user-avatar',
+    data() {
+        return {
+            user: {
+                firstName: '',
+                lastName: '',
+            },
+        }
+    },
+    created() {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            this.user = JSON.parse(userData);
+            console.log(this.user);
+        }
+    },
 }
 </script>
 

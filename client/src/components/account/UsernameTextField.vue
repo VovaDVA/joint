@@ -13,7 +13,8 @@ export default {
 <template>
   <label for="username">Логин</label>
   <div class="input_wrapper">
-    <input :id="inputId" type="text" placeholder="Введите логин" :value="value" @input="updateValue($event.target.value)">
+    <input :id="inputId" type="text" placeholder="Введите логин" :value="value"
+      @input="updateValue($event.target.value)">
   </div>
 </template>
 

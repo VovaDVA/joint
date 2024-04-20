@@ -4,6 +4,7 @@ CREATE TABLE "profiles"
 	user_id BIGINT NOT NULL,
 	avatar VARCHAR(255),
 	banner VARCHAR(255),
+    description VARCHAR(255),
 	birthday TIMESTAMP,
 	country VARCHAR(255),
 	city VARCHAR(255),
@@ -13,5 +14,3 @@ CREATE TABLE "profiles"
 	ON DELETE CASCADE
     	ON UPDATE CASCADE
 );
-
-

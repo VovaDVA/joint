@@ -1,6 +1,7 @@
 <template>
     <static-panel-header>
-        <messenger-action-icon icon-name="arrow-left"></messenger-action-icon>
+        <messenger-action-icon icon-name="arrow-left" @click="openChatList"></messenger-action-icon>
+        <static-panel-search-bar></static-panel-search-bar>
     </static-panel-header>
     <chat-title>Владимир Двойнишников</chat-title>
     <static-panel-content>
@@ -27,11 +28,43 @@
     <div class="chat-input">
         <!-- <messenger-action-icon icon-name="file"></messenger-action-icon> -->
         <messenger-action-icon icon-name="face-smile"></messenger-action-icon>
-        <input class="message-input" type="text" placeholder="Напишите сообщение...">
+        <input class="message-input" type="text" placeholder="Напишите сообщение..." v-model="newMessage"
+            @keyup.enter="sendMessage">
         <messenger-action-icon class="right" icon-name="paper-plane"></messenger-action-icon>
-        <messenger-action-icon class="right" icon-name="microphone"></messenger-action-icon>
+        <messenger-action-icon class="right" icon-name="microphone" @click="sendMessage"></messenger-action-icon>
     </div>
 </template>
+
+<script>
+// import { io } from 'socket.io-client';
+
+export default {
+    data() {
+        return {
+            socket: null,
+            messages: [],
+            newMessage: ''
+        }
+    },
+    mounted() {
+        // this.socket = io('http://127.0.0.1:3000');
+        // this.socket.on('chat message', (msg) => {
+        //     this.messages.push({ id: this.messages.length + 1, text: msg });
+        // });
+    },
+    methods: {
+        sendMessage() {
+            if (this.newMessage) {
+                this.socket.emit('chat message', this.newMessage);
+                this.newMessage = '';
+            }
+        },
+        openChatList() {
+            this.$emit('open-chat-list');
+        }
+    }
+}
+</script>
 
 <style scoped>
 .chat-input {

@@ -1,7 +1,7 @@
 <template>
     <div class="static-panel-header">
         <slot></slot>
-        <static-panel-search-bar></static-panel-search-bar>
+        <!-- <static-panel-search-bar></static-panel-search-bar> -->
     </div>
 </template>
 
@@ -13,7 +13,7 @@ export default {
 
 <style scoped>
 .static-panel-header {
-    flex: 0 0 43px;
+    flex: 0 0 45px;
     display: flex;
     margin-bottom: 10px;
 }

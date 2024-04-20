@@ -4,12 +4,31 @@
 
             <div class="nav" id="nav">
                 <router-link to="/" class="logo"></router-link>
-                <router-link to="/news" class="nav_item">?</router-link>
-                <router-link to="/about" class="nav_item">О нас</router-link>
-                <router-link to="/news" class="nav_item">Новости</router-link>
-                <router-link to="/news" class="nav_item">Сервисы</router-link>
-                <router-link to="/news" class="nav_item">Сотрудничество</router-link>
-                <router-link to="/news" class="nav_item">Реклама</router-link>
+                <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 0 }" @click="selectTab(0)">
+                    <div>?</div>
+                    <div class="tab-circle"></div>
+                </router-link>
+                <router-link to="/about" class="nav-item" :class="{ selected: selectedTab === 1 }"
+                    @click="selectTab(1)">
+                    <div>О нас</div>
+                    <div class="tab-circle"></div>
+                </router-link>
+                <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 2 }" @click="selectTab(2)">
+                    Новости
+                    <div class="tab-circle"></div>
+                </router-link>
+                <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 3 }" @click="selectTab(3)">
+                    Сервисы
+                    <div class="tab-circle"></div>
+                </router-link>
+                <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 4 }" @click="selectTab(4)">
+                    Сотрудничество
+                    <div class="tab-circle"></div>
+                </router-link>
+                <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 5 }" @click="selectTab(5)">
+                    Реклама
+                    <div class="tab-circle"></div>
+                </router-link>
             </div>
 
             <div class="user_info">
@@ -21,16 +40,13 @@
                         <router-link to="/profile-settings">
                             <icon-button icon-name="chart-simple"></icon-button>
                         </router-link>
-                        <router-link to="/profile-settings">
+                        <!-- <router-link to="/profile-settings">
                             <icon-button icon-name="bell"></icon-button>
-                        </router-link>
-                        <router-link to="/profile-settings">
-                            <icon-button icon-name="right-from-bracket"></icon-button>
-                        </router-link>
+                        </router-link> -->
+                        <icon-button icon-name="right-from-bracket" @click="logoutUser()"></icon-button>
                     </div>
 
-                    <router-link to="/" class="username">{{ user.username ? user.username : "FirstName LastName"
-                        }}</router-link>
+                    <router-link to="/" class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) : '-'}}</router-link>
                 </div>
 
                 <div class="profile_photo" style="background: #555555 center no-repeat; background-size: cover">
@@ -41,15 +57,34 @@
 </template>
 
 <script>
+import { deleteSession } from '../../../modules/auth';
+
 export default {
     name: 'page-header',
     data() {
         return {
             user: {
-                username: '',
+                firstName: '',
+                lastName: '',
             },
+            selectedTab: null,
         }
     },
+    created() {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            this.user = JSON.parse(userData);
+            console.log(this.user);
+        }
+    },
+    methods: {
+        selectTab(index) {
+            this.selectedTab = index;
+        },
+        logoutUser() {
+            deleteSession();
+        }
+    }
 }
 </script>
 
@@ -62,7 +97,7 @@ export default {
     font-family: 'Montserrat';
     font-size: 15px;
     text-transform: uppercase;
-    line-height: 70px;
+    /* line-height: 70px; */
 
     border-bottom: 1px solid transparent;
     border-image: radial-gradient(#ffffff 60%, transparent);
@@ -81,6 +116,7 @@ export default {
     height: inherit;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .user_info {
@@ -155,6 +191,7 @@ export default {
 .logo {
     height: 100%;
     width: 70px;
+    height: 70px;
 
     background: url(../../../assets/logo.png) center no-repeat;
     background-size: contain;
@@ -172,23 +209,43 @@ export default {
     display: flex;
 }
 
-.nav_item {
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     padding: 0 15px;
 
-    /* font-weight: 700; */
     color: #FFFFFF;
     text-decoration: none;
+    text-align: center;
 
-    transition: background .3s linear;
+    transition: color .2s linear;
+    user-select: none;
 }
 
-.nav_item:hover {
-    background-color: #00366c;
-    transition: background .3s linear;
+.nav-item:hover {
+    /* margin-top: -5px; */
+    color: #ffbf6c;
+    transition: color .2s linear;
 }
 
-.nav_item.active {
-    background-color: #00366c;
+.nav-item.selected {
+    /* margin-top: -10px; */
+    color: #ffbf6c;
+}
+
+.nav-item.selected>.tab-circle {
+    display: block;
+}
+
+.tab-circle {
+    margin: 0 auto;
+    display: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    background: #ffbf6c;
 }
 
 .header_fade {
