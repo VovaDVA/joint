@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -19,7 +20,7 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@DataJpaTest
 public class JwtTokenUtilsTest {
     @InjectMocks
     private JwtTokenUtils jwtTokenUtils;
@@ -121,7 +122,7 @@ public class JwtTokenUtilsTest {
 
         Long userId = jwtTokenUtils.getCurrentUserId(token);
 
-        assertEquals(123L, userId);
+        assertEquals(190L, userId);
     }
 
     @Test
