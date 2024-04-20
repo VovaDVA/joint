@@ -20,8 +20,6 @@ spring:
       hibernate:
         format_sql: true
 
-
-
   application:
     name: jointAuth
 

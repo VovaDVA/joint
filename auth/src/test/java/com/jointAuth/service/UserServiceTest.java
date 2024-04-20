@@ -161,6 +161,58 @@ public class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
 
+    @Test
+    public void testFirstNameContainsProhibitedCharacters() {
+        User user = new User();
+        user.setFirstName("Vitya!");
+        user.setLastName("Larin");
+        user.setEmail("ViLa123@gmail.com");
+        user.setPassword("Password123@");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.register(user);
+        });
+    }
+
+    @Test
+    public void testLastNameContainsProhibitedCharacters() {
+        User user = new User();
+        user.setFirstName("Svetlana");
+        user.setLastName("Sovina#");
+        user.setEmail("Sveta01@gmail.com");
+        user.setPassword("Password123@");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.register(user);
+        });
+    }
+
+    @Test
+    public void testFirstNameTooLong() {
+        User user = new User();
+        user.setFirstName("AllaathanIsATooLongNameForThisTest");
+        user.setLastName("Yorina");
+        user.setEmail("allayo@gmail.com");
+        user.setPassword("Password123@");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.register(user);
+        });
+    }
+
+    @Test
+    public void testLastNameTooLong() {
+        User user = new User();
+        user.setFirstName("Karina");
+        user.setLastName("BostrovaIsATooLongLastNameForThisTest");
+        user.setEmail("Bostrova2001@gmail.com");
+        user.setPassword("Password123@");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.register(user);
+        });
+    }
+
     //авторизация
     @Test
     public void testLoginValidCredentialsReturnsUser() {
