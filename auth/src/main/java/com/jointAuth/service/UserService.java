@@ -25,6 +25,10 @@ public class UserService {
     private static final String EMAIL_REGEX =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
+    private static final String NAME_REGEX = "^[a-zA-Z]+$";
+
+    private static final int NAME_MAX_LENGTH = 15;
+
     private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
     public UserService(@Autowired UserRepository userRepository,
@@ -35,13 +39,9 @@ public class UserService {
 
 
     public User register(User user) {
-        if (user.getFirstName() == null || user.getFirstName().isBlank()) {
-            throw new IllegalArgumentException("First name cannot be empty or contain only whitespace");
-        }
+        validateName(user.getFirstName(), "First name");
 
-        if (user.getLastName() == null || user.getLastName().isBlank()) {
-            throw new IllegalArgumentException("Last name cannot be empty or contain only whitespace");
-        }
+        validateName(user.getLastName(), "Last name");
 
         String email = user.getEmail();
         if (email == null || !isValidEmail(email)) {
@@ -61,6 +61,16 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    private void validateName(String name, String fieldName) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " cannot be empty or contain only whitespace");
+        } else if (!name.matches(NAME_REGEX)) {
+            throw new IllegalArgumentException(fieldName + " must contain only letters");
+        } else if (name.length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException(fieldName + " length must not exceed " + NAME_MAX_LENGTH + " characters");
+        }
     }
 
     private boolean validatePassword(String password) {
