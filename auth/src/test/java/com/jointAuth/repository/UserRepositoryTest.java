@@ -147,4 +147,74 @@ public class UserRepositoryTest {
         assertFalse(result.isPresent());
         verify(userRepository, times(1)).findById(id);
     }
+
+    @Test
+    public void testSaveNewUser() {
+        User user = new User();
+        user.setEmail("newuser@gmail.com");
+        when(userRepository
+                .save(user))
+                .thenReturn(user);
+
+        User result = userRepository.save(user);
+
+        assertEquals(user, result);
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    public void testSaveExistingUser() {
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setEmail("existinguser@gmail.com");
+        when(userRepository
+                .save(existingUser))
+                .thenReturn(existingUser);
+
+        User result = userRepository.save(existingUser);
+
+        assertEquals(existingUser, result);
+        verify(userRepository, times(1)).save(existingUser);
+    }
+
+    @Test
+    public void testSaveNullUser() {
+        User user = null;
+        when(userRepository
+                .save(user))
+                .thenReturn(user);
+
+        User result = userRepository.save(user);
+
+        assertNull(result);
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    public void testSaveUserWithMissingFields() {
+        User user = new User();
+        user.setEmail(null);
+        when(userRepository
+                .save(user))
+                .thenReturn(user);
+
+        User result = userRepository.save(user);
+
+        assertEquals(user, result);
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    public void testSaveUserWithInvalidFields() {
+        User user = new User();
+        user.setEmail("invalid_email");
+        when(userRepository
+                .save(user))
+                .thenReturn(user);
+
+        User result = userRepository.save(user);
+
+        assertEquals(user, result);
+        verify(userRepository, times(1)).save(user);
+    }
 }
