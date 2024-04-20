@@ -10,7 +10,7 @@ class reactionController {
         try {
             const {post_id, user_id} = req.body;
             const reaction = await reactionService.createReaction(post_id, user_id);
-            const post = await postService.newLikeForPost(post_id, user_id)
+            const post = await postService.newLike(post_id, user_id)
             return res.status(201).json(reaction);
         }
         catch (error) {

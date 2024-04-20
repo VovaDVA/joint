@@ -31,13 +31,13 @@ class postService {
 	}
 
 	async newComment(postId, commentId){
-		const post = await Post.getPostById(postId); //было this.getPostById
+		const post = await this.getPostById(postId);
 		post.comments.push(commentId);
 		await post.save();
 		return post;
 	}
 
-	async newLikeForPost(postId, userId){
+	async newLike(postId, userId){
 		const post = await this.getPostById(postId);
 		post.likes.push(userId);
 		await post.save();

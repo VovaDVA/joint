@@ -21,13 +21,6 @@ class commentService {
     async getCommentById(commentId) {
         return Comment.findById(commentId);
     }
-
-    async newLikeForComment(commentId, userId){
-		const comment = await getCommentById(commentId);
-		comment.likes.push(userId);
-		await comment.save();
-		return comment;
-	}
 }
 
 module.exports = new commentService;
