@@ -2,11 +2,11 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.User;
 import com.jointAuth.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -29,30 +29,35 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @BeforeEach
+    void setUp() {
+        userService = new UserService(userRepository,passwordEncoder);
+    }
+
     //регистрация
     @Test
     public void testRegisterUserExistingEmailThrowsException() {
         User existingUser = new User();
+        existingUser.setFirstName("Existing");
+        existingUser.setLastName("User");
+        existingUser.setEmail("existing@example.com");
+        existingUser.setPassword("ExistingPassword123@");
 
-        existingUser.setFirstName("Dan");
-        existingUser.setLastName("Dorin");
-        existingUser.setEmail("testing@gmail.com");
-        existingUser.setPassword("TestPassword123@");
-
-        when(userRepository
-                .findByEmail(existingUser
-                        .getEmail()))
-                .thenReturn(existingUser);
+        when(userRepository.findByEmail(existingUser.getEmail())).thenReturn(existingUser);
 
         User newUser = new User();
+        newUser.setFirstName("New");
+        newUser.setLastName("User");
+        newUser.setEmail("existing@example.com");
+        newUser.setPassword("NewPassword123@");
 
-        existingUser.setFirstName("Vladimir");
-        existingUser.setLastName("Proven");
-        existingUser.setEmail("testing@gmail.com");
-        existingUser.setPassword("NewTestPassword123@");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+        assertEquals("User with this email already exists", exception.getMessage());
 
-        assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+        verify(userRepository, times(1)).findByEmail("existing@example.com");
+        verify(userRepository, never()).save(any());
     }
+
 
     @Test
     public void testRegisterUserInvalidPasswordThrowsException() {
@@ -110,6 +115,22 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
     }
+
+    @Test
+    public void testRegisterUserEmptyLastNameThrowsException() {
+        User newUser = new User();
+        newUser.setFirstName("New");
+        newUser.setLastName("  "); // Empty or whitespace-only last name
+        newUser.setEmail("newuser@example.com");
+        newUser.setPassword("NewPassword123@");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+        assertEquals("Last name cannot be empty or contain only whitespace", exception.getMessage());
+
+        verify(userRepository, never()).findByEmail(any());
+        verify(userRepository, never()).save(any());
+    }
+
 
     @Test
     public void testRegisterUserWithEmptyEmailThrowsException() {
