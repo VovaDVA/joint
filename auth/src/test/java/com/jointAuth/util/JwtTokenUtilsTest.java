@@ -33,7 +33,7 @@ public class JwtTokenUtilsTest {
     private final String secret = "yourSecretKey";
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
         ReflectionTestUtils.setField(jwtTokenUtils, "jwtLifetime", jwtLifetime);
         ReflectionTestUtils.setField(jwtTokenUtils, "secret", secret);
