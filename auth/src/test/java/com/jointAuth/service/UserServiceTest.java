@@ -2,10 +2,12 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.User;
 import com.jointAuth.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +24,8 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
+    @Mock
+    private AutoCloseable autoCloseable;
     @Mock
     private PasswordEncoder passwordEncoder;
 
@@ -31,7 +34,13 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+        autoCloseable = MockitoAnnotations.openMocks(this);
         userService = new UserService(userRepository,passwordEncoder);
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        autoCloseable.close();
     }
 
     //регистрация
