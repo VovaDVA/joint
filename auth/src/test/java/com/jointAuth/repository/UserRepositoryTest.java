@@ -244,4 +244,61 @@ public class UserRepositoryTest {
 
         verify(userRepository, times(1)).deleteById(id);
     }
+
+    @Test
+    public void testFindAllWithUsers() {
+        User user1 = new User();
+        user1.setId(1L);
+        user1.setEmail("user1@gmail.com");
+
+        User user2 = new User();
+        user2.setId(2L);
+        user2.setEmail("user2@example.com");
+
+        List<User> users = List.of(user1, user2);
+        when(userRepository
+                .findAll())
+                .thenReturn(users);
+
+        List<User> result = userRepository.findAll();
+
+        assertEquals(users, result);
+        verify(userRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void testFindAllWithoutUsers() {
+        when(userRepository
+                .findAll())
+                .thenReturn(Collections.emptyList());
+
+        List<User> result = userRepository.findAll();
+
+        assertTrue(result.isEmpty());
+        verify(userRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void testFindAllVeryLargeDatabase() {
+        List<User> largeDatabase = generateLargeDatabase();
+        when(userRepository
+                .findAll())
+                .thenReturn(largeDatabase);
+
+        List<User> result = userRepository.findAll();
+
+        assertEquals(largeDatabase, result);
+        verify(userRepository, times(1)).findAll();
+    }
+
+    private List<User> generateLargeDatabase() {
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < 1000000; i++) {
+            User user = new User();
+            user.setId(i);
+            user.setEmail("newUser" + i + "@gmail.com");
+            users.add(user);
+        }
+        return users;
+    }
 }
