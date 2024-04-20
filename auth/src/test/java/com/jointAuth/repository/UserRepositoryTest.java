@@ -217,4 +217,31 @@ public class UserRepositoryTest {
         assertEquals(user, result);
         verify(userRepository, times(1)).save(user);
     }
+
+    @Test
+    public void testDeleteByIdExistingUser() {
+        Long id = 1L;
+
+        userRepository.deleteById(id);
+
+        verify(userRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    public void testDeleteByIdNonExistingUser() {
+        Long id = 99L;
+
+        userRepository.deleteById(id);
+
+        verify(userRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    public void testDeleteByIdNullId() {
+        Long id = null;
+
+        userRepository.deleteById(id);
+
+        verify(userRepository, times(1)).deleteById(id);
+    }
 }
