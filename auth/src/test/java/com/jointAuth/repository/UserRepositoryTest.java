@@ -93,5 +93,58 @@ public class UserRepositoryTest {
         verify(userRepository, times(1)).findByEmail(email);
     }
 
-    
+    @Test
+    public void testFindByIdUserExists() {
+        Long id = 1L;
+        User user = new User();
+        user.setId(id);
+        when(userRepository
+                .findById(id))
+                .thenReturn(Optional.of(user));
+
+        Optional<User> result = userRepository.findById(id);
+
+        assertTrue(result.isPresent());
+        assertEquals(user, result.get());
+        verify(userRepository, times(1)).findById(id);
+    }
+
+    @Test
+    public void testFindByIdUserDoesNotExist() {
+        Long id = 99L;
+        when(userRepository
+                .findById(id))
+                .thenReturn(Optional.empty());
+
+        Optional<User> result = userRepository.findById(id);
+
+        assertFalse(result.isPresent());
+        verify(userRepository, times(1)).findById(id);
+    }
+
+    @Test
+    public void testFindByIdNullId() {
+        Long id = null;
+        when(userRepository
+                .findById(id))
+                .thenReturn(Optional.empty());
+
+        Optional<User> result = userRepository.findById(id);
+
+        assertFalse(result.isPresent());
+        verify(userRepository, times(1)).findById(id);
+    }
+
+    @Test
+    public void testFindByIdNegativeId() {
+        Long id = -1L;
+        when(userRepository
+                .findById(id))
+                .thenReturn(Optional.empty());
+
+        Optional<User> result = userRepository.findById(id);
+
+        assertFalse(result.isPresent());
+        verify(userRepository, times(1)).findById(id);
+    }
 }
