@@ -5,25 +5,50 @@ class chatController {
         this.chatService = chatService;
     }
 
+    async getMessages(request, response){
+        try {
+            const chat_id = request.query.chat_id;
+            console.log(request.query.chat_id);
+            const messages = await chatService.getMessages(chat_id);
+            return response.status(201).json(messages);
+        }
+        catch(error){
+            return response.status(500).json({message: error.message});
+        }
+    }
+
     async createChat(request, response){
         try {
-            const {participitans} = request.body;
+            const {members} = request.body;
+            console.log(members);
 
-            if (chatService.getChatByPrts(participitans)){
+            if (await chatService.getChatByPrts(members)){
                 return response.status(400).json({message: "Chat already exist"})
             }
 
-            const chat = await chatService.createChat(participitans);
+            const chat = await chatService.createChat(members);
             return response.status(201).json(chat);
         } 
         catch (error) {
             return response.status(500).json({message: error.message});
         }
     }
-    
+
+    async getUserChats(request, response){
+        try {
+            const user_id = request.query.user_id;
+            const chats = await chatService.getUserChats(user_id);
+            return response.status(201).json(chats);
+
+        }catch(error){
+            return response.status(500).json({message: error.message});
+        }
+    }
+
     async getChat(request, response){
         try {
-            const chatId = request.params.id;
+            const chatId = request.query.id;
+            //console.log(chatId);
             const chat = await chatService.getChatById(chatId);
     
             if(!chat){
