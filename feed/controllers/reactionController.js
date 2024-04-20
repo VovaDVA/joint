@@ -1,4 +1,5 @@
 const reactionService = require('../services/reactionService');
+const postService = require('../services/postService')
 
 class reactionController {
     constructor(reactionService) {
@@ -9,6 +10,7 @@ class reactionController {
         try {
             const {post_id, user_id} = req.body;
             const reaction = await reactionService.createReaction(post_id, user_id);
+            const post = await postService.newLikeForPost(post_id, user_id)
             return res.status(201).json(reaction);
         }
         catch (error) {
@@ -18,8 +20,8 @@ class reactionController {
 
     async getReactionById(req, res) {
         try {
-            const reactionId = req.params.id;
-            const reaction = await reactionService.getReactionById(id);
+            const reaction_id = req.query.id;
+            const reaction = await reactionService.getReactionById(reaction_id);
     
             if (!reaction) {
                 return res.status(404).json("Reaction not found");
@@ -33,4 +35,4 @@ class reactionController {
     }
 }
 
-module.exports = new reactionController;
+module.exports = new reactionController();

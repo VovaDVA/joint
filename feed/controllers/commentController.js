@@ -1,4 +1,5 @@
 const commentService = require('../services/commentService');
+const postService = require('../services/postService')
 
 class commentController {
     constructor(commentService) {
@@ -9,6 +10,7 @@ class commentController {
         try {
             const {post_id, author_id, content} = req.body;
             const comment = await commentService.createComment(post_id, author_id, content);
+            const post = await postService.newComment(post_id, comment._id)
             return res.status(201).json(comment);
         }
         catch (error) {
@@ -18,7 +20,7 @@ class commentController {
 
     async getComment(req, res) {
         try {
-            const commentId = req.params.id;
+            const commentId = req.query.id;
             const comment = await commentService.getCommentById(commentId);
 
             if (!comment) {

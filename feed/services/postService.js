@@ -18,19 +18,27 @@ class postService {
 		return post;
 	}
 
+	async getPostsByAuthor(authorId) {
+		return await Post.find({"author_id": authorId});
+	}
+
+	async getAllPosts() {
+		return await Post.find();
+	}
+
 	async getPostById(postId) {
 		return await Post.findById(postId);
 	}
 
 	async newComment(postId, commentId){
-		const post = await getPostById(postId);
+		const post = await Post.getPostById(postId); //было this.getPostById
 		post.comments.push(commentId);
 		await post.save();
 		return post;
 	}
 
-	async newLike(postId, userId){
-		const post = await getPostById(postId);
+	async newLikeForPost(postId, userId){
+		const post = await this.getPostById(postId);
 		post.likes.push(userId);
 		await post.save();
 		return post;
