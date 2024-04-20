@@ -21,11 +21,15 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "auth")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenUtils jwtTokenUtils;
+
+    public UserController(@Autowired UserService userService,
+                          @Autowired JwtTokenUtils jwtTokenUtils) {
+        this.userService = userService;
+        this.jwtTokenUtils = jwtTokenUtils;
+    }
 
     @PostMapping(path = "/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
@@ -79,7 +83,8 @@ public class UserController {
     }
 
     @PutMapping(path = "/change-password")
-    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token, @RequestBody String password) {
+    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token,
+                                            @RequestBody String password) {
 
         Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
 
