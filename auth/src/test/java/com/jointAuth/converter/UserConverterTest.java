@@ -3,6 +3,7 @@ package com.jointAuth.converter;
 import com.jointAuth.model.User;
 import com.jointAuth.model.UserDTO;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SpringBootTest
+@DataJpaTest
 public class UserConverterTest {
     @Test
     public void testConvertToDtoConvertsUserToUserDTO() {
