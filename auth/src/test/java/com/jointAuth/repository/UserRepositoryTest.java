@@ -1,6 +1,8 @@
 package com.jointAuth.repository;
 
 import com.jointAuth.model.User;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,6 +20,11 @@ public class UserRepositoryTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
 
     @Test
     public void testFindByEmailUserExists() {
