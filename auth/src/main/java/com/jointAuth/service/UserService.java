@@ -90,7 +90,7 @@ public class UserService {
             return user;
         }
 
-        throw new IllegalArgumentException("Invalid email or password");
+        throw new IllegalArgumentException("Invalid email or password.");
     }
 
     public boolean passwordsMatch(String hashedPassword, String plainPassword) {
