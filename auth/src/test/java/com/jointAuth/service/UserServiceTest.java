@@ -260,7 +260,7 @@ public class UserServiceTest {
     @Test
     public void testLoginInvalidPasswordThrowsException() {
         String email = "kostya01@example.com";
-        String password = "badPassword";
+        String password = "badPassword123@";
         String encodedPassword = "encodedPassword";
         User user = new User();
 
