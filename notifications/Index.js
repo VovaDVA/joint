@@ -1,22 +1,25 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const http = require('http');
-const { MONGO_URI, PORT } = require('./config');
+const socketIO = require('socket.io');
+const sockets = require('./sockets');
+const { MONGO_URI, PORT } = require('./config/index');
+const connectDB = require('./config/db');
+const notificationRoutes = require('./routes/notificationsRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 
 const app = express();
 const server = http.createServer(app);
+const io = socketIO(server);
 
-mongoose.connect(MONGO_URI);
+connectDB();
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+app.use(express.json());
+app.use('/notifications', notificationRoutes);
+app.use('/notificationsSettings', settingsRoutes);
+
+sockets(io);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-mongoose
- .connect(MONGO_URI)
- .then((res) => console.log('MongoDB connected'))
- .catch ((error) => console.log(error));
