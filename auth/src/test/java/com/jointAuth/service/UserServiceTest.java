@@ -45,23 +45,25 @@ public class UserServiceTest {
     @Test
     public void testRegisterUserExistingEmailThrowsException() {
         User existingUser = new User();
-        existingUser.setFirstName("Existing");
-        existingUser.setLastName("User");
-        existingUser.setEmail("existing@example.com");
+
+        existingUser.setFirstName("Karina");
+        existingUser.setLastName("Ivanova");
+        existingUser.setEmail("Ivanova10@gmail.com");
         existingUser.setPassword("ExistingPassword123@");
 
         when(userRepository.findByEmail(existingUser.getEmail())).thenReturn(existingUser);
 
         User newUser = new User();
-        newUser.setFirstName("New");
-        newUser.setLastName("User");
-        newUser.setEmail("existing@example.com");
+
+        newUser.setFirstName("Irina");
+        newUser.setLastName("Ivanova");
+        newUser.setEmail("Ivanova10@gmail.com");
         newUser.setPassword("NewPassword123@");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
         assertEquals("User with this email already exists", exception.getMessage());
 
-        verify(userRepository, times(1)).findByEmail("existing@example.com");
+        verify(userRepository, times(1)).findByEmail("Ivanova10@gmail.com");
         verify(userRepository, never()).save(any());
     }
 
@@ -126,9 +128,10 @@ public class UserServiceTest {
     @Test
     public void testRegisterUserEmptyLastNameThrowsException() {
         User newUser = new User();
-        newUser.setFirstName("New");
+
+        newUser.setFirstName("Polina");
         newUser.setLastName("  ");
-        newUser.setEmail("newuser@example.com");
+        newUser.setEmail("polinaR1@gmail.com");
         newUser.setPassword("NewPassword123@");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
@@ -166,53 +169,49 @@ public class UserServiceTest {
     @Test
     public void testFirstNameContainsProhibitedCharacters() {
         User user = new User();
+
         user.setFirstName("Vitya!");
         user.setLastName("Larin");
         user.setEmail("ViLa123@gmail.com");
         user.setPassword("Password123@");
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            userService.register(user);
-        });
+        assertThrows(IllegalArgumentException.class, () -> userService.register(user));
     }
 
     @Test
     public void testLastNameContainsProhibitedCharacters() {
         User user = new User();
+
         user.setFirstName("Svetlana");
         user.setLastName("Sovina#");
         user.setEmail("Sveta01@gmail.com");
         user.setPassword("Password123@");
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            userService.register(user);
-        });
+        assertThrows(IllegalArgumentException.class, () -> userService.register(user));
     }
 
     @Test
     public void testFirstNameTooLong() {
         User user = new User();
+
         user.setFirstName("AllaathanIsATooLongNameForThisTest");
         user.setLastName("Yorina");
         user.setEmail("allayo@gmail.com");
         user.setPassword("Password123@");
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            userService.register(user);
-        });
+        assertThrows(IllegalArgumentException.class, () -> userService.register(user));
     }
 
     @Test
     public void testLastNameTooLong() {
         User user = new User();
+
         user.setFirstName("Karina");
         user.setLastName("BostrovaIsATooLongLastNameForThisTest");
         user.setEmail("Bostrova2001@gmail.com");
         user.setPassword("Password123@");
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            userService.register(user);
-        });
+        assertThrows(IllegalArgumentException.class, () -> userService.register(user));
     }
 
     //авторизация
