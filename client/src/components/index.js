@@ -1,12 +1,11 @@
 import FormBlock from "@/components/account/FormBlock.vue";
 
-import SideBar from "@/components/main/SideBar.vue";
-import SideBarMenuItem from "@/components/main/SideBarMenuItem.vue";
-import PageTitle from "@/components/main/PageTitle.vue";
-import PageContent from "@/components/main/PageContent.vue";
 import ContentBlock from "@/components/main/ContentBlock.vue";
 import ContentBlockTitle from "@/components/main/ContentBlockTitle.vue";
 import ContentBlockText from "@/components/main/ContentBlockText.vue";
+
+import ModalChangeBanner from "@/components/main/modals/ModalChangeBanner.vue";
+import ModalChangeAvatar from "@/components/main/modals/ModalChangeAvatar.vue";
 
 // Input
 import FormInput from '@/components/account/FormInput.vue';
@@ -56,10 +55,9 @@ import MusicPreviewBlock from "./main/static_panel/content/music/MusicPreviewBlo
 import NotificationPreviewBlock from "./main/static_panel/content/notifications/NotificationPreviewBlock.vue";
 
 export default [
-    PageHeader,
+    PageHeader, ModalChangeAvatar, ModalChangeBanner,
     FormBlock,
-    SideBar, SideBarMenuItem, 
-    PageTitle, PageContent, ContentBlockTitle, ContentBlockText,
+    ContentBlockTitle, ContentBlockText,
     BarChart, CalendarBlock,
     ContentBlock, FormInput, AuthBlock, PasswordInput, EmailInput, NumberInput, DateInput,
     TokenCheck,

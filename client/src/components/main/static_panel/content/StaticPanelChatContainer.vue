@@ -1,5 +1,5 @@
 <template>
-    <component :is="currentSectionComponent" :key="currentSection" @open-chat="onOpenChat" @open-chat-list="onOpenChatList"/>
+    <component :is="currentSectionComponent" :key="currentSection" :chat="selectedChat" @open-chat="onOpenChat" @open-chat-list="onOpenChatList"/>
 </template>
 
 <script>
@@ -14,6 +14,7 @@ export default {
     data() {
         return {
             currentSection: 'chats',
+            selectedChat: null,
         }
     },
     computed: {
@@ -31,7 +32,8 @@ export default {
         changeSection(section) {
             this.currentSection = section;
         },
-        onOpenChat() {
+        onOpenChat(chat) {
+            this.selectedChat = chat;
             this.currentSection = 'messenger';
         },
         onOpenChatList() {
