@@ -553,13 +553,16 @@ public class UserServiceTest {
     //удаление пользователя
     @Test
     public void testDeleteUserSuccessfulDeletion() {
+        String password = "testPassword123@";
+        String encodedPassword = passwordEncoder.encode(password);
+
         User user = new User();
 
         user.setId(1L);
         user.setFirstName("Vanya");
         user.setLastName("Fiji");
         user.setEmail("vano123@gmail.com");
-        user.setPassword("testPassword123@");
+        user.setPassword(encodedPassword);
 
         when(userRepository
                 .findById(1L))
@@ -586,13 +589,16 @@ public class UserServiceTest {
 
     @Test
     public void testDeleteUserDatabaseError() {
+        String password = "myPass12345@";
+        String encodedPassword = passwordEncoder.encode(password);
+
         User user = new User();
 
         user.setId(1L);
         user.setFirstName("Karim");
         user.setLastName("Sonos");
         user.setEmail("figureBest@example.com");
-        user.setPassword("myPass12345@");
+        user.setPassword(encodedPassword);
 
         when(userRepository
                 .findById(1L))
