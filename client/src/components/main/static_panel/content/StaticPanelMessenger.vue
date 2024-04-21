@@ -3,9 +3,10 @@
         <messenger-action-icon icon-name="arrow-left" @click="openChatList"></messenger-action-icon>
         <static-panel-search-bar></static-panel-search-bar>
     </static-panel-header>
-    <chat-title>Владимир Двойнишников</chat-title>
+    <chat-title>{{ chatName }}</chat-title>
     <static-panel-content>
-        <single-message class="you">Привет</single-message>
+        <single-message v-for="message in messages" :key="message._id" :message="message" />
+        <!-- <single-message class="you">Привет</single-message>
         <single-message>Привет</single-message>
         <single-message class="you">Как дела?</single-message>
         <single-message>Нормально, твои как?</single-message>
@@ -23,7 +24,7 @@
         <single-message>Я сообщу об этом</single-message>
         <single-message class="you">Отлично, тогда до встречи</single-message>
         <single-message>Давай, удачи</single-message>
-        <single-message class="you">Пока</single-message>
+        <single-message class="you">Пока</single-message> -->
     </static-panel-content>
     <div class="chat-input">
         <!-- <messenger-action-icon icon-name="file"></messenger-action-icon> -->
@@ -36,17 +37,38 @@
 </template>
 
 <script>
+import { getUserById } from '@/modules/auth';
+
 // import { io } from 'socket.io-client';
 
 export default {
+    props: ['chat'],
     data() {
         return {
             socket: null,
-            messages: [],
+            chatName: 'ЕПТА team',
+            messages: [
+                {
+                    "_id": 1,
+                    "chat_id": 1,
+                    "sender_id": 5678,
+                    "text": "Привет",
+                    "created_at": '2024-04 - 16T09: 54:00.063 +00:00'
+                },
+                {
+                    "_id": 2,
+                    "chat_id": 1,
+                    "sender_id": 1234,
+                    "text": "Привет",
+                    "created_at": '2024-04 - 16T09: 54:00.063 +00:00'
+                }
+            ],
             newMessage: ''
         }
     },
     mounted() {
+        // const otherUserId = this.user
+        this.chatName = getUserById();
         // this.socket = io('http://127.0.0.1:3000');
         // this.socket.on('chat message', (msg) => {
         //     this.messages.push({ id: this.messages.length + 1, text: msg });

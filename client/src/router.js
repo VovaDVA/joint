@@ -8,13 +8,7 @@ import NewsPage from './pages/NewsPage.vue';
 import ProfilePage from './pages/ProfilePage.vue';
 import FeedPage from './pages/FeedPage.vue';
 import CalendarPage from './pages/CalendarPage.vue';
-
-// import SidebarStatsTab from './components/main/sidebarMenuTabs/SidebarStatsTab.vue';
-// import StatsTabTable from './components/main/sidebarMenuTabs/StatsTabTable.vue';
-// import StatsTabGraphics from './components/main/sidebarMenuTabs/StatsTabGraphics.vue';
-
-// import SidebarCalendarTab from './components/main/sidebarMenuTabs/SidebarCalendarTab.vue';
-import SidebarAddExpenseTab from './components/main/sidebarMenuTabs/SidebarAddExpenseTab.vue';
+import StatsPage from './pages/StatsPage.vue';
 
 import ProfileContentImages from './components/profile/content/ProfileContentImages.vue';
 
@@ -31,6 +25,7 @@ const routes = [
   { path: '/news', component: NewsPage },
   { path: '/feed', component: FeedPage },
   { path: '/calendar', component: CalendarPage },
+  { path: '/stats', component: StatsPage },
   {
     path: '/', component: ProfilePage, children: [
       { path: '/', component: ProfileContentImages },
@@ -38,7 +33,6 @@ const routes = [
       { path: '/videos', component: ProfileContentImages },
       { path: '/music', component: ProfileContentMusic },
       { path: '/books', component: ProfileContentImages },
-      { path: '/add-expense', component: SidebarAddExpenseTab }
     ]
   },
 ];
