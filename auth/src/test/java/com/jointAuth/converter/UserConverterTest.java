@@ -4,9 +4,12 @@ import com.jointAuth.model.User;
 import com.jointAuth.model.UserDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
 
@@ -16,14 +19,21 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @DataJpaTest
 @ExtendWith(MockitoExtension.class)
 public class UserConverterTest {
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @Test
     public void testConvertToDtoConvertsUserToUserDTO() {
+        String password = "PassViktor123=";
+        String encodedPassword = passwordEncoder.encode(password);
+
         User user = new User();
 
         user.setFirstName("Viktor");
         user.setLastName("Doramov");
         user.setEmail("vidor@gmail.com");
-        user.setPassword("PassViktor123=");
+        user.setPassword(encodedPassword);
         user.setId(1L);
         user.setRegistrationDate(new Date());
         user.setLastLogin(null);
@@ -40,12 +50,15 @@ public class UserConverterTest {
 
     @Test
     public void testConvertToDtoNullFieldsInUserReturnsDtoWithNullFields() {
+        String password = "passForTest1+";
+        String encodedPassword = passwordEncoder.encode(password);
+
         User user = new User();
 
         user.setFirstName("Alexander");
         user.setLastName(null);
         user.setEmail("Sanya24@example.com");
-        user.setPassword("passForTest1+");
+        user.setPassword(encodedPassword);
         user.setId(1L);
         user.setRegistrationDate(new Date());
         user.setLastLogin(null);
