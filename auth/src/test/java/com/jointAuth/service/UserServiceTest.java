@@ -442,17 +442,22 @@ public class UserServiceTest {
     @Test
     public void getAllUsersNonEmptyListReturnsListWithUsers() {
         User firstUser = new User();
+        String password1 = "PassEm123+";
+        String encodedPassword1 = passwordEncoder.encode(password1);
+
         User secondUser = new User();
+        String password2 = "PassJane12@";
+        String encodedPassword2 = passwordEncoder.encode(password2);
 
         firstUser.setFirstName("Jennie");
         firstUser.setLastName("Farina");
         firstUser.setEmail("JennieEm@gmail.com");
-        firstUser.setPassword("PassEm123+");
+        firstUser.setPassword(encodedPassword1);
 
         secondUser.setFirstName("Jane");
         secondUser.setLastName("janeSmith@gmail.com");
         secondUser.setEmail("janeSmith@gmail.com");
-        secondUser.setPassword("PassJane12@");
+        secondUser.setPassword(encodedPassword2);
 
         List<User> users = List.of(
                 firstUser,
@@ -474,12 +479,14 @@ public class UserServiceTest {
     @Test
     public void testChangePasswordUserFoundPasswordChanged() {
         User user = new User();
+        String password = "oldPass123@";
+        String encodedPassword = passwordEncoder.encode(password);
 
         user.setId(1L);
         user.setFirstName("Vita");
         user.setLastName("Erina");
         user.setEmail("ViEr@gmail.com");
-        user.setPassword("oldPass123@");
+        user.setPassword(encodedPassword);
 
         when(userRepository
                 .findById(1L))
@@ -496,6 +503,16 @@ public class UserServiceTest {
 
     @Test
     public void testChangePasswordUserNotFoundThrowsException() {
+        String password = "Password123@";
+        String encodedPassword = passwordEncoder.encode(password);
+
+        User user = new User();
+
+        user.setFirstName("Evelina");
+        user.setLastName("Novikova");
+        user.setEmail("en0102@gmail.com");
+        user.setPassword(encodedPassword);
+
         when(userRepository
                 .findById(1L))
                 .thenReturn(Optional.empty());
@@ -508,13 +525,16 @@ public class UserServiceTest {
 
     @Test
     public void testChangePasswordInvalidPasswordThrowsException() {
+        String password = "oldPass123@";
+        String encodedPassword = passwordEncoder.encode(password);
+
         User user = new User();
 
         user.setId(1L);
         user.setFirstName("Nasty");
         user.setLastName("Doina");
         user.setEmail("NasDo@gmail.com");
-        user.setPassword("oldPass123@");
+        user.setPassword(encodedPassword);
 
         when(userRepository
                 .findById(1L))
@@ -527,7 +547,7 @@ public class UserServiceTest {
 
         assertEquals("Password does not meet the complexity requirements", exception.getMessage());
 
-        assertEquals("oldPass123@", user.getPassword());
+        assertEquals(encodedPassword, user.getPassword());
     }
 
     //удаление пользователя
