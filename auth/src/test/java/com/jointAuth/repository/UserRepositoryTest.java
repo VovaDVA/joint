@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,9 @@ public class UserRepositoryTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @AfterEach
     void tearDown() {
         userRepository.deleteAll();
@@ -32,12 +36,15 @@ public class UserRepositoryTest {
     @Test
     public void testFindByEmailUserExists() {
         String email = "test@gmail.com";
+        String password = "Pass123!+A";
+        String encodedPassword = passwordEncoder.encode(password);
+
         User user = new User();
         user.setId(1L);
         user.setFirstName("Katya");
         user.setLastName("Solovay");
         user.setEmail(email);
-        user.setPassword("Pass123!+A");
+        user.setPassword(encodedPassword);
         when(userRepository
                 .findByEmail(email))
                 .thenReturn(user);
@@ -90,7 +97,9 @@ public class UserRepositoryTest {
     @Test
     public void testFindByEmailSpecialCharactersEmail() {
         String email = "test+test@gmail.com";
+
         User user = new User();
+
         user.setEmail(email);
         user.setId(1L);
         when(userRepository
@@ -106,7 +115,9 @@ public class UserRepositoryTest {
     @Test
     public void testFindByIdUserExists() {
         Long id = 1L;
+
         User user = new User();
+
         user.setId(id);
         when(userRepository
                 .findById(id))
@@ -161,6 +172,7 @@ public class UserRepositoryTest {
     @Test
     public void testSaveNewUser() {
         User user = new User();
+
         user.setEmail("newuser@gmail.com");
         when(userRepository
                 .save(user))
@@ -175,6 +187,7 @@ public class UserRepositoryTest {
     @Test
     public void testSaveExistingUser() {
         User existingUser = new User();
+
         existingUser.setId(1L);
         existingUser.setEmail("existinguser@gmail.com");
         when(userRepository
@@ -203,6 +216,7 @@ public class UserRepositoryTest {
     @Test
     public void testSaveUserWithMissingFields() {
         User user = new User();
+
         user.setEmail(null);
         when(userRepository
                 .save(user))
@@ -217,6 +231,7 @@ public class UserRepositoryTest {
     @Test
     public void testSaveUserWithInvalidFields() {
         User user = new User();
+
         user.setEmail("invalid_email");
         when(userRepository
                 .save(user))
@@ -258,10 +273,12 @@ public class UserRepositoryTest {
     @Test
     public void testFindAllWithUsers() {
         User user1 = new User();
+
         user1.setId(1L);
         user1.setEmail("user1@gmail.com");
 
         User user2 = new User();
+
         user2.setId(2L);
         user2.setEmail("user2@example.com");
 
