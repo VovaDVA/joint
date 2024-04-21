@@ -39,6 +39,7 @@ public class UserServiceTest {
         userRepository = mock(UserRepository.class);
         passwordEncoder = mock(PasswordEncoder.class);
         userService = new UserService(userRepository,passwordEncoder);
+        userRepository.deleteAll();
     }
 
     //регистрация
@@ -219,7 +220,8 @@ public class UserServiceTest {
     public void testLoginValidCredentialsReturnsUser() {
         String email = "provin@gmail.com";
         String password = "PasswordVit123@";
-        String encodedPassword = "encodedPassword";
+        String encodedPassword = passwordEncoder.encode(password);
+
         User user = new User();
 
         user.setFirstName("Vitally");
@@ -248,6 +250,15 @@ public class UserServiceTest {
     public void testLoginInvalidEmailThrowsException() {
         String email = "maxim2001@gmail.com";
         String password = "PasswordMax123@";
+        String encodedPassword = passwordEncoder.encode(password);
+
+        User user = new User();
+
+        user.setFirstName("Karim");
+        user.setLastName("Valov");
+        user.setEmail("Karim03@gmail.com");
+        user.setPassword(encodedPassword);
+
         when(userRepository
                 .findByEmail(email))
                 .thenReturn(null);
@@ -262,7 +273,8 @@ public class UserServiceTest {
     public void testLoginInvalidPasswordThrowsException() {
         String email = "kostya01@example.com";
         String password = "badPassword123@";
-        String encodedPassword = "encodedPassword";
+        String encodedPassword = passwordEncoder.encode(password);
+
         User user = new User();
 
         user.setFirstName("Konstantin");
@@ -286,18 +298,34 @@ public class UserServiceTest {
     @Test
     public void testLoginWithNullEmail() {
         String password = "Password123@";
+        String encodedPassword = passwordEncoder.encode(password);
+
+        User user = new User();
+
+        user.setFirstName("Petr");
+        user.setLastName("Elov");
+        user.setEmail(null);
+        user.setPassword(encodedPassword);
 
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.login(null, password);
+            userService.login(user.getEmail(), password);
         });
     }
 
     @Test
     public void testLoginWithEmptyEmail() {
         String password = "Password123@";
+        String encodedPassword = passwordEncoder.encode(password);
+
+        User user = new User();
+
+        user.setFirstName("Selim");
+        user.setLastName("Vanov");
+        user.setEmail("");
+        user.setPassword(encodedPassword);
 
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.login("", password);
+            userService.login(user.getEmail(), password);
         });
     }
 
@@ -305,14 +333,28 @@ public class UserServiceTest {
     public void testLoginWithNullPassword() {
         String email = "forexample@gmail.com";
 
+        User user = new User();
+
+        user.setFirstName("Maxim");
+        user.setLastName("Orlov");
+        user.setEmail(email);
+        user.setPassword(null);
+
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.login(email, null);
+            userService.login(email, user.getPassword());
         });
     }
 
     @Test
     public void testLoginWithEmptyPassword() {
         String email = "forexample@gmail.com";
+
+        User user = new User();
+
+        user.setFirstName("Vladimir");
+        user.setLastName("Krelin");
+        user.setEmail(email);
+        user.setPassword("");
 
         assertThrows(IllegalArgumentException.class, () -> {
             userService.login(email, "");
