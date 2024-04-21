@@ -4,6 +4,8 @@ import com.jointAuth.model.User;
 import com.jointAuth.repository.UserRepository;
 import io.cucumber.java.bs.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.regex.Pattern;
@@ -82,6 +84,14 @@ public class UserService {
     }
 
     public User login(String email, String password) {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Missing email.");
+        }
+
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("Missing password.");
+        }
+
         User user = userRepository.findByEmail(email);
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             user.setLastLogin(new Date());

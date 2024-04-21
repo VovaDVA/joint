@@ -36,6 +36,8 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+        userRepository = mock(UserRepository.class);
+        passwordEncoder = mock(PasswordEncoder.class);
         userService = new UserService(userRepository,passwordEncoder);
     }
 
@@ -125,7 +127,7 @@ public class UserServiceTest {
     public void testRegisterUserEmptyLastNameThrowsException() {
         User newUser = new User();
         newUser.setFirstName("New");
-        newUser.setLastName("  "); // Empty or whitespace-only last name
+        newUser.setLastName("  ");
         newUser.setEmail("newuser@example.com");
         newUser.setPassword("NewPassword123@");
 
@@ -280,6 +282,42 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).findByEmail(email);
         verify(passwordEncoder, times(1)).matches(password, encodedPassword);
+    }
+
+    @Test
+    public void testLoginWithNullEmail() {
+        String password = "Password123@";
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.login(null, password);
+        });
+    }
+
+    @Test
+    public void testLoginWithEmptyEmail() {
+        String password = "Password123@";
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.login("", password);
+        });
+    }
+
+    @Test
+    public void testLoginWithNullPassword() {
+        String email = "forexample@gmail.com";
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.login(email, null);
+        });
+    }
+
+    @Test
+    public void testLoginWithEmptyPassword() {
+        String email = "forexample@gmail.com";
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.login(email, "");
+        });
     }
 
     //соответствие пароля и его же, но в хэшированном виде
