@@ -2,9 +2,11 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.Profile;
 import com.jointAuth.model.User;
+import com.jointAuth.model.UserDetailsDTO;
 import com.jointAuth.model.UserProfileDTO;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -129,31 +131,57 @@ public class UserService {
     }
 
     public UserProfileDTO getUserInfoById(Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with userId: " + userId));
 
-        if (user != null) {
-            UserProfileDTO userResponseDTO = new UserProfileDTO();
-            userResponseDTO.setUserId(user.getId());
-            userResponseDTO.setFirstName(user.getFirstName());
-            userResponseDTO.setLastName(user.getLastName());
-            userResponseDTO.setEmail(user.getEmail());
-            userResponseDTO.setRegistrationDate(user.getRegistrationDate());
-            userResponseDTO.setLastLogin(user.getLastLogin());
+        UserProfileDTO userResponseDTO = new UserProfileDTO();
+        userResponseDTO.setUserId(user.getId());
+        userResponseDTO.setFirstName(user.getFirstName());
+        userResponseDTO.setLastName(user.getLastName());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setRegistrationDate(user.getRegistrationDate());
+        userResponseDTO.setLastLogin(user.getLastLogin());
 
-            Profile userProfile = profileRepository.findByUserId(userId).orElse(null);
-            if (userProfile != null) {
-                userResponseDTO.setProfileId(userProfile.getId());
-                userResponseDTO.setDescription(userProfile.getDescription());
-                userResponseDTO.setBirthday(userProfile.getBirthday());
-                userResponseDTO.setCountry(userProfile.getCountry());
-                userResponseDTO.setCity(userProfile.getCity());
-                userResponseDTO.setPhone(userProfile.getPhone());
-                userResponseDTO.setLastEdited(userProfile.getLastEdited());
+        Profile userProfile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Profile not found for userId: " + userId));
+
+        userResponseDTO.setProfileId(userProfile.getId());
+        userResponseDTO.setDescription(userProfile.getDescription());
+        userResponseDTO.setBirthday(userProfile.getBirthday());
+        userResponseDTO.setCountry(userProfile.getCountry());
+        userResponseDTO.setCity(userProfile.getCity());
+        userResponseDTO.setPhone(userProfile.getPhone());
+        userResponseDTO.setLastEdited(userProfile.getLastEdited());
+
+        return userResponseDTO;
+    }
+
+    public UserDetailsDTO getUserByIdWithoutToken(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
+            userDetailsDTO.setFirstName(user.getFirstName());
+            userDetailsDTO.setLastName(user.getLastName());
+            userDetailsDTO.setLastLogin(user.getLastLogin());
+
+            Optional<Profile> userProfileOptional = profileRepository.findByUserId(userId);
+            if (userProfileOptional.isPresent()) {
+                Profile userProfile = userProfileOptional.get();
+                userDetailsDTO.setDescription(userProfile.getDescription());
+                userDetailsDTO.setBirthday(userProfile.getBirthday());
+                userDetailsDTO.setCountry(userProfile.getCountry());
+                userDetailsDTO.setCity(userProfile.getCity());
+            } else {
+                // Если профиль не найден, выбрасываем исключение
+                throw new RuntimeException("Profile not found for userId: " + userId);
             }
 
-            return userResponseDTO;
+            return userDetailsDTO;
         } else {
-            return null;
+            // Если пользователь не найден, выбрасываем исключение
+            throw new RuntimeException("User not found with userId: " + userId);
         }
     }
 
