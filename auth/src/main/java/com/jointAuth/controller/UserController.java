@@ -53,14 +53,12 @@ public class UserController {
     }
 
     @GetMapping(path = "/user")
-    public ResponseEntity<?> getUserById(@RequestHeader("Authorization") String token) {
-
+    public ResponseEntity<UserProfileDTO> getUserByIdWithToken(@RequestHeader("Authorization") String token) {
         Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+        UserProfileDTO userResponseDTO = userService.getUserInfoById(currentUserId);
 
-        Optional<User> user = userService.getUserById(currentUserId);
-
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
+        if (userResponseDTO != null) {
+            return ResponseEntity.ok(userResponseDTO);
         } else {
             return ResponseEntity.notFound().build();
         }
