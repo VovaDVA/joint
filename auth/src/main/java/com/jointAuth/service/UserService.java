@@ -174,13 +174,11 @@ public class UserService {
                 userDetailsDTO.setCountry(userProfile.getCountry());
                 userDetailsDTO.setCity(userProfile.getCity());
             } else {
-                // Если профиль не найден, выбрасываем исключение
                 throw new RuntimeException("Profile not found for userId: " + userId);
             }
 
             return userDetailsDTO;
         } else {
-            // Если пользователь не найден, выбрасываем исключение
             throw new RuntimeException("User not found with userId: " + userId);
         }
     }
