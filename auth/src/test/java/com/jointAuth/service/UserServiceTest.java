@@ -1,21 +1,23 @@
 package com.jointAuth.service;
 
 import com.jointAuth.model.User;
+import com.jointAuth.model.Profile;
+import com.jointAuth.model.UserProfileDTO;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.text.ParseException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -648,5 +650,66 @@ public class UserServiceTest {
         assertEquals("Database error", exception.getMessage());
 
         verify(userRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void testGetUserInfoById_Success() throws ParseException {
+        User user = new User();
+
+        user.setId(1L);
+        user.setFirstName("Vanya");
+        user.setLastName("Prohorov");
+        user.setPassword("Password123@");
+        user.setEmail("ivanko@gmail.com");
+        user.setLastLogin(new Date());
+
+        Profile userProfile = new Profile();
+
+        userProfile.setId(1L);
+        userProfile.setDescription("Description");
+        userProfile.setBirthday("2001.01.01");
+        userProfile.setCountry("Russia");
+        userProfile.setCity("Moscow");
+        userProfile.setPhone("123456789");
+        userProfile.setLastEdited(null);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(profileRepository.findByUserId(1L)).thenReturn(Optional.of(userProfile));
+
+        UserProfileDTO result = userService.getUserInfoById(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getUserId());
+        assertEquals("Vanya", result.getFirstName());
+        assertEquals("Prohorov", result.getLastName());
+        assertEquals("ivanko@gmail.com", result.getEmail());
+        assertEquals("2001.01.01", result.getBirthday());
+        assertEquals("Russia", result.getCountry());
+        assertEquals("Moscow", result.getCity());
+        assertEquals("123456789", result.getPhone());
+        assertNull(result.getLastEdited());
+    }
+
+    @Test
+    public void testGetUserInfoById_UserNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> userService.getUserInfoById(1L));
+    }
+
+    @Test
+    public void testGetUserInfoById_ProfileNotFound() {
+        User user = new User();
+
+        user.setId(1L);
+        user.setFirstName("Vladislav");
+        user.setLastName("Pokov");
+        user.setPassword("Password123@");
+        user.setEmail("vlados@gmail.com");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(profileRepository.findByUserId(1L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> userService.getUserInfoById(1L));
     }
 }

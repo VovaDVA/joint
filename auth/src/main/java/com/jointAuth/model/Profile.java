@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data
@@ -30,8 +32,7 @@ public class Profile {
     private String description;
 
     @Column(name = "birthday")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
-    private Date birthday;
+    private String birthday;
 
     @Column(name = "country")
     private String country;

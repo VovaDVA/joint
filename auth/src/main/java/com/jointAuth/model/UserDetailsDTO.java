@@ -10,7 +10,7 @@ public class UserDetailsDTO {
     private String lastName;
 
     private String description;
-    private Date birthday;
+    private String birthday;
     private String country;
     private String city;
     private Date lastLogin;
