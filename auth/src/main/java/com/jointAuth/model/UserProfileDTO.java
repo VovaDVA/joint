@@ -2,6 +2,7 @@ package com.jointAuth.model;
 
 import lombok.Data;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data
@@ -15,9 +16,10 @@ public class UserProfileDTO {
 
     private Long profileId;
     private String description;
-    private Date birthday;
+    private String birthday;
     private String country;
     private String city;
     private String phone;
     private Date lastEdited;
+
 }
