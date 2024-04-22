@@ -37,7 +37,11 @@
 </template>
 
 <script>
-import { getUserById } from '@/modules/auth';
+import { getUser, getUserById } from '@/modules/auth';
+
+// import { getUser } from '@/modules/auth';
+
+// import { getUserById } from '@/modules/auth';
 
 // import { io } from 'socket.io-client';
 
@@ -66,9 +70,31 @@ export default {
             newMessage: ''
         }
     },
-    mounted() {
+    async mounted() {
+        const otherUserId = this.chat.members.find(id => id != getUser().id);
+        this.otherUser = await getUserById(otherUserId);
+        if (this.otherUser) {
+            this.chatName = this.otherUser.firstName + ' ' + this.otherUser.lastName;
+        }
+
+        const chat = this.chat;
+        try {
+				const response = await fetch('/chat/getMessages?chat_id=' + chat._id, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+				});
+
+				const data = await response.json();
+				console.log(data);
+                this.messages = data;
+
+			} catch (error) {
+				console.error(error);
+			}
         // const otherUserId = this.user
-        this.chatName = getUserById();
+        // this.chatName = getUserById();
         // this.socket = io('http://127.0.0.1:3000');
         // this.socket.on('chat message', (msg) => {
         //     this.messages.push({ id: this.messages.length + 1, text: msg });

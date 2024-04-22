@@ -153,3 +153,7 @@ template {
     color: #ffffff;
     background-color: #00111e;
 }
+
+input {
+    color: white !important;
+}
