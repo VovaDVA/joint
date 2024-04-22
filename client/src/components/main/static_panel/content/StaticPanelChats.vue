@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import { getUser } from '@/modules/auth';
+
 export default {
     data() {
         return {
@@ -53,9 +55,30 @@ export default {
             searchText: '',
         };
     },
+    async mounted() {
+        const user = getUser();
+        console.log(user);
+        if (!user) return;
+        try {
+				const response = await fetch('/chat/getUserChats?user_id=' + user.id.toString(), {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+				});
+
+				const data = await response.json();
+				console.log(data);
+                this.chats = data;
+
+			} catch (error) {
+				console.error(error);
+			}
+    },
     computed: {
         // Фильтруем чаты в соответствии с текстом поиска
         filteredChats() {
+            
             return this.chats;
             // return this.chats.filter(() => {
             //     // return chat.name.toLowerCase().includes(this.searchText.toLowerCase());

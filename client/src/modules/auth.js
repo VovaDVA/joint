@@ -50,11 +50,11 @@ export function removeToken() {
 
 function saveUserData(data) {
     console.log(data);
-    localStorage.setItem('user', JSON.stringify({firstName: data['firstName'], lastName: data['lastName']}));
+    localStorage.setItem('user', JSON.stringify(data));
 }
 
 export function getUser() {
-    return localStorage.getItem('user');
+    return JSON.parse(localStorage.getItem('user'));
 }
 
 export function deleteSession() {
@@ -68,7 +68,9 @@ export function deleteSession() {
 
 export async function getUserById(userId) {
     try {
-        const response = await fetch('/auth/get?id=' + userId, {
+        console.log(userId)
+        const response = await fetch('/auth/user?id=' + userId, {
+            method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + getToken(),
                 'Content-Type': 'application/json'  // Пример добавления других заголовков

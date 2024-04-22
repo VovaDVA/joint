@@ -17,7 +17,7 @@
 <script>
 import { getUser } from '@/modules/auth';
 
-// import { getUserById } from '@/modules/auth';
+import { getUserById } from '@/modules/auth';
 
 export default {
     name: 'chat-preview-block',
@@ -30,10 +30,10 @@ export default {
             },
         }
     },
-    mounted() {
+    async mounted() {
         const otherUserId = this.chat.members.find(id => id != getUser().id);
-        console.log(otherUserId);
-        // const otherUser = getUserById(otherUserId);
+        console.log(this.chat.members, otherUserId);
+        this.otherUser = await getUserById(otherUserId);
     }
 }
 </script>
