@@ -64,29 +64,40 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/get-all")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        try {
-            List<User> users = userService.getAllUsers();
+    @GetMapping("/user/get")
+    public ResponseEntity<UserDetailsDTO> getUserDetailsById(@RequestBody UserDetailsRequestDTO userDetailsRequestDTO) {
+        UserDetailsDTO userDetailsDTO = userService.getUserByIdWithoutToken(userDetailsRequestDTO.getUserId());
 
-            if (users.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-
-            List<UserDTO> userDTOs = users.stream()
-                    .map(user -> {
-                        UserDTO dto = new UserDTO();
-                        BeanUtils.copyProperties(user, dto);
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(userDTOs);
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (userDetailsDTO != null) {
+            return ResponseEntity.ok(userDetailsDTO);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
+
+//    @GetMapping(path = "/get-all")
+//    public ResponseEntity<List<UserDTO>> getAllUsers() {
+//        try {
+//            List<User> users = userService.getAllUsers();
+//
+//            if (users.isEmpty()) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//            }
+//
+//            List<UserDTO> userDTOs = users.stream()
+//                    .map(user -> {
+//                        UserDTO dto = new UserDTO();
+//                        BeanUtils.copyProperties(user, dto);
+//                        return dto;
+//                    })
+//                    .collect(Collectors.toList());
+//
+//            return ResponseEntity.ok(userDTOs);
+//        } catch (Exception e) {
+//
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 
     @PutMapping(path = "/change-password")
     public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token,
