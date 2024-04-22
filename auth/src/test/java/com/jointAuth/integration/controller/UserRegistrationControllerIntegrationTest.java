@@ -1,11 +1,16 @@
 package com.jointAuth.integration.controller;
 
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import com.jointAuth.model.Profile;
 import com.jointAuth.model.User;
+import com.jointAuth.repository.ProfileRepository;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.jointAuth.repository.UserRepository;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,21 +34,27 @@ public class UserRegistrationControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+
     private static final int NAME_MAX_LENGTH = 15;
 
     @BeforeEach
     void setUp() {
+        profileRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
     public void testRegisterUserSuccess() throws Exception {
+        // JSON данных нового пользователя для регистрации
         String newUserJson = "{\"firstName\": \"Maxim\", " +
-                             "\"lastName\": \"Volsin\", " +
-                             "\"email\": \"maxVol@gmail.com\", " +
-                             "\"password\": \"Password123@\"}";
+                "\"lastName\": \"Volsin\", " +
+                "\"email\": \"maxVol@gmail.com\", " +
+                "\"password\": \"Password123@\"}";
 
-        mockMvc.perform(post("/auth/register")
+        // Выполнение запроса POST на регистрацию пользователя
+        MvcResult result = mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isOk())
@@ -49,7 +63,20 @@ public class UserRegistrationControllerIntegrationTest {
                 .andExpect(jsonPath("$.lastName").value("Volsin"))
                 .andExpect(jsonPath("$.email").value("maxVol@gmail.com"))
                 .andExpect(jsonPath("$.registrationDate").exists())
-                .andExpect(jsonPath("$.lastLogin").isEmpty());
+                .andExpect(jsonPath("$.lastLogin").doesNotExist())
+                .andReturn();
+
+        // Извлечение идентификатора пользователя из ответа
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String responseContent = result.getResponse().getContentAsString();
+        Long userId = objectMapper.readTree(responseContent).get("id").asLong();
+
+        // Поиск профиля пользователя по его идентификатору
+        Optional<Profile> profile = profileRepository.findByUserId(userId);
+
+        // Проверка, что профиль создан и связан с пользователем
+        assertNotNull(profileRepository.findByUserId(userId), "Профиль пользователя должен быть создан");
     }
 
     @Test
@@ -257,6 +284,28 @@ public class UserRegistrationControllerIntegrationTest {
             fail("Ожидалась ошибка, связанная с lastName, содержащим запрещенные символы.");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("must contain only letters"));
+        }
+    }
+
+    @Test
+    public void testRegisterUserProfileCreated() throws Exception {
+        String newUserJson = "{\"firstName\": \"Maxim\", " +
+                "\"lastName\": \"Volsin\", " +
+                "\"email\": \"maxVol@gmail.com\", " +
+                "\"password\": \"Password123@\"}";
+
+        try {
+            var result = mockMvc.perform(post("/auth/register")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(newUserJson))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Long userId = JsonPath.parse(result.getResponse().getContentAsString()).read("$.id", Long.class);
+
+            assertNotNull(profileRepository.findByUserId(userId), "Профиль пользователя должен быть создан");
+        } catch (Exception e) {
+            fail("The test failed due to an exception: " + e.getMessage());
         }
     }
 }
