@@ -77,7 +77,7 @@ public class UserService {
     }
 
     private void createProfileForUser(User savedUser) {
-        Profile profile= new Profile();
+        Profile profile = new Profile();
 
         profile.setUser(savedUser);
         profile.setLastEdited(new Date());
