@@ -3,20 +3,38 @@
         <div class="avatar"></div>
         <div class="chat-info">
             <div class="chat-header">
-                <div class="chat-title">Владимир Двойнишников</div>
-                <div class="chat-last-changed">21:00</div>
+                <div class="chat-title">{{ otherUser.firstName + ' ' + otherUser.lastName }}</div>
+                <div class="chat-last-changed">{{ chat.last_message_at }}</div>
             </div>
             <div class="last-message">
                 <div class="last-message-avatar"></div>
-                <div class="last-message-text">Сообщение</div>
+                <div class="last-message-text">{{ chat.last_message }}</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { getUser } from '@/modules/auth';
+
+import { getUserById } from '@/modules/auth';
+
 export default {
     name: 'chat-preview-block',
+    props: ['chat'],
+    data() {
+        return {
+            otherUser: {
+                firstName: 'Vova',
+                lastName: 'DVA'
+            },
+        }
+    },
+    async mounted() {
+        const otherUserId = this.chat.members.find(id => id != getUser().id);
+        console.log(this.chat.members, otherUserId);
+        this.otherUser = await getUserById(otherUserId);
+    }
 }
 </script>
 

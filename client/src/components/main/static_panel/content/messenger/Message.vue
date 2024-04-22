@@ -1,12 +1,10 @@
 <template>
-    <div class="message">
+    <div class="message" :class="isMainUser() ? 'you' : ''">
         <div class="message-inner">
             <!-- <div class="author">Владимир</div> -->
-            <div>
-                <slot></slot>
-            </div>
+            <div>{{ message.text }}</div>
             <div class="send-time">
-                <span>13:38 </span>
+                <span>{{ message.created_at }}</span>
                 <div class="icon">
                     <font-awesome-icon icon="check" />
                 </div>
@@ -20,6 +18,7 @@
 
 <script>
 import { FontAwesomeIcon } from '@/fontawesome';
+import { getUser } from '@/modules/auth';
 
 export default {
     name: 'single-message',
@@ -27,9 +26,17 @@ export default {
         FontAwesomeIcon
     },
     props: {
+        message: {},
         iconName: {
             type: String, // Ожидаем строковое значение для имени иконки
             default: 'pen' // Значение по умолчанию
+        }
+    },
+    methods: {
+        isMainUser() {
+            const user = getUser();
+            if (!user) return true;
+            return this.message['sender_id'] == user.id; 
         }
     }
 }
@@ -43,7 +50,6 @@ export default {
     height: fit-content;
     min-height: 30px;
     margin: 20px 10px;
-    /* padding: 0 10px; */
 }
 
 .message.you {
@@ -55,9 +61,7 @@ export default {
 }
 
 .message-inner {
-    /* display: flex; */
     width: fit-content;
-    /* min-width: 100px; */
     max-width: 70%;
     height: 100%;
     padding: 10px;

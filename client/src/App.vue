@@ -13,6 +13,9 @@
         <side-chat v-if="!isLoginPage && !isRegisterPage"></side-chat>
     </div>
 
+    <modal-change-banner></modal-change-banner>
+    <modal-change-avatar></modal-change-avatar>
+
     <div class="intro">
         <div class="intro_fade"></div>
     </div>

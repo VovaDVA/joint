@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const chatSchema = new mongoose.Schema({
-    participitans: {
+    members: {
         type: [String],
         required: true
     }, 
@@ -11,7 +11,12 @@ const chatSchema = new mongoose.Schema({
     },
     last_message_at: {
         type: Date,
-        required: true
+        //required: true
+    },
+    last_message: {
+        type: String,
+        default: 'Хватит коммитить!',
+        //required: true
     }
 });
 

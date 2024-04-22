@@ -3,8 +3,9 @@
         <div class="music-cover"></div>
         <div class="music-info">
             <div class="music-header">
-                <div class="music-title">Не покидай&nbsp;</div>
-                <div class="music-autor">- Л. Дербенев </div>
+                <div class="music-title">{{ name }}</div>
+                <span>&nbsp;-&nbsp;</span>
+                <div class="music-autor">{{ author }}</div>
             </div>
             <div class="buttons">
                 <div class="music-block">
@@ -20,6 +21,7 @@
 <script>
 export default {
     name: 'music-preview-block',
+    props: ['name', 'author'],
 }
 </script>
 
@@ -61,7 +63,7 @@ export default {
 
 .music-title {
     font-size: 15px;
-    color: rgb(255, 164, 54);
+    color: #ffbf6c;
 }
 .music-autor, .time {
     font-size: 15px;

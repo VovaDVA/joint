@@ -37,7 +37,7 @@
                         <router-link to="/profile-settings">
                             <icon-button icon-name="gear"></icon-button>
                         </router-link>
-                        <router-link to="/profile-settings">
+                        <router-link to="/stats">
                             <icon-button icon-name="chart-simple"></icon-button>
                         </router-link>
                         <!-- <router-link to="/profile-settings">

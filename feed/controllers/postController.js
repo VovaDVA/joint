@@ -18,7 +18,7 @@ class postController {
 
 	async getPost(req, res) {
 		try {
-			const postId = req.params.id;
+			const postId = req.query.id;
 			const post = await postService.getPostById(postId);
 
 			if (!post) {
@@ -27,6 +27,27 @@ class postController {
 
 			return res.status(201).json(post);
 		} 
+		catch (error) {
+			return res.status(500).json({message: error.message});
+		}
+	}
+
+	async getPostsByAuthor(req, res) {
+		try {
+			const author_id = req.query.author_id;
+			const posts = await postService.getPostsByAuthor(author_id);
+			return res.status(500).json(posts);
+		}
+		catch (error) {
+			return res.status(500).json({message: error.message});
+		}
+	}
+
+	async getAllPosts(req, res) {
+		try {
+			const posts = await postService.getAllPosts();
+			return res.status(500).json(posts);
+		}
 		catch (error) {
 			return res.status(500).json({message: error.message});
 		}

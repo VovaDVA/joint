@@ -2,6 +2,8 @@ package com.jointAuth.util;
 
 import com.jointAuth.model.User;
 import io.jsonwebtoken.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.lang.String;
@@ -30,7 +32,6 @@ public class JwtTokenUtils {
         claims.put("firstName", firstName);
         claims.put("lastName", lastName);
 
-        String fullName = user.getFirstName() + " " + user.getLastName();
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
 
@@ -43,32 +44,12 @@ public class JwtTokenUtils {
     }
 
     public String getFullName(String token) {
-        return getAllClaimsFromToken(token).getSubject();
-    }
-
-
-    public boolean validateToken(String authToken) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(secret)
-                    .parseClaimsJws(authToken);
-            return true;
-        } catch (ExpiredJwtException e) {
-            // Токен истек
-            return false;
-        } catch (MalformedJwtException e) {
-            // Неверный формат токена
-            return false;
-        } catch (UnsupportedJwtException e) {
-            // Токен не поддерживается
-            return false;
-        } catch (SignatureException e) {
-            // Ошибка проверки подписи
-            return false;
-        } catch (Exception e) {
-            // Другие ошибки
-            return false;
+        if (token == null || token.isEmpty()) {
+            return null;
         }
+
+        Claims claims = getAllClaimsFromToken(token);
+        return claims != null ? claims.getSubject() : null;
     }
 
     private Claims getAllClaimsFromToken(String token) {
@@ -79,8 +60,23 @@ public class JwtTokenUtils {
     }
 
     public Long getCurrentUserId(String token) {
-        token = token.substring(7);
-        Claims claims = getAllClaimsFromToken(token);
-        return claims.get("id", Long.class);
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+
+        Logger logger = LoggerFactory.getLogger(JwtTokenUtils.class);
+
+        try {
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            Claims claims = getAllClaimsFromToken(token);
+
+            return claims.get("id", Long.class);
+        } catch (MalformedJwtException e) {
+            logger.error("Error parsing JWT token: {}", e.getMessage());
+            return null;
+        }
     }
 }

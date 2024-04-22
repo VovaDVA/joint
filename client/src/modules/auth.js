@@ -50,7 +50,11 @@ export function removeToken() {
 
 function saveUserData(data) {
     console.log(data);
-    localStorage.setItem('user', JSON.stringify({firstName: data['firstName'], lastName: data['lastName']}));
+    localStorage.setItem('user', JSON.stringify(data));
+}
+
+export function getUser() {
+    return JSON.parse(localStorage.getItem('user'));
 }
 
 export function deleteSession() {
@@ -59,5 +63,26 @@ export function deleteSession() {
         localStorage.removeItem('user');
         localStorage.removeItem('jwtToken');
         checkToken();
+    }
+}
+
+export async function getUserById(userId) {
+    try {
+        console.log(userId)
+        const response = await fetch('/auth/user?id=' + userId, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + getToken(),
+                'Content-Type': 'application/json'  // Пример добавления других заголовков
+            }
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        return data;
+
+    } catch (error) {
+        console.error(error);
     }
 }

@@ -1,9 +1,7 @@
 package com.jointAuth.controller;
 
-import com.jointAuth.model.JwtResponse;
-import com.jointAuth.model.LoginRequest;
-import com.jointAuth.model.User;
-import com.jointAuth.model.UserDTO;
+import com.jointAuth.converter.UserConverter;
+import com.jointAuth.model.*;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
 import org.springframework.beans.BeanUtils;
@@ -20,26 +18,28 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "auth")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenUtils jwtTokenUtils;
 
-    //Регистрация
+    public UserController(@Autowired UserService userService,
+                          @Autowired JwtTokenUtils jwtTokenUtils) {
+        this.userService = userService;
+        this.jwtTokenUtils = jwtTokenUtils;
+    }
+
     @PostMapping(path = "/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         User registeredUser = userService.register(user);
 
         if (registeredUser != null) {
-            UserDTO userDTO = userService.convertToDto(registeredUser);
+            UserDTO userDTO = UserConverter.convertToDto(registeredUser);
             return ResponseEntity.ok(userDTO);
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user.");
     }
 
-    //Вход
     @PostMapping(path = "/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
@@ -52,7 +52,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
     }
 
-    // Получение пользователя по ID
     @GetMapping(path = "/user")
     public ResponseEntity<?> getUserById(@RequestHeader("Authorization") String token) {
 
@@ -69,20 +68,31 @@ public class UserController {
 
     @GetMapping(path = "/get-all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        List<UserDTO> userDTOs = users.stream()
-                .map(user -> {
-                    UserDTO dto = new UserDTO();
-                    BeanUtils.copyProperties(user, dto); // или любой другой метод копирования свойств
-                    return dto;
-                })
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userDTOs);
+        try {
+            List<User> users = userService.getAllUsers();
+
+            if (users.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            List<UserDTO> userDTOs = users.stream()
+                    .map(user -> {
+                        UserDTO dto = new UserDTO();
+                        BeanUtils.copyProperties(user, dto);
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(userDTOs);
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    //Обновление пароля
     @PutMapping(path = "/change-password")
-    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token, @RequestBody String password) {
+    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token,
+                                            @RequestBody String password) {
 
         Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
 
@@ -97,7 +107,6 @@ public class UserController {
 
     }
 
-    //Удаление
     @DeleteMapping(path = "/delete")
     public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
 

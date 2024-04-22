@@ -3,7 +3,7 @@
         <div class="icon">
             <font-awesome-icon icon="search" />
         </div>
-        <input class="message-input" type="text" placeholder="Поиск...">
+        <input class="message-input" type="text" placeholder="Поиск..." @input="search">
     </div>
 </template>
 
@@ -19,6 +19,11 @@ export default {
         iconName: {
             type: String, // Ожидаем строковое значение для имени иконки
             default: 'pen' // Значение по умолчанию
+        }
+    },
+    methods: {
+        search(event) {
+            this.$emit('input', event.target.value); // Генерируем событие при изменении текста поиска
         }
     }
 }
