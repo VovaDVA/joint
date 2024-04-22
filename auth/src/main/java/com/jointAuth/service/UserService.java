@@ -1,11 +1,10 @@
 package com.jointAuth.service;
 
+import com.jointAuth.model.Profile;
 import com.jointAuth.model.User;
+import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
-import io.cucumber.java.bs.A;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.regex.Pattern;
@@ -21,6 +20,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final ProfileRepository profileRepository;
+
     private static final String PASSWORD_PATTERN =
             "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_])(?=\\S+$).{8,}$";
 
@@ -34,9 +35,11 @@ public class UserService {
     private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
     public UserService(@Autowired UserRepository userRepository,
-                       @Autowired PasswordEncoder passwordEncoder) {
+                       @Autowired PasswordEncoder passwordEncoder,
+                       @Autowired ProfileRepository profileRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.profileRepository = profileRepository;
     }
 
 
@@ -62,7 +65,20 @@ public class UserService {
         user.setRegistrationDate(new Date());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+
+        createProfileForUser(savedUser);
+
+        return savedUser;
+    }
+
+    private void createProfileForUser(User savedUser) {
+        Profile profile= new Profile();
+
+        profile.setUser(savedUser);
+        profile.setLastEdited(new Date());
+        profileRepository.save(profile);
     }
 
     private void validateName(String name, String fieldName) {

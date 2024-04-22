@@ -1,10 +1,7 @@
 package com.jointAuth.controller;
 
 import com.jointAuth.converter.UserConverter;
-import com.jointAuth.model.JwtResponse;
-import com.jointAuth.model.LoginRequest;
-import com.jointAuth.model.User;
-import com.jointAuth.model.UserDTO;
+import com.jointAuth.model.*;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
 import org.springframework.beans.BeanUtils;

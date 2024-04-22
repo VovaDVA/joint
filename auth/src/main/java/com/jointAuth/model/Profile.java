@@ -12,12 +12,13 @@ import java.util.Date;
 @Table(name = "profiles")
 public class Profile {
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "user_id")
-    private Long userId;
 
     @Column(name = "avatar")
     private String avatar;
