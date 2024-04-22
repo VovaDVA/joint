@@ -2,6 +2,7 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.Profile;
 import com.jointAuth.model.User;
+import com.jointAuth.model.UserProfileDTO;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +126,35 @@ public class UserService {
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
+    }
+
+    public UserProfileDTO getUserInfoById(Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user != null) {
+            UserProfileDTO userResponseDTO = new UserProfileDTO();
+            userResponseDTO.setUserId(user.getId());
+            userResponseDTO.setFirstName(user.getFirstName());
+            userResponseDTO.setLastName(user.getLastName());
+            userResponseDTO.setEmail(user.getEmail());
+            userResponseDTO.setRegistrationDate(user.getRegistrationDate());
+            userResponseDTO.setLastLogin(user.getLastLogin());
+
+            Profile userProfile = profileRepository.findByUserId(userId).orElse(null);
+            if (userProfile != null) {
+                userResponseDTO.setProfileId(userProfile.getId());
+                userResponseDTO.setDescription(userProfile.getDescription());
+                userResponseDTO.setBirthday(userProfile.getBirthday());
+                userResponseDTO.setCountry(userProfile.getCountry());
+                userResponseDTO.setCity(userProfile.getCity());
+                userResponseDTO.setPhone(userProfile.getPhone());
+                userResponseDTO.setLastEdited(userProfile.getLastEdited());
+            }
+
+            return userResponseDTO;
+        } else {
+            return null;
+        }
     }
 
     public List<User> getAllUsers() {
