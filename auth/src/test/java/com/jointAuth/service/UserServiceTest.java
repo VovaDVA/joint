@@ -1,6 +1,7 @@
 package com.jointAuth.service;
 
 import com.jointAuth.model.User;
+import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,9 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private ProfileRepository profileRepository;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
@@ -38,7 +42,9 @@ public class UserServiceTest {
     void setUp() {
         userRepository = mock(UserRepository.class);
         passwordEncoder = mock(PasswordEncoder.class);
-        userService = new UserService(userRepository,passwordEncoder);
+        userService = new UserService(userRepository,
+                                      passwordEncoder,
+                                      profileRepository);
         userRepository.deleteAll();
     }
 
@@ -66,6 +72,7 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).findByEmail("Ivanova10@gmail.com");
         verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
 
@@ -79,6 +86,9 @@ public class UserServiceTest {
         newUser.setPassword("pass");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+
+        verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
     @Test
@@ -112,6 +122,8 @@ public class UserServiceTest {
         assertEquals("encodedPassword", registeredUser.getPassword());
 
         assertNotNull(registeredUser.getRegistrationDate());
+
+        verify(profileRepository, times(1)).save(any());
     }
 
     @Test
@@ -124,6 +136,9 @@ public class UserServiceTest {
         newUser.setPassword("PasswordTest123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+
+        verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
     @Test
@@ -140,6 +155,7 @@ public class UserServiceTest {
 
         verify(userRepository, never()).findByEmail(any());
         verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
 
@@ -153,6 +169,9 @@ public class UserServiceTest {
         newUser.setPassword("PasswordTest123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+
+        verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
     @Test
@@ -165,6 +184,9 @@ public class UserServiceTest {
         newUser.setPassword("PasswordTest123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
+
+        verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
     @Test
@@ -177,6 +199,9 @@ public class UserServiceTest {
         user.setPassword("Password123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(user));
+
+        verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
     @Test
@@ -189,6 +214,9 @@ public class UserServiceTest {
         user.setPassword("Password123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(user));
+
+        verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
     @Test
@@ -201,6 +229,9 @@ public class UserServiceTest {
         user.setPassword("Password123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(user));
+
+        verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
     @Test
@@ -213,6 +244,9 @@ public class UserServiceTest {
         user.setPassword("Password123@");
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(user));
+
+        verify(userRepository, never()).save(any());
+        verify(profileRepository, never()).save(any());
     }
 
     //авторизация
