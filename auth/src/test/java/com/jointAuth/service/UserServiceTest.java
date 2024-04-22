@@ -2,6 +2,7 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.User;
 import com.jointAuth.model.Profile;
+import com.jointAuth.model.UserDetailsDTO;
 import com.jointAuth.model.UserProfileDTO;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
@@ -659,7 +660,6 @@ public class UserServiceTest {
         user.setId(1L);
         user.setFirstName("Vanya");
         user.setLastName("Prohorov");
-        user.setPassword("Password123@");
         user.setEmail("ivanko@gmail.com");
         user.setLastLogin(new Date());
 
@@ -667,7 +667,7 @@ public class UserServiceTest {
 
         userProfile.setId(1L);
         userProfile.setDescription("Description");
-        userProfile.setBirthday("2001.01.01");
+        userProfile.setBirthday("01.01.2001");
         userProfile.setCountry("Russia");
         userProfile.setCity("Moscow");
         userProfile.setPhone("123456789");
@@ -683,7 +683,7 @@ public class UserServiceTest {
         assertEquals("Vanya", result.getFirstName());
         assertEquals("Prohorov", result.getLastName());
         assertEquals("ivanko@gmail.com", result.getEmail());
-        assertEquals("2001.01.01", result.getBirthday());
+        assertEquals("01.01.2001", result.getBirthday());
         assertEquals("Russia", result.getCountry());
         assertEquals("Moscow", result.getCity());
         assertEquals("123456789", result.getPhone());
@@ -704,12 +704,67 @@ public class UserServiceTest {
         user.setId(1L);
         user.setFirstName("Vladislav");
         user.setLastName("Pokov");
-        user.setPassword("Password123@");
         user.setEmail("vlados@gmail.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(profileRepository.findByUserId(1L)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userService.getUserInfoById(1L));
+    }
+
+    @Test
+    public void testGetUserByIdWithoutToken_UserAndProfileFound() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        user.setFirstName("Vladislav");
+        user.setLastName("Pokov");
+        user.setLastLogin(new Date());
+
+        Profile userProfile = new Profile();
+
+        userProfile.setId(userId);
+        userProfile.setDescription("Description");
+        userProfile.setBirthday("01.01.2004");
+        userProfile.setCountry("USA");
+        userProfile.setCity("Washington");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(profileRepository.findByUserId(userId)).thenReturn(Optional.of(userProfile));
+
+        UserDetailsDTO userDetailsDTO = userService.getUserByIdWithoutToken(userId);
+
+        assertNotNull(userDetailsDTO);
+        assertEquals("Vladislav", userDetailsDTO.getFirstName());
+        assertEquals("Pokov", userDetailsDTO.getLastName());
+        assertEquals(userProfile.getDescription(), userDetailsDTO.getDescription());
+        assertEquals(userProfile.getBirthday(), userDetailsDTO.getBirthday());
+        assertEquals(userProfile.getCountry(), userDetailsDTO.getCountry());
+        assertEquals(userProfile.getCity(), userDetailsDTO.getCity());
+    }
+
+    @Test
+    public void testGetUserByIdWithoutToken_UserNotFound() {
+        Long userId = 1L;
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> userService.getUserByIdWithoutToken(userId));
+    }
+
+    @Test
+    public void testGetUserByIdWithoutToken_ProfileNotFound() {
+        Long userId = 1L;
+        User user = new User();
+
+        user.setId(userId);
+        user.setFirstName("Leva");
+        user.setLastName("Durov");
+        user.setLastLogin(new Date());
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(profileRepository.findByUserId(userId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> userService.getUserByIdWithoutToken(userId));
     }
 }
