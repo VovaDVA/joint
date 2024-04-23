@@ -2,11 +2,10 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.Profile;
 import com.jointAuth.model.User;
-import com.jointAuth.model.UserDetailsDTO;
+import com.jointAuth.bom.UserDetailsDTO;
 import com.jointAuth.model.UserProfileDTO;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
