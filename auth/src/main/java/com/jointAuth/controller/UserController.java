@@ -1,5 +1,8 @@
 package com.jointAuth.controller;
 
+import com.jointAuth.bom.JwtResponse;
+import com.jointAuth.model.LoginRequest;
+import com.jointAuth.bom.UserDetailsDTO;
 import com.jointAuth.converter.UserConverter;
 import com.jointAuth.model.*;
 import com.jointAuth.service.UserService;
@@ -65,7 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/user/get")
-    public ResponseEntity<UserDetailsDTO> getUserDetailsById(@RequestBody UserDetailsRequestDTO userDetailsRequestDTO) {
+    public ResponseEntity<UserDetailsDTO> getUserDetailsById(@RequestBody UserDetailsRequest userDetailsRequestDTO) {
         UserDetailsDTO userDetailsDTO = userService.getUserByIdWithoutToken(userDetailsRequestDTO.getUserId());
 
         if (userDetailsDTO != null) {

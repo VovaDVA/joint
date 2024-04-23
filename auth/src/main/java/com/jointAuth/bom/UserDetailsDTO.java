@@ -1,4 +1,4 @@
-package com.jointAuth.model;
+package com.jointAuth.bom;
 
 import lombok.Data;
 
