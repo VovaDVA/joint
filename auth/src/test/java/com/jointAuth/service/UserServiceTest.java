@@ -654,7 +654,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserInfoById_Success() throws ParseException {
+    public void testGetUserInfoByIdSuccess() throws ParseException {
         User user = new User();
 
         user.setId(1L);
@@ -691,14 +691,14 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserInfoById_UserNotFound() {
+    public void testGetUserInfoByIdUserNotFound() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userService.getUserInfoById(1L));
     }
 
     @Test
-    public void testGetUserInfoById_ProfileNotFound() {
+    public void testGetUserInfoByIdProfileNotFound() {
         User user = new User();
 
         user.setId(1L);
@@ -713,7 +713,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserByIdWithoutToken_UserAndProfileFound() {
+    public void testGetUserByIdWithoutTokenUserAndProfileFound() {
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -744,7 +744,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserByIdWithoutToken_UserNotFound() {
+    public void testGetUserByIdWithoutTokenUserNotFound() {
         Long userId = 1L;
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -753,7 +753,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserByIdWithoutToken_ProfileNotFound() {
+    public void testGetUserByIdWithoutTokenProfileNotFound() {
         Long userId = 1L;
         User user = new User();
 
