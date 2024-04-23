@@ -47,13 +47,11 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserSuccess() throws Exception {
-        // JSON данных нового пользователя для регистрации
         String newUserJson = "{\"firstName\": \"Maxim\", " +
                 "\"lastName\": \"Volsin\", " +
                 "\"email\": \"maxVol@gmail.com\", " +
                 "\"password\": \"Password123@\"}";
 
-        // Выполнение запроса POST на регистрацию пользователя
         MvcResult result = mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
@@ -66,16 +64,11 @@ public class UserRegistrationControllerIntegrationTest {
                 .andExpect(jsonPath("$.lastLogin").doesNotExist())
                 .andReturn();
 
-        // Извлечение идентификатора пользователя из ответа
         ObjectMapper objectMapper = new ObjectMapper();
 
         String responseContent = result.getResponse().getContentAsString();
         Long userId = objectMapper.readTree(responseContent).get("id").asLong();
 
-        // Поиск профиля пользователя по его идентификатору
-        Optional<Profile> profile = profileRepository.findByUserId(userId);
-
-        // Проверка, что профиль создан и связан с пользователем
         assertNotNull(profileRepository.findByUserId(userId), "Профиль пользователя должен быть создан");
     }
 
