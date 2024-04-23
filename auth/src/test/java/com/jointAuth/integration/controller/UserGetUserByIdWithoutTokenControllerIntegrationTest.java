@@ -4,6 +4,7 @@ import com.jointAuth.model.Profile;
 import com.jointAuth.model.User;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,6 +29,12 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        profileRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @Autowired
     private ProfileRepository profileRepository;
