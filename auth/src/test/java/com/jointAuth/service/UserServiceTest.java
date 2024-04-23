@@ -49,6 +49,7 @@ public class UserServiceTest {
                                       passwordEncoder,
                                       profileRepository);
         userRepository.deleteAll();
+        profileRepository.deleteAll();
     }
 
     //регистрация
