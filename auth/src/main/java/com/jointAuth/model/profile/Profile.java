@@ -1,6 +1,7 @@
-package com.jointAuth.model;
+package com.jointAuth.model.profile;
 
 
+import com.jointAuth.model.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;

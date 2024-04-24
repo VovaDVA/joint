@@ -1,10 +1,13 @@
 package com.jointAuth.controller;
 
-import com.jointAuth.bom.JwtResponse;
-import com.jointAuth.model.LoginRequest;
-import com.jointAuth.bom.UserDetailsDTO;
+import com.jointAuth.bom.user.JwtResponse;
+import com.jointAuth.bom.user.UserProfileBom;
+import com.jointAuth.model.user.LoginRequest;
+import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.converter.UserConverter;
-import com.jointAuth.model.*;
+import com.jointAuth.model.user.User;
+import com.jointAuth.model.user.UserDTO;
+import com.jointAuth.model.user.UserDetailsRequest;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
 import org.springframework.beans.BeanUtils;
@@ -56,9 +59,9 @@ public class UserController {
     }
 
     @GetMapping(path = "/user")
-    public ResponseEntity<UserProfileDTO> getUserByIdWithToken(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<UserProfileBom> getUserByIdWithToken(@RequestHeader("Authorization") String token) {
         Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
-        UserProfileDTO userResponseDTO = userService.getUserInfoById(currentUserId);
+        UserProfileBom userResponseDTO = userService.getUserInfoById(currentUserId);
 
         if (userResponseDTO != null) {
             return ResponseEntity.ok(userResponseDTO);
@@ -68,8 +71,8 @@ public class UserController {
     }
 
     @GetMapping("/user/get")
-    public ResponseEntity<UserDetailsDTO> getUserDetailsById(@RequestBody UserDetailsRequest userDetailsRequestDTO) {
-        UserDetailsDTO userDetailsDTO = userService.getUserByIdWithoutToken(userDetailsRequestDTO.getUserId());
+    public ResponseEntity<UserBom> getUserDetailsById(@RequestBody UserDetailsRequest userDetailsRequestDTO) {
+        UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userDetailsRequestDTO.getUserId());
 
         if (userDetailsDTO != null) {
             return ResponseEntity.ok(userDetailsDTO);

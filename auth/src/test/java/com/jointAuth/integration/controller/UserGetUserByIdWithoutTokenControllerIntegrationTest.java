@@ -1,7 +1,7 @@
 package com.jointAuth.integration.controller;
 
-import com.jointAuth.model.Profile;
-import com.jointAuth.model.User;
+import com.jointAuth.model.profile.Profile;
+import com.jointAuth.model.user.User;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,7 +1,7 @@
 package com.jointAuth.converter;
 
-import com.jointAuth.model.User;
-import com.jointAuth.model.UserDTO;
+import com.jointAuth.model.user.User;
+import com.jointAuth.model.user.UserDTO;
 
 public class UserConverter {
     public static UserDTO convertToDto(User user) {

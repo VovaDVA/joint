@@ -1,9 +1,9 @@
 package com.jointAuth.service;
 
-import com.jointAuth.model.User;
-import com.jointAuth.model.Profile;
-import com.jointAuth.bom.UserDetailsDTO;
-import com.jointAuth.model.UserProfileDTO;
+import com.jointAuth.model.user.User;
+import com.jointAuth.model.profile.Profile;
+import com.jointAuth.bom.user.UserBom;
+import com.jointAuth.bom.user.UserProfileBom;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -677,7 +677,7 @@ public class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(profileRepository.findByUserId(1L)).thenReturn(Optional.of(userProfile));
 
-        UserProfileDTO result = userService.getUserInfoById(1L);
+        UserProfileBom result = userService.getUserInfoById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getUserId());
@@ -733,7 +733,7 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(profileRepository.findByUserId(userId)).thenReturn(Optional.of(userProfile));
 
-        UserDetailsDTO userDetailsDTO = userService.getUserByIdWithoutToken(userId);
+        UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userId);
 
         assertNotNull(userDetailsDTO);
         assertEquals("Vladislav", userDetailsDTO.getFirstName());

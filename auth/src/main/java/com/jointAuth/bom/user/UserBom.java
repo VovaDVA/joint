@@ -1,11 +1,11 @@
-package com.jointAuth.bom;
+package com.jointAuth.bom.user;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class UserDetailsDTO {
+public class UserBom {
     private String firstName;
     private String lastName;
 

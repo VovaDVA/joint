@@ -1,6 +1,6 @@
 package com.jointAuth.repository;
 
-import com.jointAuth.model.Profile;
+import com.jointAuth.model.profile.Profile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

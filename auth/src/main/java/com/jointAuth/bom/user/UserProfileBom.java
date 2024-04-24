@@ -1,12 +1,11 @@
-package com.jointAuth.model;
+package com.jointAuth.bom.user;
 
 import lombok.Data;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data
-public class UserProfileDTO {
+public class UserProfileBom {
     private Long userId;
     private String firstName;
     private String lastName;

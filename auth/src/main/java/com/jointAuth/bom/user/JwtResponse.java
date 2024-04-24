@@ -1,4 +1,4 @@
-package com.jointAuth.bom;
+package com.jointAuth.bom.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

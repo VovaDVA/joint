@@ -1,14 +1,12 @@
 package com.jointAuth.converter;
 
-import com.jointAuth.model.User;
-import com.jointAuth.model.UserDTO;
+import com.jointAuth.model.user.User;
+import com.jointAuth.model.user.UserDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
