@@ -70,4 +70,44 @@ public class UserConverterTest {
         assertEquals(user.getRegistrationDate(), dto.getRegistrationDate());
         assertNull(dto.getLastLogin());
     }
+
+    @Test
+    public void testConvertToDtoEmptyUserReturnsEmptyDto() {
+        User emptyUser = new User();
+
+        UserDTO emptyDto = UserConverter.convertToDto(emptyUser);
+
+        assertEquals(0L, emptyDto.getId());
+        assertNull(emptyDto.getLastName());
+        assertNull(emptyDto.getEmail());
+        assertNull(emptyDto.getRegistrationDate());
+        assertNull(emptyDto.getLastLogin());
+    }
+
+    @Test
+    public void testConvertToDtoMinimalUserData() {
+        User minimalUser = new User();
+        minimalUser.setId(1L);
+        minimalUser.setFirstName("Vladimir");
+        minimalUser.setEmail("john@gmail.com");
+
+        UserDTO dto = UserConverter.convertToDto(minimalUser);
+
+        assertEquals(minimalUser.getId(), dto.getId());
+        assertEquals(minimalUser.getFirstName(), dto.getFirstName());
+        assertEquals(minimalUser.getEmail(), dto.getEmail());
+
+        assertNull(dto.getLastName());
+        assertNull(dto.getRegistrationDate());
+        assertNull(dto.getLastLogin());
+    }
+
+    @Test
+    public void testConvertToDtoNullUser() {
+        User nullUser = null;
+
+        UserDTO dto = UserConverter.convertToDto(nullUser);
+
+        assertNull(dto);
+    }
 }
