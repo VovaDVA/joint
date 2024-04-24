@@ -121,6 +121,9 @@ public class UserController {
 
     @DeleteMapping(path = "/delete")
     public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
 
