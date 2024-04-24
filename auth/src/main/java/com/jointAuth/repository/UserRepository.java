@@ -1,6 +1,6 @@
 package com.jointAuth.repository;
 
-import com.jointAuth.model.User;
+import com.jointAuth.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

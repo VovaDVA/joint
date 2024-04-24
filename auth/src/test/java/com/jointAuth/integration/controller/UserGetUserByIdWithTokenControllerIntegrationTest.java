@@ -1,8 +1,7 @@
 package com.jointAuth.integration.controller;
 
-import com.jointAuth.model.Profile;
-import com.jointAuth.model.User;
-import com.jointAuth.model.UserDTO;
+import com.jointAuth.model.profile.Profile;
+import com.jointAuth.model.user.User;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.service.UserService;
@@ -22,10 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

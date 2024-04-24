@@ -1,7 +1,6 @@
 package com.jointAuth.repository;
 
-import com.jointAuth.model.User;
-import org.junit.jupiter.api.AfterAll;
+import com.jointAuth.model.user.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

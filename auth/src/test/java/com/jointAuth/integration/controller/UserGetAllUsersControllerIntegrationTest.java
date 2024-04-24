@@ -1,12 +1,10 @@
 package com.jointAuth.integration.controller;
 
-import com.jointAuth.controller.UserController;
-import com.jointAuth.model.User;
+import com.jointAuth.model.user.User;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;

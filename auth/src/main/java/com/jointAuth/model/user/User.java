@@ -1,4 +1,4 @@
-package com.jointAuth.model;
+package com.jointAuth.model.user;
 
 import jakarta.persistence.*;
 import lombok.Data;

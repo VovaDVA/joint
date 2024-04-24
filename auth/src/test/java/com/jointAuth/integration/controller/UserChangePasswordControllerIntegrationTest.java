@@ -1,6 +1,6 @@
 package com.jointAuth.integration.controller;
 
-import com.jointAuth.model.User;
+import com.jointAuth.model.user.User;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;

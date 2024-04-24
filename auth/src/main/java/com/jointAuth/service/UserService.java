@@ -1,9 +1,9 @@
 package com.jointAuth.service;
 
-import com.jointAuth.model.Profile;
-import com.jointAuth.model.User;
-import com.jointAuth.bom.UserDetailsDTO;
-import com.jointAuth.model.UserProfileDTO;
+import com.jointAuth.model.profile.Profile;
+import com.jointAuth.model.user.User;
+import com.jointAuth.bom.user.UserBom;
+import com.jointAuth.bom.user.UserProfileBom;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,11 +129,11 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public UserProfileDTO getUserInfoById(Long userId) {
+    public UserProfileBom getUserInfoById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with userId: " + userId));
 
-        UserProfileDTO userResponseDTO = new UserProfileDTO();
+        UserProfileBom userResponseDTO = new UserProfileBom();
         userResponseDTO.setUserId(user.getId());
         userResponseDTO.setFirstName(user.getFirstName());
         userResponseDTO.setLastName(user.getLastName());
@@ -155,12 +155,12 @@ public class UserService {
         return userResponseDTO;
     }
 
-    public UserDetailsDTO getUserByIdWithoutToken(Long userId) {
+    public UserBom getUserByIdWithoutToken(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
+            UserBom userDetailsDTO = new UserBom();
             userDetailsDTO.setFirstName(user.getFirstName());
             userDetailsDTO.setLastName(user.getLastName());
             userDetailsDTO.setLastLogin(user.getLastLogin());

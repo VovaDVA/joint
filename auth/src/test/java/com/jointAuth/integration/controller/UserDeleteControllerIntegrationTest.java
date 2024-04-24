@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.jointAuth.model.Profile;
-import com.jointAuth.model.User;
+import com.jointAuth.model.profile.Profile;
+import com.jointAuth.model.user.User;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.util.JwtTokenUtils;
@@ -29,6 +29,7 @@ public class UserDeleteControllerIntegrationTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+
     @Autowired
     private UserRepository userRepository;
 
@@ -40,44 +41,42 @@ public class UserDeleteControllerIntegrationTest {
 
     private MockMvc mockMvc;
 
-    private String validToken;
-
     @BeforeEach
     public void setup() {
-        profileRepository.deleteAll();
-        userRepository.deleteAll();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-
-        User testUser = new User();
-        testUser.setId(1L);
-        testUser.setFirstName("Valentin");
-        testUser.setLastName("Kosev");
-        testUser.setEmail("Vale01@gmail.com");
-        testUser.setPassword("Password123@");
-        testUser = userRepository.save(testUser);
-
-        Profile testProfile = new Profile();
-        testProfile.setId(2L);
-        profileRepository.save(testProfile);
-
-        validToken = jwtTokenUtils.generateToken(testUser);
     }
 
     @Test
     @Transactional
     public void testDeleteUserSuccess() throws Exception {
-        User testUser = userRepository.findByEmail("hello221@gmail.com");
+        User testUser = new User();
+        testUser.setId(1L);
+        testUser.setEmail("hello221@gmail.com");
+        testUser.setFirstName("Petr");
+        testUser.setLastName("Prunov");
+        testUser.setPassword("Password123@");
+        userRepository.save(testUser);
+
+        Profile testProfile = new Profile();
+        testProfile.setId(2L);
+        testProfile.setUser(testUser);
+        profileRepository.save(testProfile);
+
         Long userId = testUser.getId();
+        Long profileId = testProfile.getId();
+
+        String token = jwtTokenUtils.generateToken(testUser);
 
         mockMvc.perform(delete("/auth/delete")
-                        .header("Authorization", validToken))
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
 
         Optional<User> deletedUser = userRepository.findById(userId);
+        Optional<Profile> deletedProfile = profileRepository.findById(profileId);
+
         assertThat(deletedUser).isEmpty();
 
-        Optional<Profile> deletedProfile = profileRepository.findByUserId(userId);
         assertThat(deletedProfile).isEmpty();
     }
 

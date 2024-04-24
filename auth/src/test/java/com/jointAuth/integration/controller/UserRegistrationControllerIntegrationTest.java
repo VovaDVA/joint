@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import com.jointAuth.model.Profile;
-import com.jointAuth.model.User;
+import com.jointAuth.model.user.User;
 import com.jointAuth.repository.ProfileRepository;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.jointAuth.repository.UserRepository;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
