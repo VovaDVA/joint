@@ -4,7 +4,12 @@ import com.jointAuth.model.user.User;
 import com.jointAuth.model.user.UserDTO;
 
 public class UserConverter {
+
     public static UserDTO convertToDto(User user) {
+        if (user == null) {
+            return null;
+        }
+
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
         dto.setFirstName(user.getFirstName());

@@ -4,6 +4,9 @@ import com.jointAuth.bom.profile.ProfileBom;
 import com.jointAuth.model.profile.Profile;
 import com.jointAuth.model.user.User;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
@@ -12,7 +15,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@DataJpaTest
+@ExtendWith(MockitoExtension.class)
 public class ProfileConverterTest {
 
     private User createTestUser() {
