@@ -222,7 +222,6 @@ public class JwtTokenUtilsTest {
 
     @Test
     public void testGetCurrentProfileIdDifferentCases() {
-        // Тестирование различной структуры токена или содержимого
         Claims claims = Jwts.claims();
         claims.put("profileId", 3L);
         claims.put("email", "different_case@example.com");
