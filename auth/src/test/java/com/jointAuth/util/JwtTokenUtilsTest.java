@@ -176,5 +176,65 @@ public class JwtTokenUtilsTest {
 
         assertNull(userId);
     }
+
+    @Test
+    public void testGetCurrentProfileIdSuccessful() {
+        Claims claims = Jwts.claims();
+        claims.put("profileId", 5L);
+
+        String token = "Bearer " + Jwts.builder()
+                .setClaims(claims)
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret)
+                .compact();
+
+        Long profileId = jwtTokenUtils.getCurrentProfileId(token);
+
+        assertEquals(5L, profileId);
+    }
+
+    @Test
+    public void testGetCurrentProfileIdNullToken() {
+        Long profileId = jwtTokenUtils.getCurrentProfileId(null);
+        assertNull(profileId);
+    }
+
+    @Test
+    public void testGetCurrentProfileIdInvalidToken() {
+        String invalidToken = "invalid.token.string";
+
+        Long profileId = jwtTokenUtils.getCurrentProfileId(invalidToken);
+        assertNull(profileId);
+    }
+
+    @Test
+    public void testGetCurrentProfileIdMissingId() {
+        Claims claims = Jwts.claims();
+        claims.put("username", "Evelina_Matveeva");
+
+        String token = "Bearer " + Jwts.builder()
+                .setClaims(claims)
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret)
+                .compact();
+
+        Long profileId = jwtTokenUtils.getCurrentProfileId(token);
+        assertNull(profileId);
+    }
+
+    @Test
+    public void testGetCurrentProfileIdDifferentCases() {
+        // Тестирование различной структуры токена или содержимого
+        Claims claims = Jwts.claims();
+        claims.put("profileId", 3L);
+        claims.put("email", "different_case@example.com");
+        claims.put("someOtherKey", "unexpectedValue");
+
+        String token = "Bearer " + Jwts.builder()
+                .setClaims(claims)
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret)
+                .compact();
+
+        Long profileId = jwtTokenUtils.getCurrentProfileId(token);
+        assertEquals(3L, profileId);
+    }
 }
 
