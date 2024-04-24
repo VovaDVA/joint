@@ -134,31 +134,25 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
     @Test
     public void testGetUserByIdUserNotFound() throws Exception {
-        // Создаем токен с ненастоящим userId
         User fakeUser = new User();
-        fakeUser.setId(0L); // Устанавливаем userId, который не существует в базе данных
+        fakeUser.setId(0L);
 
         String token = jwtTokenUtils.generateToken(fakeUser);
 
         try {
-            // Выполнение запроса к контроллеру с токеном несуществующего пользователя
             mockMvc.perform(MockMvcRequestBuilders.get("/auth/user")
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         } catch (jakarta.servlet.ServletException e) {
-            // Если возникло исключение jakarta.servlet.ServletException с сообщением о том, что пользователь не найден, тест успешно завершился
             if (e.getCause() != null && e.getCause() instanceof RuntimeException runtimeException) {
                 if (runtimeException.getMessage().contains("User not found with userId: 0")) {
-                    // Успешный тест
                     assertTrue(true);
                     return;
                 }
             }
-            // Если исключение не связано с "User not found with userId: 0", провалить тест
             fail("Unexpected exception: " + e.getMessage());
         }
-        // Если исключение не возникло, провалить тест
         fail("Expected exception for non-existing user, but request succeeded");
     }
 
@@ -174,7 +168,6 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
             assertTrue(true);
         } catch (Exception e) {
-            // Обработка исключений: проверяем на `MalformedJwtException` или сообщение об ошибке в токене.
             if (e instanceof io.jsonwebtoken.MalformedJwtException || e.getMessage().contains("JWT strings must contain exactly 2 period characters")) {
                 assertTrue(true);
             } else {
@@ -202,7 +195,6 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
             fail("Expected InvalidDataAccessApiUsageException to be thrown");
         } catch (Exception e) {
-            // Проверяем исключения на тип `InvalidDataAccessApiUsageException` или сообщение о `null` значениях
             if (e instanceof org.springframework.dao.InvalidDataAccessApiUsageException &&
                     e.getMessage().contains("The given id must not be null")) {
                 assertTrue(true);
@@ -224,7 +216,6 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
         user = userRepository.save(user);
 
-        // Устанавливаем данные профиля
         Profile profile = new Profile();
         profile.setUser(user);
         profile.setDescription("Test description");
@@ -235,7 +226,6 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
         profile.setLastEdited(new Date());
         profileRepository.save(profile);
 
-        // Устанавливаем срок действия токена и создаем просроченный токен
         Date issuedDate = new Date(System.currentTimeMillis() - Duration.ofHours(2).toMillis());
         Date expiredDate = new Date(issuedDate.getTime() - Duration.ofMinutes(30).toMillis());
 
@@ -244,14 +234,12 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
         claims.put("id", user.getId());
         claims.put("firstName", user.getFirstName());
         claims.put("lastName", user.getLastName());
-        // Добавьте дополнительные поля из профиля, если необходимо
         claims.put("description", profile.getDescription());
         claims.put("birthday", profile.getBirthday());
         claims.put("country", profile.getCountry());
         claims.put("city", profile.getCity());
         claims.put("phone", profile.getPhone());
 
-        // Создаем просроченный токен
         String expiredToken = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(issuedDate)
@@ -267,7 +255,6 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
             assertTrue(true);
         } catch (Exception e) {
-            // Обработка исключений: проверяем на `ExpiredJwtException` или сообщение о просроченном токене.
             if (e instanceof io.jsonwebtoken.ExpiredJwtException || e.getMessage().contains("JWT expired")) {
                 assertTrue(true);
             } else {
