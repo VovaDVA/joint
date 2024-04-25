@@ -13,7 +13,11 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
 server:
   port: 8081
+
+connector:
+  auth:
+    url: localhost:8080/auth
