@@ -1,7 +1,7 @@
 package com.jointProfile.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.relational.core.mapping.Table;
@@ -11,8 +11,9 @@ import java.util.Date;
 @Data // эта аннотация вместо геттеров и сеттеров
 @Entity
 @Table(name = "profiles")
-public class Profile {
+public class Profiles {
 
+  @Column(name = "id")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -30,8 +31,7 @@ public class Profile {
   private String description;
 
   @Column(name = "birthday")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
-  private Date birthday;
+  private String birthday;
 
   @Column(name = "country")
   private String country;
