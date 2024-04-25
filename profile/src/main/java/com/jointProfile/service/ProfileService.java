@@ -1,55 +1,52 @@
 package com.jointProfile.service;
-// реализуется основная логика функций
 
-import com.jointProfile.entity.Profile;
+import com.jointProfile.converter.ProfileConverter;
+import com.jointProfile.bom.ProfileBom;
+import com.jointProfile.entity.ProfileDTO;
+import com.jointProfile.entity.Profiles;
 import com.jointProfile.repository.ProfileRepository;
-import jakarta.transaction.Transactional;
+import com.jointProfile.utils.RemoteFileUploader;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.Date;
-import java.util.Optional;
+
 
 @Service
-@Transactional
 public class ProfileService {
 
     @Autowired
     private ProfileRepository profileRepository;
 
-    public Optional<Profile> updateProfile(Profile updatedProfile) {
 
-        Optional<Profile> existingProfile = profileRepository.findById(updatedProfile.getId());
+    public ProfileBom updateProfile(Profiles currentProfile, ProfileDTO updatedProfile) {
 
-        if (!isProfileExists(updatedProfile.getId(), updatedProfile.getUserId())) {
-            throw new IllegalArgumentException("User ID in request does not match user ID in database");
+        Profiles currentUpdatedProfile = profileRepository.findById(currentProfile.getId()).orElseThrow(() ->
+                new EntityNotFoundException("Profile not found"));
 
+        if (updatedProfile.getDescription() != null) {
+            currentUpdatedProfile.setDescription(updatedProfile.getDescription());
+        }
+        if (updatedProfile.getBirthday() != null) {
+            currentUpdatedProfile.setBirthday(updatedProfile.getBirthday());
+        }
+        if (updatedProfile.getCountry() != null) {
+            currentUpdatedProfile.setCountry(updatedProfile.getCountry());
+        }
+        if (updatedProfile.getCity() != null) {
+            currentUpdatedProfile.setCity(updatedProfile.getCity());
+        }
+        if (updatedProfile.getPhone() != null) {
+            currentUpdatedProfile.setPhone(updatedProfile.getPhone());
         }
 
-        if (existingProfile.isPresent()) {
-            Profile profileToUpdate = getProfileToUpdate(updatedProfile, existingProfile);
+        currentProfile.setLastEdited(new Date());
 
-            return Optional.of(profileRepository.save(profileToUpdate));
-        }
+        profileRepository.save(currentProfile);
 
-        return Optional.empty();
-    }
-
-    private static Profile getProfileToUpdate(Profile updatedProfile, Optional<Profile> existingProfile) {
-        Profile profileToUpdate = existingProfile.get();
-        // Обновляем данные профиля
-        profileToUpdate.setDescription(updatedProfile.getDescription());
-        profileToUpdate.setBirthday(updatedProfile.getBirthday());
-        profileToUpdate.setCountry(updatedProfile.getCountry());
-        profileToUpdate.setCity(updatedProfile.getCity());
-        profileToUpdate.setPhone(updatedProfile.getPhone());
-        profileToUpdate.setLastEdited(new Date()); // Устанавливаем текущее время как время редактирования
-        return profileToUpdate;
-    }
-
-    // функция чтобы проверить не пустой ли пользователь в случае, если id из БД и userID разные
-    public boolean isProfileExists(Long id, Long userID) {
-        return id.equals(userID);
+        return ProfileConverter.converterToBom(currentProfile);
     }
 
 }
