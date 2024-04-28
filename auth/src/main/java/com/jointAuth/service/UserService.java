@@ -251,8 +251,6 @@ public class UserService {
         }
     }
 
-
-
     public String getUserEmailById(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
