@@ -356,13 +356,17 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+
+            if (!user.getTwoFactorVerified()) {
+                throw new IllegalStateException("Two-factor authentication is already disabled");
+            }
+
             user.setTwoFactorVerified(false);
             userRepository.save(user);
         } else {
             throw new IllegalArgumentException("User not found");
         }
     }
-
 
     private String generateVerificationCode() {
         SecureRandom random = new SecureRandom();
