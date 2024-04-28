@@ -60,6 +60,30 @@ public class VerificationCodeService {
         return false;
     }
 
+    public boolean verifyUserVerificationCode(Long userId, String code) {
+        Optional<UserVerificationCode> optionalVerificationCode = userVerificationCodeRepository.findByUserId(userId);
+
+        if (optionalVerificationCode.isEmpty()) {
+            throw new RuntimeException("Verification code not found for userId: " + userId);
+        }
+
+        UserVerificationCode verificationCode = optionalVerificationCode.get();
+
+        if (verificationCode.getCode().equals(code) && !isVerificationCodeExpiredForUser(verificationCode)) {
+            userVerificationCodeRepository.delete(verificationCode);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isVerificationCodeExpiredForUser(UserVerificationCode verificationCode) {
+        return verificationCode.getExpirationTime().isBefore(LocalDateTime.now());
+    }
+
+    private boolean isVerificationCodeExpiredFor2FA(TwoFactorAuthVerificationCode verificationCode) {
+        return verificationCode.getExpirationTime().isBefore(LocalDateTime.now());
+    }
+
     @Scheduled(fixedRate = 1209600000)
     public void cleanExpiredVerificationCodesFor2FA() {
         LocalDateTime currentTime = LocalDateTime.now();
@@ -67,10 +91,6 @@ public class VerificationCodeService {
         List<TwoFactorAuthVerificationCode> expiredCodes = verificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
 
         verificationCodeRepository.deleteAll(expiredCodes);
-    }
-
-    private boolean isVerificationCodeExpiredFor2FA(TwoFactorAuthVerificationCode verificationCode) {
-        return verificationCode.getExpirationTime().isBefore(LocalDateTime.now());
     }
 
     public void saveOrUpdateVerificationCodeForResetPassword(Long userId, String verificationCode, RequestType requestType, LocalDateTime expirationTime) {
@@ -90,6 +110,25 @@ public class VerificationCodeService {
 
         userVerificationCode.setRequestType(requestType);
 
+        userVerificationCode.setExpirationTime(expirationTime);
+
+        userVerificationCodeRepository.save(userVerificationCode);
+    }
+
+    public void saveOrUpdateVerificationCodeForAccountDeletion(Long userId, String newVerificationCode, LocalDateTime expirationTime) {
+        Optional<UserVerificationCode> existingCodeOptional = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
+
+        UserVerificationCode userVerificationCode;
+
+        if (existingCodeOptional.isPresent()) {
+            userVerificationCode = existingCodeOptional.get();
+        } else {
+            userVerificationCode = new UserVerificationCode();
+            userVerificationCode.setUser(userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found")));
+            userVerificationCode.setRequestType(RequestType.ACCOUNT_DELETION);
+        }
+
+        userVerificationCode.setCode(newVerificationCode);
         userVerificationCode.setExpirationTime(expirationTime);
 
         userVerificationCodeRepository.save(userVerificationCode);

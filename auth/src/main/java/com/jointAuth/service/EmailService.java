@@ -120,4 +120,54 @@ public class EmailService {
                 confirmationCode
         );
     }
+
+    public boolean sendAccountDeletionConfirmationEmail(User user, String verificationCode) {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", String.valueOf(port));
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        });
+
+        try {
+            String emailSubject = createEmailSubjectForAccountDeletion();
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(fromEmail));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
+            message.setSubject(emailSubject);
+
+            String emailContent = createEmailContentForAccountDeletion(user, verificationCode);
+            message.setText(emailContent);
+
+            Transport.send(message);
+            return true;
+        } catch (MessagingException e) {
+            Logger.getLogger(EmailService.class.getName()).log(Level.SEVERE, "Error sending account deletion confirmation email to " + user.getEmail(), e);
+            return false;
+        }
+    }
+
+    private String createEmailSubjectForAccountDeletion() {
+        return "Код подтверждения для удаления учетной записи";
+    }
+
+    private String createEmailContentForAccountDeletion(User user, String verificationCode) {
+        return String.format(
+                "Здравствуйте, %s %s!\n\n" +
+                        "Мы получили запрос на удаление вашей учетной записи Joint.\n\n" +
+                        "Ваш код подтверждения для удаления учетной записи: %s\n\n" +
+                        "Если вы не запрашивали удаление учетной записи, никому не сообщайте этот код и обратитесь в службу поддержки учетных записей Joint.\n\n" +
+                        "С уважением,\n" +
+                        "команда Joint",
+                user.getFirstName(),
+                user.getLastName(),
+                verificationCode
+        );
+    }
 }

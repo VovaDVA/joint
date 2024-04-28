@@ -9,6 +9,7 @@ import com.jointAuth.model.user.UserVerificationCode;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -287,13 +288,54 @@ public class UserService {
         return emailService.sendPasswordResetConfirmationEmail(currentUser, verificationCode);
     }
 
-    public void deleteUser(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            userRepository.deleteById(id);
-        } else {
-            throw new IllegalArgumentException("User not found");
+    public boolean sendAccountDeletionRequest(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return false;
         }
+
+        User user = optionalUser.get();
+
+        String verificationCode = generateVerificationCode();
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
+
+        verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, verificationCode, expirationTime);
+
+        return emailService.sendAccountDeletionConfirmationEmail(user, verificationCode);
+    }
+
+    @Transactional
+    public boolean deleteUser(Long userId, String verificationCode) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return false;
+        }
+
+        User user = optionalUser.get();
+
+        boolean isVerified = verificationCodeService.verifyUserVerificationCode(userId, verificationCode);
+
+        if (!isVerified) {
+            return false;
+        }
+
+        deleteUserVerificationCodesByUserId(userId);
+
+        deleteUserById(userId);
+
+        return true;
+    }
+
+    @Transactional
+    public void deleteUserVerificationCodesByUserId(Long userId) {
+        userVerificationCodeRepository.deleteByUserId(userId);
+    }
+
+    @Transactional
+    public void deleteUserById(Long userId) {
+        profileRepository.deleteByUserId(userId);
+
+        userRepository.deleteById(userId);
     }
 
     public void enableTwoFactorAuth(Long userId) {
