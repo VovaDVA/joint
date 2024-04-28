@@ -1143,6 +1143,7 @@ public class UserServiceTest {
         assertFalse(result, "User should not be deleted because verification code is invalid");
     }
 
+    //DelRequest
     @Test
     void testSendAccountDeletionRequestSuccess() {
         Long userId = 1L;
@@ -1231,6 +1232,39 @@ public class UserServiceTest {
 
         verify(verificationCodeService)
                 .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
+    }
+
+    //Enable2FA
+    @Test
+    void testEnableTwoFactorAuthSuccess() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+
+        userService.enableTwoFactorAuth(userId);
+
+        assertTrue(user.getTwoFactorVerified(), "Two-factor authentication should be enabled");
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void testEnableTwoFactorAuthUserNotFound() {
+        Long userId = 1L;
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.enableTwoFactorAuth(userId);
+        });
+
+        assertEquals("User not found", exception.getMessage());
     }
 
 }
