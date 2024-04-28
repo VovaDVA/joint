@@ -24,8 +24,11 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
-    @Autowired
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
+
+    public JwtTokenUtils(@Autowired ProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
+    }
 
     public String generateToken(User user) {
         String email = user.getEmail();

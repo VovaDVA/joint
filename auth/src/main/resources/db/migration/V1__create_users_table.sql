@@ -6,7 +6,8 @@ CREATE TABLE "users"
 	email VARCHAR(255) NOT NULL,
 	password VARCHAR(255) NOT NULL,
 	registration_date TIMESTAMP,
-	last_login TIMESTAMP
+	last_login TIMESTAMP,
+    two_factor_verified BOOLEAN DEFAULT FALSE
 );
 
 

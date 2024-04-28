@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "auth")
 public class ProfileController {
 
-    @Autowired
-    private ProfileService profileService;
+    private final ProfileService profileService;
+
+    public ProfileController(@Autowired ProfileService profileService) {
+        this.profileService = profileService;
+    }
 
     @GetMapping("/getCurrentProfile")
     public ProfileBom getCurrentUser(@RequestHeader(name = "Authorization", required = false) String token) {

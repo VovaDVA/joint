@@ -12,6 +12,7 @@ public class UserProfileBom {
     private String email;
     private Date registrationDate;
     private Date lastLogin;
+    private Boolean twoFactorEnabled;
 
     private Long profileId;
     private String description;

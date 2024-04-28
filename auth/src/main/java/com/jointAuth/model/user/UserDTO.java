@@ -12,4 +12,5 @@ public class UserDTO {
     private String email;
     private Date registrationDate;
     private Date lastLogin;
+    private Boolean twoFactorVerified;
 }

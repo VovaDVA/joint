@@ -27,4 +27,6 @@ public class User {
     private Date registrationDate;
     @Column(name = "last_login")
     private Date lastLogin;
+    @Column(name = "two_factor_verified")
+    private Boolean twoFactorVerified = false;
 }

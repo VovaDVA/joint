@@ -6,14 +6,18 @@ import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.regex.Pattern;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.security.SecureRandom;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService {
@@ -23,6 +27,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final ProfileRepository profileRepository;
+
+    private final VerificationCodeService verificationCodeService;
+
+    private final EmailService emailService;
 
     private static final String PASSWORD_PATTERN =
             "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_])(?=\\S+$).{8,}$";
@@ -38,10 +46,14 @@ public class UserService {
 
     public UserService(@Autowired UserRepository userRepository,
                        @Autowired PasswordEncoder passwordEncoder,
-                       @Autowired ProfileRepository profileRepository) {
+                       @Autowired ProfileRepository profileRepository,
+                       @Autowired VerificationCodeService verificationCodeService,
+                       @Autowired EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.profileRepository = profileRepository;
+        this.verificationCodeService = verificationCodeService;
+        this.emailService = emailService;
     }
 
 
@@ -115,6 +127,12 @@ public class UserService {
             user.setLastLogin(new Date());
             userRepository.save(user);
 
+            if (user.getTwoFactorVerified()) {
+                String verificationCode = generateVerificationCode();
+                verificationCodeService.saveOrUpdateVerificationCode(user.getId(), verificationCode);
+                sendVerificationCode(user, verificationCode);
+            }
+
             return user;
         }
 
@@ -140,6 +158,7 @@ public class UserService {
         userResponseDTO.setEmail(user.getEmail());
         userResponseDTO.setRegistrationDate(user.getRegistrationDate());
         userResponseDTO.setLastLogin(user.getLastLogin());
+        userResponseDTO.setTwoFactorEnabled(user.getTwoFactorVerified());
 
         Profile userProfile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Profile not found for userId: " + userId));
@@ -209,5 +228,45 @@ public class UserService {
         } else {
             throw new IllegalArgumentException("User not found");
         }
+    }
+
+    public void enableTwoFactorAuth(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setTwoFactorVerified(true);
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
+    public void disableTwoFactorAuth(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setTwoFactorVerified(false);
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
+
+    private String generateVerificationCode() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+
+        StringBuilder code = new StringBuilder(6);
+
+        for (int i = 0; i < 6; i++) {
+            code.append(chars.charAt(random.nextInt(chars.length())));
+        }
+
+        return code.toString();
+    }
+
+    public void sendVerificationCode(User user, String verificationCode) {
+        emailService.sendVerificationCodeByEmail(user, verificationCode);
     }
 }
