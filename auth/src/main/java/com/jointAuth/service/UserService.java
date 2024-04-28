@@ -294,13 +294,20 @@ public class UserService {
 
         User user = optionalUser.get();
 
-        String verificationCode = generateVerificationCode();
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
+        try {
+            // Получаем и сохраняем код подтверждения
+            String verificationCode = generateVerificationCode();
+            verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, verificationCode, LocalDateTime.now().plusMinutes(2));
 
-        verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, verificationCode, expirationTime);
+            // Отправляем письмо с подтверждением удаления
 
-        return emailService.sendAccountDeletionConfirmationEmail(user, verificationCode);
+            return emailService.sendAccountDeletionConfirmationEmail(user, verificationCode);
+        } catch (Exception e) {
+            // Обработка исключения, выбрасываемого при сохранении или обновлении кода подтверждения
+            return false;
+        }
     }
+
 
     @Transactional
     public boolean deleteUser(Long userId, String verificationCode) {

@@ -91,7 +91,9 @@ public class UserServiceTest {
         existingUser.setEmail("Ivanova10@gmail.com");
         existingUser.setPassword("ExistingPassword123@");
 
-        when(userRepository.findByEmail(existingUser.getEmail())).thenReturn(existingUser);
+        when(userRepository
+                .findByEmail(existingUser.getEmail()))
+                .thenReturn(existingUser);
 
         User newUser = new User();
 
@@ -104,8 +106,10 @@ public class UserServiceTest {
         assertEquals("User with this email already exists", exception.getMessage());
 
         verify(userRepository, times(1)).findByEmail("Ivanova10@gmail.com");
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
 
@@ -120,8 +124,10 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
 
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
     @Test
@@ -156,7 +162,8 @@ public class UserServiceTest {
 
         assertNotNull(registeredUser.getRegistrationDate());
 
-        verify(profileRepository, times(1)).save(any());
+        verify(profileRepository, times(1))
+                .save(any());
     }
 
     @Test
@@ -170,8 +177,10 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
 
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
     @Test
@@ -186,9 +195,12 @@ public class UserServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
         assertEquals("Last name cannot be empty or contain only whitespace", exception.getMessage());
 
-        verify(userRepository, never()).findByEmail(any());
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .findByEmail(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
 
@@ -203,8 +215,10 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
 
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
     @Test
@@ -218,8 +232,10 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
 
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
     @Test
@@ -233,8 +249,10 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(user));
 
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
     @Test
@@ -248,8 +266,10 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(user));
 
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
     @Test
@@ -263,8 +283,10 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.register(user));
 
-        verify(userRepository, never()).save(any());
-        verify(profileRepository, never()).save(any());
+        verify(userRepository, never())
+                .save(any());
+        verify(profileRepository, never())
+                .save(any());
     }
 
     @Test
@@ -305,8 +327,10 @@ public class UserServiceTest {
 
         User loggedInUser = userService.login(email, password);
 
-        verify(userRepository, times(1)).findByEmail(email);
-        verify(passwordEncoder, times(1)).matches(password, encodedPassword);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(passwordEncoder, times(1))
+                .matches(password, encodedPassword);
 
         assertNotNull(loggedInUser);
         assertEquals(user, loggedInUser);
@@ -332,7 +356,8 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.login(email, password));
 
-        verify(userRepository, times(1)).findByEmail(email);
+        verify(userRepository, times(1))
+                .findByEmail(email);
         verify(passwordEncoder, never()).matches(any(), any());
     }
 
@@ -358,8 +383,10 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.login(email, password));
 
-        verify(userRepository, times(1)).findByEmail(email);
-        verify(passwordEncoder, times(1)).matches(password, encodedPassword);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(passwordEncoder, times(1))
+                .matches(password, encodedPassword);
     }
 
     @Test
@@ -441,16 +468,25 @@ public class UserServiceTest {
         user.setPassword(encodedPassword);
         user.setTwoFactorVerified(true);
 
-        when(userRepository.findByEmail(email)).thenReturn(user);
-        when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(user);
+        when(passwordEncoder
+                .matches(password, encodedPassword))
+                .thenReturn(true);
 
-        doNothing().when(emailService).sendVerificationCodeByEmail(eq(user), anyString());
+        doNothing()
+                .when(emailService)
+                .sendVerificationCodeByEmail(eq(user), anyString());
 
         User loggedInUser = userService.login(email, password);
 
-        verify(userRepository, times(1)).findByEmail(email);
-        verify(passwordEncoder, times(1)).matches(password, encodedPassword);
-        verify(emailService, times(1)).sendVerificationCodeByEmail(eq(user), anyString());
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(passwordEncoder, times(1))
+                .matches(password, encodedPassword);
+        verify(emailService, times(1))
+                .sendVerificationCodeByEmail(eq(user), anyString());
 
         assertNotNull(loggedInUser);
         assertEquals(user, loggedInUser);
@@ -593,8 +629,12 @@ public class UserServiceTest {
         userProfile.setLastEdited(null);
         user.setTwoFactorVerified(true);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(profileRepository.findByUserId(1L)).thenReturn(Optional.of(userProfile));
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.of(user));
+        when(profileRepository
+                .findByUserId(1L))
+                .thenReturn(Optional.of(userProfile));
 
         UserProfileBom result = userService.getUserInfoById(1L);
 
@@ -613,7 +653,9 @@ public class UserServiceTest {
 
     @Test
     public void testGetUserInfoByIdUserNotFound() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository
+                .findById(anyLong()))
+                .thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userService.getUserInfoById(1L));
     }
@@ -627,8 +669,12 @@ public class UserServiceTest {
         user.setLastName("Pokov");
         user.setEmail("vlados@gmail.com");
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(profileRepository.findByUserId(1L)).thenReturn(Optional.empty());
+        when(userRepository
+                .findById(1L))
+                .thenReturn(Optional.of(user));
+        when(profileRepository
+                .findByUserId(1L))
+                .thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userService.getUserInfoById(1L));
     }
@@ -651,8 +697,12 @@ public class UserServiceTest {
         userProfile.setCountry("USA");
         userProfile.setCity("Washington");
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(profileRepository.findByUserId(userId)).thenReturn(Optional.of(userProfile));
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(profileRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(userProfile));
 
         UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userId);
 
@@ -669,7 +719,9 @@ public class UserServiceTest {
     public void testGetUserByIdWithoutTokenUserNotFound() {
         Long userId = 1L;
 
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userService.getUserByIdWithoutToken(userId));
     }
@@ -684,8 +736,12 @@ public class UserServiceTest {
         user.setLastName("Durov");
         user.setLastLogin(new Date());
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(profileRepository.findByUserId(userId)).thenReturn(Optional.empty());
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(profileRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userService.getUserByIdWithoutToken(userId));
     }
@@ -698,7 +754,9 @@ public class UserServiceTest {
         String newPassword = "NewPassword123!";
         String currentPassword = "CurrentPassword123!";
 
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
@@ -715,8 +773,11 @@ public class UserServiceTest {
         String currentPassword = "CurrentPassword123!";
 
         User user = new User();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
                 .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -742,8 +803,11 @@ public class UserServiceTest {
         userVerificationCode.setRequestType(RequestType.ANOTHER_TYPE);
         userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
                 .thenReturn(Optional.of(userVerificationCode));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -767,8 +831,11 @@ public class UserServiceTest {
         userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
         userVerificationCode.setExpirationTime(LocalDateTime.now().minusMinutes(2));
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
                 .thenReturn(Optional.of(userVerificationCode));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -792,10 +859,14 @@ public class UserServiceTest {
         userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
         userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
                 .thenReturn(Optional.of(userVerificationCode));
-        when(passwordEncoder.matches(currentPassword, user.getPassword()))
+        when(passwordEncoder
+                .matches(currentPassword, user.getPassword()))
                 .thenReturn(false);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -819,11 +890,17 @@ public class UserServiceTest {
         UserVerificationCode userVerificationCode = new UserVerificationCode();
         userVerificationCode.setCode(invalidVerificationCode);
         userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
-        userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+        userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userVerificationCodeRepository.findByUserIdAndCode(userId, invalidVerificationCode)).thenReturn(Optional.of(userVerificationCode));
-        when(passwordEncoder.matches(currentPassword, user.getPassword())).thenReturn(true);
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository
+                .findByUserIdAndCode(userId, invalidVerificationCode))
+                .thenReturn(Optional.of(userVerificationCode));
+        when(passwordEncoder
+                .matches(currentPassword, user.getPassword()))
+                .thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.resetPassword(userId, invalidVerificationCode, invalidPassword, currentPassword);
@@ -848,19 +925,27 @@ public class UserServiceTest {
         userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
         userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
                 .thenReturn(Optional.of(userVerificationCode));
-        when(passwordEncoder.matches(currentPassword, user.getPassword()))
+        when(passwordEncoder
+                .matches(currentPassword, user.getPassword()))
                 .thenReturn(true);
 
-        when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
+        when(passwordEncoder
+                .encode(newPassword))
+                .thenReturn("encodedNewPassword");
 
         boolean result = userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
 
         assertTrue(result);
-        verify(userRepository, times(1)).save(user);
-        verify(userVerificationCodeRepository, times(1)).delete(userVerificationCode);
+        verify(userRepository, times(1))
+                .save(user);
+        verify(userVerificationCodeRepository, times(1))
+                .delete(userVerificationCode);
 
         assertEquals("encodedNewPassword", user.getPassword());
     }
@@ -875,7 +960,9 @@ public class UserServiceTest {
         user.setId(userId);
         user.setEmail(expectedEmail);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
 
         String actualEmail = userService.getUserEmailById(userId);
 
@@ -886,7 +973,9 @@ public class UserServiceTest {
     public void testGetUserEmailByIdUserNotFound() {
         Long userId = 1L;
 
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
 
         String actualEmail = userService.getUserEmailById(userId);
 
@@ -898,14 +987,18 @@ public class UserServiceTest {
     public void testSendPasswordResetRequestUserNotFound() {
         Long userId = 1L;
 
-        when(userService.getUserEmailById(userId)).thenReturn(null);
+        when(userService
+                .getUserEmailById(userId))
+                .thenReturn(null);
 
         boolean result = userService.sendPasswordResetRequest(userId);
 
         assertFalse(result);
 
-        verify(emailService, never()).sendPasswordResetConfirmationEmail(any(User.class), anyString());
-        verify(verificationCodeService, never()).saveOrUpdateVerificationCodeForResetPassword(anyLong(), anyString(), any(RequestType.class), any(LocalDateTime.class));
+        verify(emailService, never())
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
+        verify(verificationCodeService, never())
+                .saveOrUpdateVerificationCodeForResetPassword(anyLong(), anyString(), any(RequestType.class), any(LocalDateTime.class));
     }
 
     @Test
@@ -918,19 +1011,28 @@ public class UserServiceTest {
         user.setEmail(email);
         user.setTwoFactorVerified(true);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.findByEmail(email)).thenReturn(user);
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(user);
 
-        when(emailService.sendPasswordResetConfirmationEmail(any(User.class), anyString())).thenReturn(true);
+        when(emailService
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString()))
+                .thenReturn(true);
 
         boolean result = userService.sendPasswordResetRequest(userId);
 
         assertTrue(result);
 
-        verify(userRepository, times(1)).findById(userId);
-        verify(userRepository, times(1)).findByEmail(email);
+        verify(userRepository, times(1))
+                .findById(userId);
+        verify(userRepository, times(1))
+                .findByEmail(email);
 
-        verify(emailService, times(1)).sendPasswordResetConfirmationEmail(any(User.class), anyString());
+        verify(emailService, times(1))
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
     }
 
     @Test
@@ -942,16 +1044,22 @@ public class UserServiceTest {
         user.setId(userId);
         user.setEmail(email);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.findByEmail(email)).thenReturn(user);
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(user);
         when(emailService.sendPasswordResetConfirmationEmail(any(User.class), anyString())).thenReturn(false);
 
         boolean result = userService.sendPasswordResetRequest(userId);
 
         assertFalse(result);
 
-        verify(verificationCodeService, times(1)).saveOrUpdateVerificationCodeForResetPassword(eq(userId), anyString(), eq(RequestType.PASSWORD_RESET), any(LocalDateTime.class));
-        verify(emailService, times(1)).sendPasswordResetConfirmationEmail(any(User.class), anyString());
+        verify(verificationCodeService, times(1))
+                .saveOrUpdateVerificationCodeForResetPassword(eq(userId), anyString(), eq(RequestType.PASSWORD_RESET), any(LocalDateTime.class));
+        verify(emailService, times(1))
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
     }
 
     //delete
@@ -961,7 +1069,9 @@ public class UserServiceTest {
         Long userId = 1L;
         String verificationCode = "someCode";
 
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
 
         boolean result = userService.deleteUser(userId, verificationCode);
 
@@ -975,9 +1085,13 @@ public class UserServiceTest {
         User user = new User();
         user.setId(userId);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
 
-        when(verificationCodeService.verifyUserVerificationCode(userId, verificationCode)).thenReturn(false);
+        when(verificationCodeService
+                .verifyUserVerificationCode(userId, verificationCode))
+                .thenReturn(false);
 
         boolean result = userService.deleteUser(userId, verificationCode);
 
@@ -990,17 +1104,24 @@ public class UserServiceTest {
         String verificationCode = "testCode";
 
         User user = new User();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
 
-        when(verificationCodeService.verifyUserVerificationCode(userId, verificationCode)).thenReturn(true);
+        when(verificationCodeService
+                .verifyUserVerificationCode(userId, verificationCode))
+                .thenReturn(true);
 
         boolean result = userService.deleteUser(userId, verificationCode);
 
         assertTrue(result, "User deletion should be successful");
 
-        verify(userVerificationCodeRepository, times(1)).deleteByUserId(userId);
-        verify(profileRepository, times(1)).deleteByUserId(userId);
-        verify(userRepository, times(1)).deleteById(userId);
+        verify(userVerificationCodeRepository, times(1))
+                .deleteByUserId(userId);
+        verify(profileRepository, times(1))
+                .deleteByUserId(userId);
+        verify(userRepository, times(1))
+                .deleteById(userId);
     }
 
     @Test
@@ -1009,12 +1130,107 @@ public class UserServiceTest {
         String verificationCode = "invalidCode";
 
         User user = new User();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
 
-        when(verificationCodeService.verifyUserVerificationCode(userId, verificationCode)).thenReturn(false);
+        when(verificationCodeService
+                .verifyUserVerificationCode(userId, verificationCode))
+                .thenReturn(false);
 
         boolean result = userService.deleteUser(userId, verificationCode);
 
         assertFalse(result, "User should not be deleted because verification code is invalid");
     }
+
+    @Test
+    void testSendAccountDeletionRequestSuccess() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+
+        doNothing()
+                .when(verificationCodeService)
+                .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
+
+        when(emailService
+                .sendAccountDeletionConfirmationEmail(eq(user), anyString()))
+                .thenReturn(true);
+
+        boolean result = userService.sendAccountDeletionRequest(userId);
+
+        assertTrue(result, "Account deletion request should be successfully sent");
+
+        verify(verificationCodeService)
+                .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
+        verify(emailService)
+                .sendAccountDeletionConfirmationEmail(eq(user), anyString());
+    }
+
+    @Test
+    void testSendAccountDeletionRequestUserNotFound() {
+        Long userId = 1L;
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
+
+        boolean result = userService.sendAccountDeletionRequest(userId);
+
+        assertFalse(result, "Account deletion request should not be sent because user was not found");
+    }
+
+    @Test
+    void testSendAccountDeletionRequestEmailSendingFailure() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+
+        doNothing().when(verificationCodeService)
+                .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
+
+        when(emailService
+                .sendAccountDeletionConfirmationEmail(eq(user), anyString()))
+                .thenReturn(false);
+
+        boolean result = userService.sendAccountDeletionRequest(userId);
+
+        assertFalse(result, "Account deletion request should fail due to email sending failure");
+
+        verify(verificationCodeService)
+                .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
+        verify(emailService)
+                .sendAccountDeletionConfirmationEmail(eq(user), anyString());
+    }
+
+    @Test
+    void testSendAccountDeletionRequestVerificationCodeUpdateFailure() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+
+        doThrow(new RuntimeException("Verification code update failed"))
+                .when(verificationCodeService)
+                .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
+
+        boolean result = userService.sendAccountDeletionRequest(userId);
+
+        assertFalse(result, "Account deletion request should fail due to verification code update failure");
+
+        verify(verificationCodeService)
+                .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
+    }
+
 }
