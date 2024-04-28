@@ -1,14 +1,14 @@
 <template>
-    <div class="static-panel">
+    <div class="static-panel" :class="{ 'active': $store.state.staticPanelVisible }">
         <component :is="currentSectionComponent" :key="currentSection" />
     </div>
     <div class="icon-container left">
-        <router-link to="/">
-            <filled-icon-button icon-name="house">Моя страница</filled-icon-button>
-        </router-link>
         <router-link to="/feed">
-            <filled-icon-button icon-name="newspaper">Лента</filled-icon-button>
+            <filled-icon-button icon-name="house">Главная</filled-icon-button>
         </router-link>
+        <!-- <router-link to="/feed">
+            <filled-icon-button icon-name="newspaper">Лента</filled-icon-button>
+        </router-link> -->
         <router-link to="/calendar">
             <filled-icon-button icon-name="calendar">Календарь</filled-icon-button>
         </router-link>
@@ -39,6 +39,26 @@
         <filled-icon-button icon-name="music" @click="changeSection('music')">Музыка</filled-icon-button>
         <filled-icon-button icon-name="book" @click="changeSection('books')">Книги</filled-icon-button>
     </div>
+
+    <!-- Bottom buttons panel (screen width < 1000px) -->
+    <div class="bottom-container" :class="{ 'active': isBottomActive }">
+        <div class="bottom-inner">
+            <router-link to="/feed" class="nav-item" :class="{ selected: selectedTab === 0 }"
+                @click="$store.commit('hideStaticPanel')">
+                <icon-button icon-name="home"></icon-button>
+            </router-link>
+            <icon-button icon-name="user-group" @click="changeSection('people')"></icon-button>
+            <icon-button icon-name="message" @click="changeSection('chat')"></icon-button>
+            <icon-button icon-name="bell" @click="changeSection('notifications')"></icon-button>
+            <icon-button icon-name="grip" @click="toggleBottom()"></icon-button>
+        </div>
+        <div class="bottom-menu">
+            <filled-icon-button icon-name="image" @click="changeSection('images')">Изображения</filled-icon-button>
+            <filled-icon-button icon-name="video" @click="changeSection('videos')">Видео</filled-icon-button>
+            <filled-icon-button icon-name="music" @click="changeSection('music')">Музыка</filled-icon-button>
+            <filled-icon-button icon-name="book" @click="changeSection('books')">Книги</filled-icon-button>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -51,6 +71,7 @@ import StaticPanelChatContainer from './content/StaticPanelChatContainer.vue';
 
 export default {
     name: 'side-chat',
+    props: ['isActive'],
     components: {
         StaticPanelPeople,
         StaticPanelChatContainer,
@@ -64,7 +85,8 @@ export default {
             currentSection: 'chat',
             socket: null,
             messages: [],
-            newMessage: ''
+            newMessage: '',
+            isBottomActive: false,
         }
     },
     computed: {
@@ -103,8 +125,13 @@ export default {
     methods: {
         changeSection(section) {
             this.currentSection = section;
+            this.$store.commit('showStaticPanel');
+            // this.isBottomActive = false;
+        },
+        toggleBottom() {
+            this.isBottomActive = !this.isBottomActive;
         }
-    }
+    },
 }
 </script>
 
@@ -118,12 +145,17 @@ export default {
     top: 70px;
     right: 0;
     width: 30vw;
-    height: calc(100vh - 90px);
+    height: calc(100% - 90px);
     margin: 10px;
+    z-index: 30;
 
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+.static-panel.active {
+    display: flex;
 }
 
 .icon-container {
@@ -133,6 +165,7 @@ export default {
     right: calc(30vw + 20px);
     margin-top: 10px;
     display: flex;
+    gap: 10px;
     justify-content: flex-start;
     align-items: start;
     flex-direction: column;
@@ -147,11 +180,88 @@ export default {
     top: 40vh;
 }
 
-.icon-container .filled-icon-button {
-    margin-bottom: 10px;
+.bottom-container {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+    min-height: 70px;
+
+    position: fixed;
+    bottom: -50px;
+    right: 0;
+    left: 0;
+    margin: auto;
+    z-index: 50;
+
+    border-top: 1px solid #ffffff7c;
+    border-radius: 25px 25px 0 0;
+
+    background: #000000;
+    transition: bottom .2s ease-out;
+}
+
+.bottom-container.active {
+    bottom: 0;
+    transition: bottom .2s ease-out;
+}
+
+.bottom-inner, .bottom-menu {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 15px;
+}
+
+.bottom-menu {
+    margin-bottom: 15px;
+}
+
+.icon-button {
+    font-size: 20px;
 }
 
 a {
     color: white;
+}
+
+
+@media (max-width: 1300px) {
+    .static-panel {
+        display: none;
+    }
+
+    .icon-container {
+        right: 10px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .static-panel {
+        /* display: flex; */
+        position: fixed;
+        top: 70px;
+        right: 0;
+        left: 0;
+        margin: auto;
+
+        padding-bottom: 60px;
+
+        width: 100%;
+        background: #2d3844;
+        border: none;
+        border-radius: 0;
+    }
+
+    .icon-container {
+        display: none;
+    }
+
+    .bottom-container {
+        display: flex;
+    }
 }
 </style>

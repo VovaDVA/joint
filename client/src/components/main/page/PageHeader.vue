@@ -2,8 +2,14 @@
     <div class="header">
         <div class="header_inner">
 
-            <div class="nav" id="nav">
+            <div class="right-container">
                 <router-link to="/" class="logo"></router-link>
+                <button class="nav-toggle" :class="{ 'active': isActive }" type="button" @click="toggleNav()">
+                    <span class="nav-toggle_item">Menu</span>
+                </button>
+            </div>
+
+            <div class="nav" :class="{ 'active': isActive }">
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 0 }" @click="selectTab(0)">
                     <div>?</div>
                     <div class="tab-circle"></div>
@@ -34,23 +40,23 @@
             <div class="user_info">
                 <div class="user_top">
                     <div class="user_icons">
-                        <router-link to="/profile-settings">
+                        <router-link to="/profile-settings" @click="changePage()">
                             <icon-button icon-name="gear"></icon-button>
                         </router-link>
-                        <router-link to="/stats">
+                        <router-link to="/stats" @click="changePage()">
                             <icon-button icon-name="chart-simple"></icon-button>
                         </router-link>
-                        <!-- <router-link to="/profile-settings">
-                            <icon-button icon-name="bell"></icon-button>
-                        </router-link> -->
                         <icon-button icon-name="right-from-bracket" @click="logoutUser()"></icon-button>
                     </div>
 
-                    <router-link to="/" class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) : '-'}}</router-link>
+                    <router-link to="/" class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) :
+                        '-' }}</router-link>
                 </div>
 
-                <div class="profile_photo" style="background: #555555 center no-repeat; background-size: cover">
-                </div>
+                <router-link to="/" @click="changePage()">
+                    <div class="profile_photo" style="background: #555555 center no-repeat; background-size: cover">
+                    </div>
+                </router-link>
             </div>
         </div>
     </div>
@@ -68,6 +74,7 @@ export default {
                 lastName: '',
             },
             selectedTab: null,
+            isActive: false,
         }
     },
     created() {
@@ -78,11 +85,19 @@ export default {
         }
     },
     methods: {
+        changePage() {
+            this.$store.commit('hideStaticPanel');
+        },
         selectTab(index) {
             this.selectedTab = index;
+            this.toggleNav();
+            this.changePage();
         },
         logoutUser() {
             deleteSession();
+        },
+        toggleNav() {
+            this.isActive = !this.isActive;
         }
     }
 }
@@ -92,12 +107,11 @@ export default {
 .header {
     width: auto;
     height: 70px;
-    padding: 0 20px;
+    padding: 0 20px 0 0;
 
     font-family: 'Montserrat';
     font-size: 15px;
     text-transform: uppercase;
-    /* line-height: 70px; */
 
     border-bottom: 1px solid transparent;
     border-image: radial-gradient(#ffffff 60%, transparent);
@@ -119,8 +133,15 @@ export default {
     align-items: center;
 }
 
+.right-container {
+    display: flex;
+    z-index: 101;
+}
+
 .user_info {
     display: flex;
+    align-items: center;
+    z-index: 101;
 }
 
 .user_top {
@@ -140,10 +161,7 @@ export default {
     width: 40px;
     height: 40px;
 
-    margin-top: 15px;
-
     background-color: #555555;
-
     border: 1px #FFFFFF solid;
     border-radius: 50%;
 }
@@ -189,14 +207,11 @@ export default {
 }
 
 .logo {
-    height: 100%;
     width: 70px;
     height: 70px;
 
     background: url(../../../assets/logo.png) center no-repeat;
     background-size: contain;
-
-    /* filter: drop-shadow(0 0 0 #000000) brightness(150%); */
     transition: filter .2s linear;
 }
 
@@ -205,8 +220,10 @@ export default {
     transition: filter .2s linear;
 }
 
-.nav {
+.nav,
+.nav.active {
     display: flex;
+    z-index: 100;
 }
 
 .nav-item {
@@ -224,13 +241,11 @@ export default {
 }
 
 .nav-item:hover {
-    /* margin-top: -5px; */
     color: #ffbf6c;
     transition: color .2s linear;
 }
 
 .nav-item.selected {
-    /* margin-top: -10px; */
     color: #ffbf6c;
 }
 
@@ -261,5 +276,112 @@ export default {
 
 a {
     color: white;
+}
+
+
+.nav-toggle {
+    width: 30px;
+    padding: 10px 0;
+    display: none;
+
+    font-size: 0;
+    color: transparent;
+
+    border: 0;
+    background: none;
+    cursor: pointer;
+    outline: none !important;
+    user-select: none !important;
+}
+
+.nav-toggle.active .nav-toggle_item {
+    background: none;
+}
+
+.nav-toggle_item {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 3px;
+
+    background-color: #fff;
+    transition: background .2s linear;
+}
+
+.nav-toggle_item:before,
+.nav-toggle_item:after {
+    content: "";
+    width: 100%;
+    height: 3px;
+
+    background-color: #fff;
+
+    position: absolute;
+    left: 0;
+    z-index: 1;
+
+    transition: transform .2s linear;
+}
+
+.nav-toggle_item:before {
+    top: -10px;
+}
+
+.nav-toggle_item:after {
+    bottom: -10px;
+}
+
+.nav-toggle.active .nav-toggle_item:before {
+    transform-origin: left top;
+    transform: translateX(5px)rotate(45deg);
+}
+
+.nav-toggle.active .nav-toggle_item:after {
+    transform-origin: left bottom;
+    transform: translateX(5px)rotate(-45deg);
+}
+
+
+@media (max-width: 1000px) {
+    .nav {
+        display: flex;
+        /* opacity: 0; */
+        visibility: hidden;
+        position: absolute;
+        flex-direction: column;
+        width: 100%;
+        top: -150px;
+        left: 0;
+        right: 0;
+        padding: 10px;
+
+        background: #000000;
+        border-bottom: 1px solid #ffffff7c;
+        border-radius: 0 0 25px 25px;
+        transition: top .2s, visibility .1s ease-out;
+    }
+
+    .nav.active {
+        visibility: visible;
+        top: 70px;
+        transition: visibility, top .2s ease-out;
+    }
+
+    .nav-toggle {
+        display: block;
+    }
+
+    .nav-item {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .username {
+        display: none;
+    }
+
+    .user_top {
+        margin-right: 10px;
+    }
 }
 </style>

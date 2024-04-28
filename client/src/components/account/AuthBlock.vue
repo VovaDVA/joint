@@ -18,11 +18,20 @@ export default {
 	position: absolute;
 	right: 0;
 	left: 0;
-	margin: auto;
+	margin: 50px auto;
 
-	padding: 20px 30px;
+	padding: 20px;
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 600px) {
+	.auth-block {
+		border: none;
+		background: none;
+		margin: auto;
+		margin-top: -50px;
+	}
 }
 </style>

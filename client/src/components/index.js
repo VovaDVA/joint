@@ -4,8 +4,8 @@ import ContentBlock from "@/components/main/ContentBlock.vue";
 import ContentBlockTitle from "@/components/main/ContentBlockTitle.vue";
 import ContentBlockText from "@/components/main/ContentBlockText.vue";
 
-import ModalChangeBanner from "@/components/main/modals/ModalChangeBanner.vue";
-import ModalChangeAvatar from "@/components/main/modals/ModalChangeAvatar.vue";
+// import ModalChangeBanner from "@/components/main/modals/ModalChangeBanner.vue";
+// import ModalChangeAvatar from "@/components/main/modals/ModalChangeAvatar.vue";
 
 // Input
 import FormInput from '@/components/account/FormInput.vue';
@@ -37,6 +37,7 @@ import NewsBlock from "@/components/news/NewsBlock.vue";
 // Static Panel
 import StaticPanel from "@/components/main/static_panel/StaticPanel.vue";
 import StaticPanelHeader from "./main/static_panel/components/StaticPanelHeader.vue";
+import StaticPanelHeaderMenu from "./main/static_panel/components/StaticPanelHeaderMenu.vue";
 import StaticPanelSearchBar from "./main/static_panel/components/StaticPanelSearchBar.vue";
 import StaticPanelContent from "./main/static_panel/components/StaticPanelContent.vue";
 // Chat
@@ -55,7 +56,7 @@ import MusicPreviewBlock from "./main/static_panel/content/music/MusicPreviewBlo
 import NotificationPreviewBlock from "./main/static_panel/content/notifications/NotificationPreviewBlock.vue";
 
 export default [
-    PageHeader, ModalChangeAvatar, ModalChangeBanner,
+    PageHeader,//ModalChangeAvatar, ModalChangeBanner,
     FormBlock,
     ContentBlockTitle, ContentBlockText,
     BarChart, CalendarBlock,
@@ -70,7 +71,7 @@ export default [
     // News
     NewsBlock,
     // Static Panel
-    StaticPanel, StaticPanelSearchBar, StaticPanelContent, StaticPanelHeader,
+    StaticPanel, StaticPanelSearchBar, StaticPanelContent, StaticPanelHeader, StaticPanelHeaderMenu,
     // Chat
     ChatPreviewBlock,
     // Messenger

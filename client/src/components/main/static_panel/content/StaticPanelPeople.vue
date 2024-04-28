@@ -1,10 +1,12 @@
 <template>
     <static-panel-header>
-        <messenger-action-icon icon-name="user"></messenger-action-icon>
-        <messenger-action-icon icon-name="user-tag"></messenger-action-icon>
-        <messenger-action-icon icon-name="wallet"></messenger-action-icon>
         <static-panel-search-bar @input="updateSearch"></static-panel-search-bar>
     </static-panel-header>
+    <static-panel-header-menu>
+        <icon-button icon-name="user"></icon-button>
+        <icon-button icon-name="user-tag"></icon-button>
+        <icon-button icon-name="wallet"></icon-button>
+    </static-panel-header-menu>
     <static-panel-content>
         <account-preview-block v-for="item in filteredContent" :key="item.id" :name="item.name"></account-preview-block>
     </static-panel-content>
@@ -23,7 +25,7 @@ export default {
                 { id: 6, name: 'Максим Примак' },
                 { id: 7, name: 'Елизавета Рябухина' },
                 { id: 8, name: 'Кристина Плетюк' },
-            ], 
+            ],
             searchText: '',
         };
     },

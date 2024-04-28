@@ -1,7 +1,7 @@
 <template>
     <div class="content-block">
         <div class="content-block-inner">
-            <div class="news-info">
+            <div class="info">
                 <slot></slot>
             </div>
         </div>
@@ -19,7 +19,7 @@ export default {
     display: flex;
     width: 100%;
     height: fit-content;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .content-block-inner {
@@ -28,15 +28,21 @@ export default {
     flex-direction: column;
 }
 
-.news-info {
+.info {
     text-align: center;
     position: relative;
     flex: 1;
     height: calc(100% - 45px);
-    margin-bottom: 10px;
     padding: 20px 30px;
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
+}
+
+
+@media (max-width: 500px) {
+    .info {
+        padding: 20px 10px;
+    }
 }
 </style>
