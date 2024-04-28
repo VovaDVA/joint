@@ -254,12 +254,13 @@ public class UserService {
     public String getUserEmailById(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            return user.getEmail();
-        } else {
+        // Обработка случая, когда userOptional равен null или не найден
+        if (userOptional == null || userOptional.isEmpty()) {
             return null;
         }
+
+        User user = userOptional.get();
+        return user.getEmail();
     }
 
     public boolean sendPasswordResetRequest(Long userId) {
