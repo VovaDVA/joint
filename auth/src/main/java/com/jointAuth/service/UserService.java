@@ -270,22 +270,21 @@ public class UserService {
             return false;
         }
 
-        User currentUser = userRepository.findByEmail(email);
+        Optional<User> optionalCurrentUser = Optional.ofNullable(userRepository.findByEmail(email));
 
-        if (currentUser == null) {
-            return false;
-        }
+        return optionalCurrentUser.map(currentUser -> {
+            String verificationCode = generateVerificationCode();
+            RequestType requestType = RequestType.PASSWORD_RESET;
+            LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
 
-        String verificationCode = generateVerificationCode();
+            verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(
+                    userId, verificationCode, requestType, expirationTime
+            );
 
-        RequestType requestType = RequestType.PASSWORD_RESET;
-
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
-
-        verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(userId, verificationCode, requestType, expirationTime);
-
-        return emailService.sendPasswordResetConfirmationEmail(currentUser, verificationCode);
+            return emailService.sendPasswordResetConfirmationEmail(currentUser, verificationCode);
+        }).orElse(false);
     }
+
 
     public boolean sendAccountDeletionRequest(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);

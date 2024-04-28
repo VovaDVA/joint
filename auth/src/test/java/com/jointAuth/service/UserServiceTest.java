@@ -57,6 +57,7 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    private UserService userServiceSpy;
 
     @BeforeEach
     void setUp() {
@@ -66,6 +67,8 @@ public class UserServiceTest {
         verificationCodeService = mock(VerificationCodeService.class);
         emailService = mock(EmailService.class);
         userVerificationCodeRepository = mock(UserVerificationCodeRepository.class);
+
+        userServiceSpy = spy(userService);
 
         userService = new UserService(userRepository,
                 passwordEncoder,
@@ -951,150 +954,67 @@ public class UserServiceTest {
         verify(emailService, times(1)).sendPasswordResetConfirmationEmail(any(User.class), anyString());
     }
 
+    //delete
 
+    @Test
+    void testDeleteUserUserNotFound() {
+        Long userId = 1L;
+        String verificationCode = "someCode";
 
-    //Изменение пароля
-//    @Test
-//    public void testChangePasswordUserFoundPasswordChanged() {
-//        User user = new User();
-//        String password = "oldPass123@";
-//        String encodedPassword = passwordEncoder.encode(password);
-//
-//        user.setId(1L);
-//        user.setFirstName("Vita");
-//        user.setLastName("Erina");
-//        user.setEmail("ViEr@gmail.com");
-//        user.setPassword(encodedPassword);
-//
-//        when(userRepository
-//                .findById(1L))
-//                .thenReturn(Optional.of(user));
-//
-//        when(passwordEncoder
-//                .encode("newPass123@"))
-//                .thenReturn("encodedPassword");
-//
-//        userService.changePassword(1L, "newPass123@");
-//
-//        assertEquals("encodedPassword", user.getPassword());
-//    }
-//
-//    @Test
-//    public void testChangePasswordUserNotFoundThrowsException() {
-//        String password = "Password123@";
-//        String encodedPassword = passwordEncoder.encode(password);
-//
-//        User user = new User();
-//
-//        user.setFirstName("Evelina");
-//        user.setLastName("Novikova");
-//        user.setEmail("en0102@gmail.com");
-//        user.setPassword(encodedPassword);
-//
-//        when(userRepository
-//                .findById(1L))
-//                .thenReturn(Optional.empty());
-//
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-//                () -> userService.changePassword(1L, "newPassword123@"));
-//
-//        assertEquals("User not found", exception.getMessage());
-//    }
-//
-//    @Test
-//    public void testChangePasswordInvalidPasswordThrowsException() {
-//        String password = "oldPass123@";
-//        String encodedPassword = passwordEncoder.encode(password);
-//
-//        User user = new User();
-//
-//        user.setId(1L);
-//        user.setFirstName("Nasty");
-//        user.setLastName("Doina");
-//        user.setEmail("NasDo@gmail.com");
-//        user.setPassword(encodedPassword);
-//
-//        when(userRepository
-//                .findById(1L))
-//                .thenReturn(Optional.of(user));
-//
-//        String invalidPassword = "newPass!";
-//
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-//                () -> userService.changePassword(1L, invalidPassword));
-//
-//        assertEquals("Password does not meet the complexity requirements", exception.getMessage());
-//
-//        assertEquals(encodedPassword, user.getPassword());
-//    }
-//
-//    //удаление пользователя
-//    @Test
-//    public void testDeleteUserSuccessfulDeletion() {
-//        String password = "testPassword123@";
-//        String encodedPassword = passwordEncoder.encode(password);
-//
-//        User user = new User();
-//
-//        user.setId(1L);
-//        user.setFirstName("Vanya");
-//        user.setLastName("Fiji");
-//        user.setEmail("vano123@gmail.com");
-//        user.setPassword(encodedPassword);
-//
-//        when(userRepository
-//                .findById(1L))
-//                .thenReturn(Optional.of(user));
-//
-//        assertDoesNotThrow(() -> userService.deleteUser(1L));
-//
-//        verify(userRepository, times(1)).deleteById(1L);
-//    }
-//
-//    @Test
-//    public void testDeleteUserUserNotFound() {
-//        when(userRepository
-//                .findById(1L))
-//                .thenReturn(Optional.empty());
-//
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-//                () -> userService.deleteUser(1L));
-//
-//        assertEquals("User not found", exception.getMessage());
-//
-//        verify(userRepository, never()).deleteById(anyLong());
-//    }
-//
-//    @Test
-//    public void testDeleteUserDatabaseError() {
-//        String password = "myPass12345@";
-//        String encodedPassword = passwordEncoder.encode(password);
-//
-//        User user = new User();
-//
-//        user.setId(1L);
-//        user.setFirstName("Karim");
-//        user.setLastName("Sonos");
-//        user.setEmail("figureBest@example.com");
-//        user.setPassword(encodedPassword);
-//
-//        when(userRepository
-//                .findById(1L))
-//                .thenReturn(Optional.of(user));
-//
-//        doThrow(new DataAccessException("Database error") {})
-//                .when(userRepository)
-//                .deleteById(1L);
-//
-//        DataAccessException exception = assertThrows(DataAccessException.class,
-//                () -> userService.deleteUser(1L));
-//
-//        assertEquals("Database error", exception.getMessage());
-//
-//        verify(userRepository, times(1)).deleteById(1L);
-//    }
-//
-//
-//
-//
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        boolean result = userService.deleteUser(userId, verificationCode);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void testDeleteUserVerificationFailed() {
+        Long userId = 1L;
+        String verificationCode = "someCode";
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        when(verificationCodeService.verifyUserVerificationCode(userId, verificationCode)).thenReturn(false);
+
+        boolean result = userService.deleteUser(userId, verificationCode);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void testDeleteUserSuccess() {
+        Long userId = 1L;
+        String verificationCode = "testCode";
+
+        User user = new User();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        when(verificationCodeService.verifyUserVerificationCode(userId, verificationCode)).thenReturn(true);
+
+        boolean result = userService.deleteUser(userId, verificationCode);
+
+        assertTrue(result, "User deletion should be successful");
+
+        verify(userVerificationCodeRepository, times(1)).deleteByUserId(userId);
+        verify(profileRepository, times(1)).deleteByUserId(userId);
+        verify(userRepository, times(1)).deleteById(userId);
+    }
+
+    @Test
+    void testDeleteUserInvalidVerificationCode() {
+        Long userId = 1L;
+        String verificationCode = "invalidCode";
+
+        User user = new User();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        when(verificationCodeService.verifyUserVerificationCode(userId, verificationCode)).thenReturn(false);
+
+        boolean result = userService.deleteUser(userId, verificationCode);
+
+        assertFalse(result, "User should not be deleted because verification code is invalid");
+    }
 }
