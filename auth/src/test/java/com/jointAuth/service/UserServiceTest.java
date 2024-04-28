@@ -1,9 +1,11 @@
 package com.jointAuth.service;
 
+import com.jointAuth.model.user.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.model.profile.Profile;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
+import com.jointAuth.model.user.UserVerificationCode;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -20,6 +22,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -423,13 +426,13 @@ public class UserServiceTest {
 
     @Test
     public void testLoginWithValidCredentialsAnd2FA() {
-        String email = "user@gmail.com";
-        String password = "ValidPassword123";
+        String email = "vov4ik@gmail.com";
+        String password = "ValidPassword123@";
         String encodedPassword = passwordEncoder.encode(password);
 
         User user = new User();
-        user.setFirstName("John");
-        user.setLastName("Doe");
+        user.setFirstName("Vova");
+        user.setLastName("Petrov");
         user.setEmail(email);
         user.setPassword(encodedPassword);
         user.setTwoFactorVerified(true);
@@ -437,14 +440,12 @@ public class UserServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(user);
         when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
 
-        // Мокаем метод emailService для отправки кода верификации по почте
         doNothing().when(emailService).sendVerificationCodeByEmail(eq(user), anyString());
 
         User loggedInUser = userService.login(email, password);
 
         verify(userRepository, times(1)).findByEmail(email);
         verify(passwordEncoder, times(1)).matches(password, encodedPassword);
-        // Проверяем, что метод sendVerificationCodeByEmail был вызван с нужными аргументами
         verify(emailService, times(1)).sendVerificationCodeByEmail(eq(user), anyString());
 
         assertNotNull(loggedInUser);
@@ -683,6 +684,181 @@ public class UserServiceTest {
         when(profileRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userService.getUserByIdWithoutToken(userId));
+    }
+
+    //change pass
+    @Test
+    public void testResetPasswordUserNotFound() {
+        Long userId = 1L;
+        String verificationCode = "123456";
+        String newPassword = "NewPassword123!";
+        String currentPassword = "CurrentPassword123!";
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+        });
+
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
+    public void testResetPasswordInvalidVerificationCode() {
+        Long userId = 1L;
+        String verificationCode = "invalid";
+        String newPassword = "NewPassword123!";
+        String currentPassword = "CurrentPassword123!";
+
+        User user = new User();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+        });
+
+        assertEquals("Invalid verification code", exception.getMessage());
+    }
+
+    @Test
+    public void testResetPasswordInvalidRequestType() {
+        Long userId = 1L;
+        String verificationCode = "123456";
+        String newPassword = "NewPassword123!";
+        String currentPassword = "CurrentPassword123!";
+
+        User user = new User();
+        user.setId(userId);
+
+        UserVerificationCode userVerificationCode = new UserVerificationCode();
+        userVerificationCode.setUser(user);
+        userVerificationCode.setCode(verificationCode);
+        userVerificationCode.setRequestType(RequestType.ANOTHER_TYPE);
+        userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.of(userVerificationCode));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+        });
+
+        assertEquals("Invalid request type for password reset", exception.getMessage());
+    }
+
+    @Test
+    public void testResetPasswordVerificationCodeExpired() {
+        Long userId = 1L;
+        String verificationCode = "123456";
+        String newPassword = "NewPassword123!";
+        String currentPassword = "CurrentPassword123!";
+
+        User user = new User();
+        UserVerificationCode userVerificationCode = new UserVerificationCode();
+        userVerificationCode.setUser(user);
+        userVerificationCode.setCode(verificationCode);
+        userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
+        userVerificationCode.setExpirationTime(LocalDateTime.now().minusMinutes(2));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.of(userVerificationCode));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+        });
+
+        assertEquals("Verification code has expired", exception.getMessage());
+    }
+
+    @Test
+    public void testResetPasswordInvalidCurrentPassword() {
+        Long userId = 1L;
+        String verificationCode = "123456";
+        String newPassword = "NewPassword123!";
+        String currentPassword = "InvalidCurrentPassword";
+
+        User user = new User();
+        UserVerificationCode userVerificationCode = new UserVerificationCode();
+        userVerificationCode.setUser(user);
+        userVerificationCode.setCode(verificationCode);
+        userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
+        userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.of(userVerificationCode));
+        when(passwordEncoder.matches(currentPassword, user.getPassword()))
+                .thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+        });
+
+        assertEquals("Invalid current password", exception.getMessage());
+    }
+
+    @Test
+    public void testResetPasswordInvalidPassword() {
+        Long userId = 1L;
+        String invalidVerificationCode = "validCode";
+        String invalidPassword = "123";
+        String currentPassword = "currentValidPassword123@";
+
+        User user = new User();
+        user.setId(userId);
+        user.setPassword(passwordEncoder.encode(currentPassword));
+
+        UserVerificationCode userVerificationCode = new UserVerificationCode();
+        userVerificationCode.setCode(invalidVerificationCode);
+        userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
+        userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository.findByUserIdAndCode(userId, invalidVerificationCode)).thenReturn(Optional.of(userVerificationCode));
+        when(passwordEncoder.matches(currentPassword, user.getPassword())).thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, invalidVerificationCode, invalidPassword, currentPassword);
+        });
+        assertEquals("Password does not meet the complexity requirements", exception.getMessage());
+    }
+
+    @Test
+    public void testResetPasswordSuccess() {
+        Long userId = 1L;
+        String verificationCode = "123456";
+        String newPassword = "NewPassword123@";
+        String currentPassword = "CurrentPassword123@";
+
+        User user = new User();
+        user.setId(userId);
+        user.setPassword(passwordEncoder.encode(currentPassword));
+
+        UserVerificationCode userVerificationCode = new UserVerificationCode();
+        userVerificationCode.setUser(user);
+        userVerificationCode.setCode(verificationCode);
+        userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
+        userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.of(userVerificationCode));
+        when(passwordEncoder.matches(currentPassword, user.getPassword()))
+                .thenReturn(true);
+
+        when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
+
+        boolean result = userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+
+        assertTrue(result);
+        verify(userRepository, times(1)).save(user);
+        verify(userVerificationCodeRepository, times(1)).delete(userVerificationCode);
+
+        assertEquals("encodedNewPassword", user.getPassword());
     }
 
     //Изменение пароля
