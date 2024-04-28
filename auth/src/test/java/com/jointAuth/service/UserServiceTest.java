@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -887,6 +888,67 @@ public class UserServiceTest {
         String actualEmail = userService.getUserEmailById(userId);
 
         assertNull(actualEmail);
+    }
+
+    //resetRequestPass
+    @Test
+    public void testSendPasswordResetRequestUserNotFound() {
+        Long userId = 1L;
+
+        when(userService.getUserEmailById(userId)).thenReturn(null);
+
+        boolean result = userService.sendPasswordResetRequest(userId);
+
+        assertFalse(result);
+
+        verify(emailService, never()).sendPasswordResetConfirmationEmail(any(User.class), anyString());
+        verify(verificationCodeService, never()).saveOrUpdateVerificationCodeForResetPassword(anyLong(), anyString(), any(RequestType.class), any(LocalDateTime.class));
+    }
+
+    @Test
+    public void testSendPasswordResetRequestSuccess() {
+        Long userId = 1L;
+        String email = "Valera09@gmail.com";
+
+        User user = new User();
+        user.setId(userId);
+        user.setEmail(email);
+        user.setTwoFactorVerified(true);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(email)).thenReturn(user);
+
+        when(emailService.sendPasswordResetConfirmationEmail(any(User.class), anyString())).thenReturn(true);
+
+        boolean result = userService.sendPasswordResetRequest(userId);
+
+        assertTrue(result);
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, times(1)).findByEmail(email);
+
+        verify(emailService, times(1)).sendPasswordResetConfirmationEmail(any(User.class), anyString());
+    }
+
+    @Test
+    public void testSendPasswordResetRequestEmailSendingFailure() {
+        Long userId = 1L;
+        String email = "DaryaVoronina@gmail.com";
+
+        User user = new User();
+        user.setId(userId);
+        user.setEmail(email);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(email)).thenReturn(user);
+        when(emailService.sendPasswordResetConfirmationEmail(any(User.class), anyString())).thenReturn(false);
+
+        boolean result = userService.sendPasswordResetRequest(userId);
+
+        assertFalse(result);
+
+        verify(verificationCodeService, times(1)).saveOrUpdateVerificationCodeForResetPassword(eq(userId), anyString(), eq(RequestType.PASSWORD_RESET), any(LocalDateTime.class));
+        verify(emailService, times(1)).sendPasswordResetConfirmationEmail(any(User.class), anyString());
     }
 
 
