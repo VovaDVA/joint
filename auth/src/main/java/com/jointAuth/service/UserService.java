@@ -1,22 +1,21 @@
 package com.jointAuth.service;
 
 import com.jointAuth.model.profile.Profile;
+import com.jointAuth.model.user.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
+import com.jointAuth.model.user.UserVerificationCode;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
-import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import com.jointAuth.repository.UserVerificationCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 @Service
@@ -31,6 +30,10 @@ public class UserService {
     private final VerificationCodeService verificationCodeService;
 
     private final EmailService emailService;
+
+    private final UserVerificationCodeRepository userVerificationCodeRepository;
+
+    private final String COMBINATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private static final String PASSWORD_PATTERN =
             "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_])(?=\\S+$).{8,}$";
@@ -48,12 +51,14 @@ public class UserService {
                        @Autowired PasswordEncoder passwordEncoder,
                        @Autowired ProfileRepository profileRepository,
                        @Autowired VerificationCodeService verificationCodeService,
-                       @Autowired EmailService emailService) {
+                       @Autowired EmailService emailService,
+                       @Autowired UserVerificationCodeRepository userVerificationCodeRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.profileRepository = profileRepository;
         this.verificationCodeService = verificationCodeService;
         this.emailService = emailService;
+        this.userVerificationCodeRepository = userVerificationCodeRepository;
     }
 
 
@@ -129,7 +134,7 @@ public class UserService {
 
             if (user.getTwoFactorVerified()) {
                 String verificationCode = generateVerificationCode();
-                verificationCodeService.saveOrUpdateVerificationCode(user.getId(), verificationCode);
+                verificationCodeService.saveOrUpdateVerificationCodeFor2FA(user.getId(), verificationCode);
                 sendVerificationCode(user, verificationCode);
             }
 
@@ -205,20 +210,81 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void changePassword(Long userId, String newPassword) {
+    public boolean resetPassword(Long userId, String verificationCode, String newPassword, String currentPassword) {
         Optional<User> optionalUser = userRepository.findById(userId);
-
-        if (validatePassword(newPassword)) {
-            throw new IllegalArgumentException("Password does not meet the complexity requirements");
-        }
-
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
+
+            Optional<UserVerificationCode> optionalVerificationCode = userVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode);
+
+            if (optionalVerificationCode.isPresent()) {
+                UserVerificationCode userVerificationCode = optionalVerificationCode.get();
+
+                if (userVerificationCode.getRequestType() != RequestType.PASSWORD_RESET) {
+                    throw new IllegalArgumentException("Invalid request type for password reset");
+                }
+
+                if (userVerificationCode.getExpirationTime().isBefore(LocalDateTime.now())) {
+                    throw new IllegalArgumentException("Verification code has expired");
+                }
+
+                if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+                    throw new IllegalArgumentException("Invalid current password");
+                }
+
+                if (validatePassword(newPassword)) {
+                    throw new IllegalArgumentException("Password does not meet the complexity requirements");
+                }
+
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+
+                userVerificationCodeRepository.delete(userVerificationCode);
+
+                return true;
+            } else {
+                throw new IllegalArgumentException("Invalid verification code");
+            }
         } else {
             throw new IllegalArgumentException("User not found");
         }
+    }
+
+
+
+    public String getUserEmailById(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return user.getEmail();
+        } else {
+            return null;
+        }
+    }
+
+    public boolean sendPasswordResetRequest(Long userId) {
+        String email = getUserEmailById(userId);
+
+        if (email == null) {
+            return false;
+        }
+
+        User currentUser = userRepository.findByEmail(email);
+
+        if (currentUser == null) {
+            return false;
+        }
+
+        String verificationCode = generateVerificationCode();
+
+        RequestType requestType = RequestType.PASSWORD_RESET;
+
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
+
+        verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(userId, verificationCode, requestType, expirationTime);
+
+        return emailService.sendPasswordResetConfirmationEmail(currentUser, verificationCode);
     }
 
     public void deleteUser(Long id) {
@@ -254,13 +320,12 @@ public class UserService {
 
 
     private String generateVerificationCode() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         SecureRandom random = new SecureRandom();
 
         StringBuilder code = new StringBuilder(6);
 
         for (int i = 0; i < 6; i++) {
-            code.append(chars.charAt(random.nextInt(chars.length())));
+            code.append(COMBINATIONS.charAt(random.nextInt(COMBINATIONS.length())));
         }
 
         return code.toString();

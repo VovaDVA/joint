@@ -1,8 +1,11 @@
 package com.jointAuth.service;
 
-import com.jointAuth.model.user.VerificationCode;
+import com.jointAuth.model.user.RequestType;
+import com.jointAuth.model.user.TwoFactorAuthVerificationCode;
+import com.jointAuth.model.user.UserVerificationCode;
 import com.jointAuth.repository.UserRepository;
-import com.jointAuth.repository.VerificationCodeRepository;
+import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
+import com.jointAuth.repository.UserVerificationCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,25 +17,29 @@ import java.util.Optional;
 @Service
 public class VerificationCodeService {
 
-    private final VerificationCodeRepository verificationCodeRepository;
+    private final TwoFactorAuthVerificationCodeRepository verificationCodeRepository;
 
     private final UserRepository userRepository;
 
-    public VerificationCodeService(@Autowired VerificationCodeRepository verificationCodeRepository,
-                                   @Autowired UserRepository userRepository) {
+    private final UserVerificationCodeRepository userVerificationCodeRepository;
+
+    public VerificationCodeService(@Autowired TwoFactorAuthVerificationCodeRepository verificationCodeRepository,
+                                   @Autowired UserRepository userRepository,
+                                   @Autowired UserVerificationCodeRepository userVerificationCodeRepository) {
         this.verificationCodeRepository = verificationCodeRepository;
         this.userRepository = userRepository;
+        this.userVerificationCodeRepository = userVerificationCodeRepository;
     }
 
-    public void saveOrUpdateVerificationCode(Long userId, String newCode) {
-        Optional<VerificationCode> existingCodeOptional = verificationCodeRepository.findByUserId(userId);
+    public void saveOrUpdateVerificationCodeFor2FA(Long userId, String newCode) {
+        Optional<TwoFactorAuthVerificationCode> existingCodeOptional = verificationCodeRepository.findByUserId(userId);
 
-        VerificationCode verificationCode;
+        TwoFactorAuthVerificationCode verificationCode;
 
         if (existingCodeOptional.isPresent()) {
             verificationCode = existingCodeOptional.get();
         } else {
-            verificationCode = new VerificationCode();
+            verificationCode = new TwoFactorAuthVerificationCode();
             verificationCode.setUser(userRepository.getOne(userId));
         }
         verificationCode.setCode(newCode);
@@ -42,11 +49,11 @@ public class VerificationCodeService {
     }
 
 
-    public boolean verifyVerificationCode(Long userId, String code) {
-        VerificationCode verificationCode = verificationCodeRepository.findByUserId(userId)
+    public boolean verifyVerificationCodeFor2FA(Long userId, String code) {
+        TwoFactorAuthVerificationCode verificationCode = verificationCodeRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Verification code not found for userId: " + userId));
 
-        if (verificationCode.getCode().equals(code) && !isVerificationCodeExpired(verificationCode)) {
+        if (verificationCode.getCode().equals(code) && !isVerificationCodeExpiredFor2FA(verificationCode)) {
             verificationCodeRepository.delete(verificationCode);
             return true;
         }
@@ -54,15 +61,47 @@ public class VerificationCodeService {
     }
 
     @Scheduled(fixedRate = 1209600000)
-    public void cleanExpiredVerificationCodes() {
+    public void cleanExpiredVerificationCodesFor2FA() {
         LocalDateTime currentTime = LocalDateTime.now();
 
-        List<VerificationCode> expiredCodes = verificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
+        List<TwoFactorAuthVerificationCode> expiredCodes = verificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
 
         verificationCodeRepository.deleteAll(expiredCodes);
     }
 
-    private boolean isVerificationCodeExpired(VerificationCode verificationCode) {
+    private boolean isVerificationCodeExpiredFor2FA(TwoFactorAuthVerificationCode verificationCode) {
         return verificationCode.getExpirationTime().isBefore(LocalDateTime.now());
     }
+
+    public void saveOrUpdateVerificationCodeForResetPassword(Long userId, String verificationCode, RequestType requestType, LocalDateTime expirationTime) {
+        Optional<UserVerificationCode> existingCodeOptional = userVerificationCodeRepository.findByUserId(userId);
+
+        UserVerificationCode userVerificationCode;
+
+        if (existingCodeOptional.isPresent()) {
+            userVerificationCode = existingCodeOptional.get();
+        } else {
+            userVerificationCode = new UserVerificationCode();
+
+            userVerificationCode.setUser(userRepository.getById(userId));
+        }
+
+        userVerificationCode.setCode(verificationCode);
+
+        userVerificationCode.setRequestType(requestType);
+
+        userVerificationCode.setExpirationTime(expirationTime);
+
+        userVerificationCodeRepository.save(userVerificationCode);
+    }
+
+    @Scheduled(fixedRate = 1209600000)
+    public void cleanExpiredVerificationCodesForPasswordReset() {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<UserVerificationCode> expiredCodes = userVerificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
+
+        userVerificationCodeRepository.deleteAll(expiredCodes);
+    }
+
 }
