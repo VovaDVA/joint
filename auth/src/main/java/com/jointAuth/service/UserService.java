@@ -42,7 +42,7 @@ public class UserService {
     private static final String EMAIL_REGEX =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
-    private static final String NAME_REGEX = "^[a-zA-Z]+$";
+    private static final String NAME_REGEX = "^[a-zA-Zа-яА-ЯёЁ]+$";
 
     private static final int NAME_MAX_LENGTH = 15;
 
@@ -310,8 +310,6 @@ public class UserService {
         if (optionalUser.isEmpty()) {
             return false;
         }
-
-        User user = optionalUser.get();
 
         boolean isVerified = verificationCodeService.verifyUserVerificationCode(userId, verificationCode);
 
