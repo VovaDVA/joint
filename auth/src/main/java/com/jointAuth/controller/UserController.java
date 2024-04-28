@@ -5,7 +5,7 @@ import com.jointAuth.bom.user.UserProfileBom;
 import com.jointAuth.model.user.*;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.converter.UserConverter;
-import com.jointAuth.repository.VerificationCodeRepository;
+import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.service.UserService;
 import com.jointAuth.service.VerificationCodeService;
 import com.jointAuth.util.JwtTokenUtils;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,12 +29,12 @@ public class UserController {
 
     private final VerificationCodeService verificationCodeService;
 
-    private final VerificationCodeRepository verificationCodeRepository;
+    private final TwoFactorAuthVerificationCodeRepository verificationCodeRepository;
 
     public UserController(@Autowired UserService userService,
                           @Autowired JwtTokenUtils jwtTokenUtils,
                           @Autowired VerificationCodeService verificationCodeService,
-                          @Autowired VerificationCodeRepository verificationCodeRepository) {
+                          @Autowired TwoFactorAuthVerificationCodeRepository verificationCodeRepository) {
         this.userService = userService;
         this.jwtTokenUtils = jwtTokenUtils;
         this.verificationCodeService = verificationCodeService;
@@ -72,7 +71,7 @@ public class UserController {
 
     @PostMapping(path = "/verify-code")
     public ResponseEntity<?> verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) {
-        boolean isValid = verificationCodeService.verifyVerificationCode(verifyCodeRequest.getUserId(),verifyCodeRequest.getCode());
+        boolean isValid = verificationCodeService.verifyVerificationCodeFor2FA(verifyCodeRequest.getUserId(),verifyCodeRequest.getCode());
 
         if (isValid) {
             User user = userService.getUserById(verifyCodeRequest.getUserId())
@@ -98,8 +97,8 @@ public class UserController {
     }
 
     @GetMapping("/user/get")
-    public ResponseEntity<UserBom> getUserDetailsById(@RequestBody UserDetailsRequest userDetailsRequestDTO) {
-        UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userDetailsRequestDTO.getUserId());
+    public ResponseEntity<UserBom> getUserDetailsById(@RequestParam Long userId) {
+        UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userId);
 
         if (userDetailsDTO != null) {
             return ResponseEntity.ok(userDetailsDTO);
@@ -132,21 +131,37 @@ public class UserController {
         }
     }
 
-    @PutMapping(path = "/change-password")
-    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token,
-                                            @RequestBody String password) {
+    @PostMapping(path = "/change-password")
+    public ResponseEntity<?> requestPasswordReset(@RequestHeader("Authorization") String token) {
+        // Извлекаем идентификатор пользователя из токена
+        Long userId = jwtTokenUtils.getCurrentUserId(token);
 
-        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
-
-        Optional<User> existingUser = userService.getUserById(currentUserId);
-
-        if (existingUser.isPresent()) {
-            userService.changePassword(currentUserId, password);
-            return ResponseEntity.ok("Password changed successfully");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
 
-        return ResponseEntity.notFound().build();
+        // Отправляем запрос на сброс пароля на почту пользователя
+        boolean emailSent = userService.sendPasswordResetRequest(userId);
+        if (emailSent) {
+            return ResponseEntity.ok("Password reset request sent to email.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to send password reset request.");
+        }
+    }
 
+    @PostMapping(path = "/confirm-change-password")
+    public ResponseEntity<?> confirmPasswordReset(@RequestBody ConfirmPasswordResetRequest confirmPasswordResetRequest) {
+        // Проверяем сброс пароля с помощью сервиса пользователя
+        boolean passwordReset = userService.resetPassword(confirmPasswordResetRequest.getUserId(),
+                confirmPasswordResetRequest.getVerificationCode(),
+                confirmPasswordResetRequest.getNewPassword(),
+                confirmPasswordResetRequest.getCurrentPassword());
+
+        if (passwordReset) {
+            return ResponseEntity.ok("Password reset successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code.");
+        }
     }
 
     @DeleteMapping(path = "/delete")
