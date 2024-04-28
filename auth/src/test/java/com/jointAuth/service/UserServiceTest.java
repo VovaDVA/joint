@@ -861,6 +861,36 @@ public class UserServiceTest {
         assertEquals("encodedNewPassword", user.getPassword());
     }
 
+    //findByEmail
+
+    @Test
+    public void testGetUserEmailByIdUserFound() {
+        Long userId = 1L;
+        String expectedEmail = "vovan012@gmail.com";
+        User user = new User();
+        user.setId(userId);
+        user.setEmail(expectedEmail);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        String actualEmail = userService.getUserEmailById(userId);
+
+        assertEquals(expectedEmail, actualEmail);
+    }
+
+    @Test
+    public void testGetUserEmailByIdUserNotFound() {
+        Long userId = 1L;
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        String actualEmail = userService.getUserEmailById(userId);
+
+        assertNull(actualEmail);
+    }
+
+
+
     //Изменение пароля
 //    @Test
 //    public void testChangePasswordUserFoundPasswordChanged() {
