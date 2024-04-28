@@ -17,6 +17,7 @@ public class UserConverter {
         dto.setEmail(user.getEmail());
         dto.setRegistrationDate(user.getRegistrationDate());
         dto.setLastLogin(user.getLastLogin());
+        dto.setTwoFactorVerified(user.getTwoFactorVerified());
         return dto;
     }
 }

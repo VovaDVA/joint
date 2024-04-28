@@ -14,11 +14,15 @@ import java.util.Optional;
 @Service
 public class ProfileService {
 
-    @Autowired
-    private JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenUtils jwtTokenUtils;
 
-    @Autowired
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
+
+    public ProfileService(@Autowired JwtTokenUtils jwtTokenUtils,
+                          @Autowired ProfileRepository profileRepository) {
+        this.jwtTokenUtils = jwtTokenUtils;
+        this.profileRepository = profileRepository;
+    }
 
     public ProfileBom getCurrentProfile(String token) {
         try {
