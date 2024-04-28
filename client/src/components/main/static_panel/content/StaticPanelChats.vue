@@ -15,70 +15,39 @@ export default {
     data() {
         return {
             chats: [
-                {
-                    "_id": 1,
-                    "members": [1234, 5678],
-                    "created_at": '2024-04 - 16T09: 21: 52.696+00:00',
-                    "last_message_at": '21:00',
-                    "last_message": 'Привет'
-                },
-                {
-                    "_id": 2,
-                    "members": [1234, 6256],
-                    "created_at": '2024-04 - 16T09: 21: 52.696+00:00',
-                    "last_message_at": '15:01',
-                    "last_message": 'Хорошо, договорились'
-                },
-                {
-                    "_id": 3,
-                    "members": [1234, 2626],
-                    "created_at": '2024-04 - 16T09: 21: 52.696+00:00',
-                    "last_message_at": '7:45',
-                    "last_message": 'Не знаю, скорее всего'
-                },
-                {
-                    "_id": 4,
-                    "members": [1234, 3474],
-                    "created_at": '2024-04 - 16T09: 21: 52.696+00:00',
-                    "last_message_at": '2:54',
-                    "last_message": 'Пока'
-                },
-                // { id: 2, name: 'Евгений Зойкин' },
-                // { id: 1, name: 'Владимир Двойнишников' },
-                // { id: 2, name: 'Алексей Ищенко' },
-                // { id: 3, name: 'Анастасия Зубенко' },
-                // { id: 3, name: 'Сергей Копытов' },
-                // { id: 3, name: 'Максим Примак' },
-                // { id: 3, name: 'Елизавета Рябухина' },
-                // { id: 3, name: 'Кристина Плетюк' },
+                // {
+                //     "_id": 1,
+                //     "members": [1234, 5678],
+                //     "created_at": '2024-04 - 16T09: 21: 52.696+00:00',
+                //     "last_message_at": '21:00',
+                //     "last_message": 'Привет'
+                // },
             ],
             searchText: '',
         };
     },
     async mounted() {
         const user = getUser();
-        console.log(user);
         if (!user) return;
         try {
-				const response = await fetch('/chat/getUserChats?user_id=' + user.id.toString(), {
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-				});
+            const response = await fetch('/chat/getUserChats?user_id=' + user.userId.toString(), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
 
-				const data = await response.json();
-				console.log(data);
-                this.chats = data;
+            const data = await response.json();
+            console.log(data);
+            this.chats = data;
 
-			} catch (error) {
-				console.error(error);
-			}
+        } catch (error) {
+            console.error(error);
+        }
     },
     computed: {
         // Фильтруем чаты в соответствии с текстом поиска
         filteredChats() {
-            
             return this.chats;
             // return this.chats.filter(() => {
             //     // return chat.name.toLowerCase().includes(this.searchText.toLowerCase());

@@ -3,7 +3,7 @@
         <div class="avatar"></div>
         <div class="chat-info">
             <div class="chat-header">
-                <div class="chat-title">{{ otherUser.firstName + ' ' + otherUser.lastName }}</div>
+                <div class="chat-title">{{ getUserName() }}</div>
                 <div class="chat-last-changed">{{ chat.last_message_at }}</div>
             </div>
             <div class="last-message">
@@ -15,25 +15,27 @@
 </template>
 
 <script>
-import { getUser } from '@/modules/auth';
-
-import { getUserById } from '@/modules/auth';
+import { getUserById, getUserId } from '@/modules/auth';
 
 export default {
     name: 'chat-preview-block',
     props: ['chat'],
     data() {
         return {
-            otherUser: {
-                firstName: 'Vova',
-                lastName: 'DVA'
-            },
+            otherUser: null,
         }
     },
     async mounted() {
-        const otherUserId = this.chat.members.find(id => id != getUser().id);
+        const otherUserId = this.chat.members.find(id => getUserId(id));
         console.log(this.chat.members, otherUserId);
         this.otherUser = await getUserById(otherUserId);
+        console.log(this.otherUser)
+    },
+    methods: {
+        getUserName() {
+            if (!this.otherUser) return '';
+            return this.otherUser.firstName + ' ' + this.otherUser.lastName;
+        }
     }
 }
 </script>
@@ -55,7 +57,8 @@ export default {
     transition: background .2s linear;
 }
 
-.avatar, .last-message-avatar {
+.avatar,
+.last-message-avatar {
     width: 60px;
     height: 60px;
     margin-right: 20px;
@@ -92,7 +95,8 @@ export default {
     margin-right: 10px;
 }
 
-.last-message-text, .chat-last-changed {
+.last-message-text,
+.chat-last-changed {
     font-size: 13px;
     color: #969696;
 }
