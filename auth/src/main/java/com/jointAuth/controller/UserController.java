@@ -133,14 +133,12 @@ public class UserController {
 
     @PostMapping(path = "/change-password")
     public ResponseEntity<?> requestPasswordReset(@RequestHeader("Authorization") String token) {
-        // Извлекаем идентификатор пользователя из токена
         Long userId = jwtTokenUtils.getCurrentUserId(token);
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
 
-        // Отправляем запрос на сброс пароля на почту пользователя
         boolean emailSent = userService.sendPasswordResetRequest(userId);
         if (emailSent) {
             return ResponseEntity.ok("Password reset request sent to email.");
@@ -151,7 +149,6 @@ public class UserController {
 
     @PostMapping(path = "/confirm-change-password")
     public ResponseEntity<?> confirmPasswordReset(@RequestBody ConfirmPasswordResetRequest confirmPasswordResetRequest) {
-        // Проверяем сброс пароля с помощью сервиса пользователя
         boolean passwordReset = userService.resetPassword(confirmPasswordResetRequest.getUserId(),
                 confirmPasswordResetRequest.getVerificationCode(),
                 confirmPasswordResetRequest.getNewPassword(),
@@ -165,21 +162,31 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/delete")
-    public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
-        if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<?> requestAccountDeletion(@RequestHeader("Authorization") String token) {
+        Long userId = jwtTokenUtils.getCurrentUserId(token);
+
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
 
-        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
-
-        Optional<User> existingUser = userService.getUserById(currentUserId);
-
-        if (existingUser.isPresent()) {
-            userService.deleteUser(currentUserId);
-            return ResponseEntity.ok().build();
+        boolean emailSent = userService.sendAccountDeletionRequest(userId);
+        if (emailSent) {
+            return ResponseEntity.ok("Account deletion request sent to email.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to send account deletion request.");
         }
+    }
 
-        return ResponseEntity.notFound().build();
+    @DeleteMapping(path = "/confirm-delete")
+    public ResponseEntity<?> confirmAccountDeletion(@RequestBody ConfirmAccountDeletionRequest confirmAccountDeletionRequest) {
+        boolean accountDeleted = userService.deleteUser(confirmAccountDeletionRequest.getUserId(),
+                confirmAccountDeletionRequest.getVerificationCode());
+
+        if (accountDeleted) {
+            return ResponseEntity.ok("Account deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code or failed to delete account.");
+        }
     }
 
     @PostMapping(path = "/two-factor/enable")
