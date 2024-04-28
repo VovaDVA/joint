@@ -11,13 +11,13 @@ export default {
 <style scoped>
 .static-panel-content {
     flex: 1;
-    /* padding: 0 10px; */
+    position: relative;
 
     border: 1px #ffffff4f solid;
     border-radius: 20px;
     background-color: rgba(0, 0, 0, 0.5);
 
-    overflow-y: scroll;
+    overflow-y: auto;
     scrollbar-color: #ffffff;
 }
 

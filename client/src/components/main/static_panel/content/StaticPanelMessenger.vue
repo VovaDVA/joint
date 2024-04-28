@@ -5,7 +5,9 @@
     </static-panel-header>
     <chat-title>{{ chatName }}</chat-title>
     <static-panel-content>
-        <single-message v-for="message in messages" :key="message._id" :message="message" />
+        <div class="message-container">
+            <single-message v-for="message in messages" :key="message._id" :message="message" />
+        </div>
     </static-panel-content>
     <div class="chat-input">
         <icon-button icon-name="paperclip"></icon-button>
@@ -18,41 +20,29 @@
 </template>
 
 <script>
-import { getUser, getUserById } from '@/modules/auth';
-
-// import { getUser } from '@/modules/auth';
-
-// import { getUserById } from '@/modules/auth';
-
-// import { io } from 'socket.io-client';
+import { getUser, getUserId, getUserById } from '@/modules/auth';
+import { io } from 'socket.io-client';
 
 export default {
     props: ['chat'],
     data() {
         return {
             socket: null,
-            chatName: 'ЕПТА team',
+            chatName: '',
             messages: [
-                {
-                    "_id": 1,
-                    "chat_id": 1,
-                    "sender_id": 5678,
-                    "text": "Привет",
-                    "created_at": '2024-04 - 16T09: 54:00.063 +00:00'
-                },
-                {
-                    "_id": 2,
-                    "chat_id": 1,
-                    "sender_id": 1234,
-                    "text": "Привет",
-                    "created_at": '2024-04 - 16T09: 54:00.063 +00:00'
-                }
+                // {
+                //     "_id": 1,
+                //     "chat_id": 1,
+                //     "sender_id": 5678,
+                //     "text": "Привет",
+                //     "created_at": '2024-04 - 16T09: 54:00.063 +00:00'
+                // },
             ],
             newMessage: ''
         }
     },
     async mounted() {
-        const otherUserId = this.chat.members.find(id => id != getUser().id);
+        const otherUserId = this.chat.members.find(id => getUserId(id));
         this.otherUser = await getUserById(otherUserId);
         if (this.otherUser) {
             this.chatName = this.otherUser.firstName + ' ' + this.otherUser.lastName;
@@ -69,22 +59,30 @@ export default {
 
             const data = await response.json();
             console.log(data);
-            this.messages = data;
+            this.messages = data.reverse();
 
         } catch (error) {
             console.error(error);
         }
-        // const otherUserId = this.user
-        // this.chatName = getUserById();
-        // this.socket = io('http://127.0.0.1:3000');
-        // this.socket.on('chat message', (msg) => {
-        //     this.messages.push({ id: this.messages.length + 1, text: msg });
-        // });
+
+        this.socket = io('http://192.168.0.107:3000', {
+            query: {
+                chatId: this.chat._id
+            }
+        });
+        this.socket.on('message', (message) => {
+            this.messages.unshift(message);
+        });
     },
     methods: {
         sendMessage() {
-            if (this.newMessage) {
-                this.socket.emit('chat message', this.newMessage);
+            const messageData = {
+                chat_id: this.chat._id,
+                sender_id: getUser().userId,
+                text: this.newMessage,
+            }
+            if (this.newMessage !== '') {
+                this.socket.emit('sendMessage', messageData);
                 this.newMessage = '';
             }
         },
@@ -96,6 +94,19 @@ export default {
 </script>
 
 <style scoped>
+.message-container {
+    height: 100%;
+    position: absolute;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.message-container::-webkit-scrollbar {
+    width: 0;
+}
+
 .chat-input {
     flex: 0 0 50px;
     margin-top: 10px;

@@ -33,7 +33,7 @@ async function isTokenValid(token) {
         const data = await response.json();
         console.log(data);
 
-        if (data['id']) {
+        if (data['userId']) {
             saveUserData(data);
         } else {
             // alert(data['message']);
@@ -49,7 +49,6 @@ export function removeToken() {
 }
 
 function saveUserData(data) {
-    console.log(data);
     localStorage.setItem('user', JSON.stringify(data));
 }
 
@@ -57,8 +56,14 @@ export function getUser() {
     return JSON.parse(localStorage.getItem('user'));
 }
 
+export function getUserId(id) {
+    const user = getUser();
+    if (!user) return;
+    return id != getUser().userId;
+}
+
 export function deleteSession() {
-    const user = localStorage.getItem('user');
+    const user = getUser();
     if (user) {
         localStorage.removeItem('user');
         localStorage.removeItem('jwtToken');
@@ -68,8 +73,7 @@ export function deleteSession() {
 
 export async function getUserById(userId) {
     try {
-        console.log(userId)
-        const response = await fetch('/auth/user?id=' + userId, {
+        const response = await fetch('/auth/user/get?userId=' + userId, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + getToken(),

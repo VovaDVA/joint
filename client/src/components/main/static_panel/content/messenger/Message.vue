@@ -36,7 +36,7 @@ export default {
         isMainUser() {
             const user = getUser();
             if (!user) return true;
-            return this.message['sender_id'] == user.id; 
+            return this.message['sender_id'] == user.userId; 
         }
     }
 }
@@ -48,8 +48,8 @@ export default {
     justify-content: start;
     width: auto;
     height: fit-content;
-    min-height: 30px;
-    margin: 20px 10px;
+    /* min-height: 30px; */
+    margin: 10px;
 }
 
 .message.you {
@@ -57,7 +57,7 @@ export default {
 }
 
 .message.you .message-inner {
-    background-color: rgb(255, 210, 87);
+    background-color: rgb(151, 208, 255);
 }
 
 .message-inner {
@@ -66,12 +66,13 @@ export default {
     height: 100%;
     padding: 10px;
 
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 17px;
     line-height: 17px;
     color: #000;
 
     border-radius: 15px;
-    background-color: rgb(202, 202, 202);
+    background-color: rgb(226, 226, 226);
 }
 
 .author {
@@ -105,5 +106,16 @@ export default {
 .svg-inline--fa {
     height: auto;
     vertical-align: 0;
+}
+
+
+@media (max-width: 800px) {
+    .message-inner {
+        font-size: 17px;
+    }
+
+    .send-time {
+        font-size: 10px;
+    }
 }
 </style>

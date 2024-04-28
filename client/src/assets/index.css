@@ -100,21 +100,6 @@ button[type="submit"] {
     cursor: not-allowed;
 }
 
-.submit_btn {
-    background: none;
-    color: #ffffff;
-    line-height: 20px;
-
-    transition: color, background .3s linear;
-}
-
-.submit_btn:hover {
-    color: #000000;
-    background-color: #ffffff;
-
-    transition: color, background .3s linear;
-}
-
 
 .lost_password {
     text-align: center;
@@ -156,6 +141,21 @@ template {
 
 input {
     color: white !important;
+}
+
+.submit_btn {
+    background: none;
+    color: #ffffff;
+    line-height: 20px;
+
+    transition: color, background .3s linear;
+}
+
+.submit_btn:hover {
+    color: #000000 !important;
+    background-color: #ffffff;
+
+    transition: color, background .3s linear;
 }
 
 button {

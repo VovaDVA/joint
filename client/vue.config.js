@@ -6,7 +6,7 @@ module.exports = defineConfig({
 		port: 9000,
 		proxy: {
 			'/auth': {
-				target: 'http://10.99.15.144:8080',
+				target: 'http://localhost:8080',
 				changeOrigin: true,
 				pathRewrite: {
 					'^/auth': '/auth'

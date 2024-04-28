@@ -169,6 +169,7 @@ export default {
     justify-content: flex-start;
     align-items: start;
     flex-direction: column;
+    z-index: 31;
 }
 
 .icon-container.left {
