@@ -1,6 +1,6 @@
 <template>
     <static-panel-header>
-        <messenger-action-icon icon-name="user"></messenger-action-icon>
+        <messenger-action-icon icon-name="star"></messenger-action-icon>
         <static-panel-search-bar @input="updateSearch"></static-panel-search-bar>
     </static-panel-header>
     <static-panel-content>
@@ -14,7 +14,7 @@ export default {
     data() {
         return {
             items: [
-                { id: 1, author: 'VovaDVA', name: 'Как манипулировать людьми?' },
+                // { id: 1, author: 'VovaDVA', name: 'Как манипулировать людьми?' },
                 { id: 2, author: 'VovaDVA', name: 'Пишем свою соцсеть' },
                 { id: 3, author: 'VovaDVA', name: 'Планета Н-0131 | Обзор №1' },
                 { id: 4, author: 'VovaDVA', name: 'Планета Н-0131 | Обзор №2 | Сюжет' },

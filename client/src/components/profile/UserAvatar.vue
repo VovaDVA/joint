@@ -2,7 +2,7 @@
     <div class="user-info">
         <div class="avatar"></div>
         <div class="user-info-text">
-            <div class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) : '-'}}</div>
+            <div class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) : 'Владимир Двойнишников'}}</div>
         </div>
     </div>
 </template>
@@ -59,5 +59,29 @@ export default {
     flex-direction: column;
     margin-top: 10px;
     margin-left: 10px;
+}
+
+
+@media (max-width: 1300px) {
+    .avatar {
+        width: 80px;
+        height: 80px;
+        margin-top: -40px;
+        margin-left: 50px;
+    }
+}
+
+
+@media (max-width: 800px) {
+    .avatar {
+        margin: auto;
+        margin-top: -40px;
+    }
+
+    .user-info {
+        margin: 0;
+        text-align: center;
+        flex-direction: column;
+    }
 }
 </style>

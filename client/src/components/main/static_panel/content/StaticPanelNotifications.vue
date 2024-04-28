@@ -13,9 +13,10 @@ export default {
     data() {
         return {
             items: [
-                { id: 1, author: 'VovaDVA', name: 'Как манипулировать людьми?' },
-                { id: 2, author: 'VovaDVA', name: 'Как манипулировать женщинами?' },
-                { id: 3, author: 'VovaDVA', name: 'Как понять, что вами манипулируют?' },
+                { id: 1, author: 'VovaDVA', name: 'Обновление в игре H-0131' },
+                // { id: 1, author: 'VovaDVA', name: 'Как манипулировать людьми?' },
+                // { id: 2, author: 'VovaDVA', name: 'Как манипулировать женщинами?' },
+                // { id: 3, author: 'VovaDVA', name: 'Как понять, что вами манипулируют?' },
             ],
             searchText: '',
         };

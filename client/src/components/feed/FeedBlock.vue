@@ -31,6 +31,7 @@ export default {
 <style scoped>
 .feed-block {
     display: flex;
+    gap: 10px;
     width: 100%;
     height: 13.5vw;
     margin-bottom: 20px;
@@ -38,7 +39,7 @@ export default {
 
 .feed-preview {
     flex: 0 0 24vw;
-    margin-right: 10px;
+    /* aspect-ratio: 16/9; */
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
@@ -47,6 +48,7 @@ export default {
 .feed-block-inner {
     flex: 1;
     display: flex;
+    gap: 10px;
     flex-direction: column;
 }
 
@@ -54,7 +56,6 @@ export default {
     position: relative;
     flex: 1;
     height: calc(100% - 45px);
-    margin-bottom: 10px;
     padding: 15px 20px;
     border: 1px #ffffff7c solid;
     border-radius: 20px;
@@ -74,18 +75,69 @@ export default {
 
 .feed-stats {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
 }
 
 .feed-stats-container {
     display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.feed-stats-container * {
-    margin-right: 10px;
+
+@media (max-width: 1000px) {
+    .feed-block {
+        height: 22.5vw;
+    }
+
+    .feed-preview {
+        flex: 0 0 40vw;
+    }
 }
 
-.feed-stats-container.right * {
-    margin-right: 0;
+@media (max-width: 800px) {
+    .feed-block {
+        flex-direction: column;
+        height: fit-content;
+        padding: 15px;
+
+        border: 1px #ffffff7c solid;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .feed-preview {
+        flex: 1;
+        aspect-ratio: 16/9 !important;
+    }
+
+    .feed-info {
+        padding: 10px 0;
+        border: none;
+        background: none;
+    }
+}
+
+@media (max-width: 520px) {
+    .feed-stats {
+        flex-direction: column;
+    }
+
+    .feed-stats-container {
+        justify-content: space-between;
+    }
+
+    .feed-stats-container * {
+        width: 20%;
+        min-width: fit-content;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .feed-stats-container.right * {
+        width: 100%;
+        margin-bottom: 0;
+    }
 }
 </style>

@@ -84,4 +84,11 @@ export default {
     color: #ffe030;
     transition: color .3s linear;
 }
+
+
+@media (max-width: 1000px) {
+    .profile-content {
+        margin-top: 10px;
+    }
+}
 </style>

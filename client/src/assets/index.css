@@ -157,3 +157,8 @@ template {
 input {
     color: white !important;
 }
+
+button {
+    outline: none !important;
+    user-select: none;
+}

@@ -85,39 +85,6 @@ export default {
     transition: color, background .3s linear;
 }
 
-.nav {
-    display: flex;
-}
-
-.nav_item {
-    padding: 0 15px;
-
-    color: #FFFFFF;
-    text-decoration: none;
-
-    transition: background .3s linear;
-}
-
-.nav_item:hover {
-    background-color: #00366c;
-    transition: background .3s linear;
-}
-
-.nav_item.active {
-    background-color: #00366c;
-}
-
-.header_fade {
-    width: 100%;
-    height: 300px;
-    background-image: linear-gradient(#00111e 70px, transparent);
-
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 90;
-}
-
 /* Section */
 
 .section {
@@ -125,6 +92,7 @@ export default {
     margin-top: 10px;
     /* flex: 0.7; */
     width: calc(100vw - 30vw - 135px);
+    z-index: 10;
     /* overflow-y: auto; */
     /* margin-top: 200px;
     padding: 50px 0 100px;
@@ -152,5 +120,22 @@ export default {
 .container p {
     max-width: 750px;
     margin: 15px auto;
+}
+
+
+@media (max-width: 1300px) {
+    .section {
+        width: calc(100vw - 110px);
+    }
+}
+
+@media (max-width: 1000px) {
+    .page {
+        padding: 0 10px;
+    }
+
+    .section {
+        width: 100%;
+    }
 }
 </style>

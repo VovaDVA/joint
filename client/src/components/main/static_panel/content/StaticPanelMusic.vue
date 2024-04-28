@@ -1,6 +1,6 @@
 <template>
     <static-panel-header>
-        <messenger-action-icon icon-name="user"></messenger-action-icon>
+        <messenger-action-icon icon-name="star"></messenger-action-icon>
         <static-panel-search-bar @input="updateSearch"></static-panel-search-bar>
     </static-panel-header>
     <static-panel-content>

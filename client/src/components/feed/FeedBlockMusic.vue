@@ -140,4 +140,62 @@ export default {
     border-radius: 2px;
     background-color: rgba(255, 255, 255, 0.555);
 }
+
+
+/* @media (max-width: 1000px) {
+    .feed-block {
+        height: 22.5vw;
+    }
+
+    .feed-preview {
+        flex: 0 0 40vw;
+    }
+} */
+
+@media (max-width: 800px) {
+    .feed-block {
+        flex-direction: column;
+        height: fit-content;
+        padding: 15px;
+
+        border: 1px #ffffff7c solid;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .feed-preview {
+        flex: 0 0 50px;
+        margin-right: 0;
+        aspect-ratio: 1/1 !important;
+        border: none;
+    }
+
+    .feed-info {
+        padding: 10px 0;
+        border: none;
+        background: none;
+    }
+}
+
+@media (max-width: 520px) {
+    .feed-stats {
+        flex-direction: column;
+    }
+
+    .feed-stats-container {
+        justify-content: space-between;
+    }
+
+    .feed-stats-container * {
+        width: 20%;
+        min-width: fit-content;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .feed-stats-container.right * {
+        width: 100%;
+        margin-bottom: 0;
+    }
+}
 </style>
