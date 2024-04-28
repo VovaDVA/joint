@@ -1363,4 +1363,29 @@ public class UserServiceTest {
 
         assertEquals("Save failed", exception.getMessage());
     }
+
+    @Test
+    public void testSendVerificationCodeSuccess() {
+        User user = new User();
+        user.setEmail("Dodo0329@gmail.com");
+        String verificationCode = "12345";
+
+        userService.sendVerificationCode(user, verificationCode);
+
+        verify(emailService)
+                .sendVerificationCodeByEmail(user, verificationCode);
+    }
+
+    @Test
+    public void testSendVerificationCodeEmailSendingError() {
+        User user = new User();
+        user.setEmail("Vasek123@gmail.com");
+        String verificationCode = "12345";
+
+        doThrow(new RuntimeException("Email sending error"))
+                .when(emailService)
+                .sendVerificationCodeByEmail(user, verificationCode);
+
+        assertThrows(RuntimeException.class, () -> userService.sendVerificationCode(user, verificationCode));
+    }
 }
