@@ -286,7 +286,7 @@ a {
 
     font-size: 0;
     color: transparent;
-
+ 
     border: 0;
     background: none;
     cursor: pointer;
