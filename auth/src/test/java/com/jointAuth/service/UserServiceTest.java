@@ -1065,7 +1065,7 @@ public class UserServiceTest {
     //delete
 
     @Test
-    void testDeleteUserUserNotFound() {
+    public void testDeleteUserUserNotFound() {
         Long userId = 1L;
         String verificationCode = "someCode";
 
@@ -1079,7 +1079,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testDeleteUserVerificationFailed() {
+    public void testDeleteUserVerificationFailed() {
         Long userId = 1L;
         String verificationCode = "someCode";
         User user = new User();
@@ -1099,7 +1099,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testDeleteUserSuccess() {
+    public void testDeleteUserSuccess() {
         Long userId = 1L;
         String verificationCode = "testCode";
 
@@ -1125,7 +1125,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testDeleteUserInvalidVerificationCode() {
+    public void testDeleteUserInvalidVerificationCode() {
         Long userId = 1L;
         String verificationCode = "invalidCode";
 
@@ -1145,7 +1145,7 @@ public class UserServiceTest {
 
     //DelRequest
     @Test
-    void testSendAccountDeletionRequestSuccess() {
+    public void testSendAccountDeletionRequestSuccess() {
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -1173,7 +1173,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testSendAccountDeletionRequestUserNotFound() {
+    public void testSendAccountDeletionRequestUserNotFound() {
         Long userId = 1L;
 
         when(userRepository
@@ -1186,7 +1186,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testSendAccountDeletionRequestEmailSendingFailure() {
+    public void testSendAccountDeletionRequestEmailSendingFailure() {
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -1213,7 +1213,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testSendAccountDeletionRequestVerificationCodeUpdateFailure() {
+    public void testSendAccountDeletionRequestVerificationCodeUpdateFailure() {
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -1236,7 +1236,7 @@ public class UserServiceTest {
 
     //Enable2FA
     @Test
-    void testEnableTwoFactorAuthSuccess() {
+    public void testEnableTwoFactorAuthSuccess() {
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -1249,11 +1249,12 @@ public class UserServiceTest {
 
         assertTrue(user.getTwoFactorVerified(), "Two-factor authentication should be enabled");
 
-        verify(userRepository).save(user);
+        verify(userRepository)
+                .save(user);
     }
 
     @Test
-    void testEnableTwoFactorAuthUserNotFound() {
+    public void testEnableTwoFactorAuthUserNotFound() {
         Long userId = 1L;
 
         when(userRepository
@@ -1267,4 +1268,99 @@ public class UserServiceTest {
         assertEquals("User not found", exception.getMessage());
     }
 
+    @Test
+    public void testEnableTwoFactorAuthSaveFailure() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+
+        doThrow(new RuntimeException("Failed to save user"))
+                .when(userRepository)
+                .save(user);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            userService.enableTwoFactorAuth(userId);
+        });
+
+        assertEquals("Failed to save user", exception.getMessage());
+    }
+
+
+    //Disable2FA
+    @Test
+    public void testDisableTwoFactorAuthUserNotFound() {
+        Long userId = 1L;
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.disableTwoFactorAuth(userId);
+        });
+
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
+    public void testDisableTwoFactorAuthAlreadyDisabled() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        user.setTwoFactorVerified(false);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            userService.disableTwoFactorAuth(userId);
+        });
+
+        assertEquals("Two-factor authentication is already disabled", exception.getMessage());
+    }
+
+    @Test
+    public void testDisableTwoFactorAuthSuccess() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        user.setTwoFactorVerified(true);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+
+        userService.disableTwoFactorAuth(userId);
+
+        assertFalse(user.getTwoFactorVerified());
+
+        verify(userRepository)
+                .save(user);
+    }
+
+    @Test
+    void testDisableTwoFactorAuthSaveFailure() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        user.setTwoFactorVerified(true);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        doThrow(new RuntimeException("Save failed"))
+                .when(userRepository)
+                .save(user);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            userService.disableTwoFactorAuth(userId);
+        });
+
+        assertEquals("Save failed", exception.getMessage());
+    }
 }
