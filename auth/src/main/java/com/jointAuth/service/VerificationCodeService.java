@@ -98,38 +98,43 @@ public class VerificationCodeService {
             throw new NullPointerException("User ID cannot be null");
         }
 
-        Optional<UserVerificationCode> existingCodeOptional = userVerificationCodeRepository.findByUserId(userId);
+        Optional<UserVerificationCode> existingCodeOptionalForPassword = userVerificationCodeRepository.findByUserIdAndRequestType(userId, requestType);
+        Optional<UserVerificationCode> existingCodeOptionalForDeletion = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
 
         UserVerificationCode userVerificationCode;
 
-        if (existingCodeOptional.isPresent()) {
-            userVerificationCode = existingCodeOptional.get();
+        if (existingCodeOptionalForPassword.isPresent()) {
+            userVerificationCode = existingCodeOptionalForPassword.get();
+        } else if (existingCodeOptionalForDeletion.isPresent()) {
+            userVerificationCode = existingCodeOptionalForDeletion.get();
+            userVerificationCode.setRequestType(requestType); // Change the request type to PASSWORD_RESET
         } else {
             userVerificationCode = new UserVerificationCode();
-
             userVerificationCode.setUser(userRepository.getById(userId));
+            userVerificationCode.setRequestType(requestType);
         }
 
         userVerificationCode.setCode(verificationCode);
-
-        userVerificationCode.setRequestType(requestType);
-
         userVerificationCode.setExpirationTime(expirationTime);
 
         userVerificationCodeRepository.save(userVerificationCode);
     }
+
 
     public void saveOrUpdateVerificationCodeForAccountDeletion(Long userId, String newVerificationCode, LocalDateTime expirationTime) {
         if (userId == null) {
             throw new NullPointerException("User ID cannot be null");
         }
 
-        Optional<UserVerificationCode> existingCodeOptional = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
-
+        Optional<UserVerificationCode> existingCodeOptionalForDeletion = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
+        Optional<UserVerificationCode> existingCodeOptionalForPassword = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.PASSWORD_RESET);
         UserVerificationCode userVerificationCode;
 
-        if (existingCodeOptional.isPresent()) {
-            userVerificationCode = existingCodeOptional.get();
+        if (existingCodeOptionalForDeletion.isPresent()) {
+            userVerificationCode = existingCodeOptionalForDeletion.get();
+        } else if (existingCodeOptionalForPassword.isPresent()) {
+            userVerificationCode = existingCodeOptionalForPassword.get();
+            userVerificationCode.setRequestType(RequestType.ACCOUNT_DELETION); // Change the request type to ACCOUNT_DELETION
         } else {
             userVerificationCode = new UserVerificationCode();
             userVerificationCode.setUser(userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found")));
@@ -141,6 +146,7 @@ public class VerificationCodeService {
 
         userVerificationCodeRepository.save(userVerificationCode);
     }
+
 
     @Scheduled(fixedRate = 1209600000)
     public void cleanExpiredVerificationCodesForPasswordReset() {
