@@ -3,20 +3,19 @@
     " rel="stylesheet">
 
     <page-header v-if="!isLoginPage && !isRegisterPage"></page-header>
-
-    <div class="page">
+    <div class="page" :class="{ 'fixed': isPageScrollable() }">
         <div class="section">
             <div class="container">
                 <router-view></router-view>
             </div>
         </div>
-        <side-chat v-if="!isLoginPage && !isRegisterPage"></side-chat>
     </div>
+    <static-panel v-if="!isLoginPage && !isRegisterPage"></static-panel>
 
     <!-- <modal-change-banner></modal-change-banner> -->
     <modal-change-avatar></modal-change-avatar>
 
-    <div class="intro">
+    <div class="intro" :class="$store.state.theme">
         <div class="intro_fade"></div>
     </div>
 </template>
@@ -32,6 +31,11 @@ export default {
             return this.$route.path === '/register'; // Проверка текущего маршрута на страницу регистрации (register)
         }
     },
+    methods: {
+        isPageScrollable() {
+            return this.$store.state.staticPanelVisible && window.innerWidth < 1300;
+        }
+    }
 }
 </script>
 
@@ -49,40 +53,18 @@ export default {
     display: flex;
     height: auto;
     min-height: 200px;
-    margin-bottom: 200px;
+    margin-bottom: 70px;
     padding-left: 55px;
+}
+
+.page.fixed {
+    position: fixed;
 }
 
 .container {
     flex: 1;
     margin: 0 auto;
     font-family: 'Montserrat', sans-serif;
-}
-
-.button {
-    margin: 0 15px;
-    padding: 5px 30px;
-
-    border: 1px #ffffff solid;
-    border-radius: 50px;
-
-    font-size: 13px;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: #dff4ff;
-
-    transition: color, background .3s linear;
-}
-
-.button.profile {
-    margin-right: 130px;
-}
-
-.button:hover {
-    background-color: #ffffff;
-    color: #000000;
-
-    transition: color, background .3s linear;
 }
 
 /* Section */

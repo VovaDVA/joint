@@ -55,12 +55,12 @@ export default {
                     x: {
                         type: 'category',
                         ticks: {
-                            color: '#ffffff', 
+                            color: '#8A8A8A', 
                         },
                     },
                     y: {
                         ticks: {
-                            color: '#ffffff', 
+                            color: '#8A8A8A', 
                         },
                     },
                 },

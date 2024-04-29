@@ -1,5 +1,5 @@
 <template>
-    <div class="messenger-action-icon">
+    <div class="messenger-action-icon" :class="$store.state.theme">
         <div class="icon">
             <font-awesome-icon :icon="iconName" />
         </div>
@@ -26,7 +26,6 @@ export default {
 <style scoped>
 .messenger-action-icon {
     display: flex;
-    /* height: auto; */
     aspect-ratio: 1/1;
     border-radius: 30px;
     margin-right: 10px;
@@ -36,7 +35,12 @@ export default {
 
     background-color: rgba(0, 0, 0, 0.5);
     user-select: none;
-    transition: color, background .3s linear;
+    transition: color .2s, background .2s linear;
+}
+
+.messenger-action-icon.light-theme {
+    background: #fff;
+    color: #000;
 }
 
 .messenger-action-icon.right {
@@ -47,7 +51,13 @@ export default {
 .messenger-action-icon:hover {
     color: black;
     background-color: white;
-    transition: color, background .3s linear;
+    transition: color .2s, background .2s linear;
+}
+
+.messenger-action-icon.light-theme:hover {
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 0, 0);
+    transition: color .2s, background .2s linear;
 }
 
 .icon {

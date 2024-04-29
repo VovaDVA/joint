@@ -98,8 +98,8 @@ public class UserController {
     }
 
     @GetMapping("/user/get")
-    public ResponseEntity<UserBom> getUserDetailsById(@RequestBody UserDetailsRequest userDetailsRequestDTO) {
-        UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userDetailsRequestDTO.getUserId());
+    public ResponseEntity<UserBom> getUserDetailsById(@RequestParam Long userId) {
+        UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userId);
 
         if (userDetailsDTO != null) {
             return ResponseEntity.ok(userDetailsDTO);

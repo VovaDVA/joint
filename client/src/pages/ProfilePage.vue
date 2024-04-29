@@ -1,7 +1,7 @@
 <template>
     <token-check></token-check>
     <profile-banner></profile-banner>
-    <div class="tabs">
+    <div class="tabs" :class="$store.state.theme">
         <div class="tabs-container">
             <router-link to="/">
                 <filled-icon-button icon-name="user">Об авторе</filled-icon-button>
@@ -38,6 +38,11 @@
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
     overflow-x: scroll;
+}
+
+.tabs.light-theme {
+    border: 1px #0000007c solid;
+    background: #ebebeb;
 }
 
 .tabs-container {

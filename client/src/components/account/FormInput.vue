@@ -1,10 +1,10 @@
 <template>
-    <div class="input-field">
+    <div class="input-field" :class="$store.state.theme">
         <label>
             <slot></slot>
         </label>
         <div class="input-wrapper">
-            <input class="input-field" placeholder="Введите данные" v-bind="$attrs" v-model="value">
+            <input :type="type" class="input-field" :placeholder="data ?? 'Введите данные'" v-bind="$attrs" v-model="value">
         </div>
     </div>
 </template>
@@ -12,12 +12,40 @@
 <script>
 export default {
     name: 'form-input',
+    props: ['data', 'type'],
 }
 </script>
 
 <style scoped>
 .input-field {
     text-align: left;
+}
+
+.input-field.light-theme input {
+    color: #000000 !important;
+    background-color: #ffffff;
+    border: 1px #0000007c solid;
+}
+
+.input-field.light-theme input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #0000007e;
+}
+.input-field.light-theme input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #0000007e;
+   opacity:  1;
+}
+.input-field.light-theme input::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #0000007e;
+   opacity:  1;
+}
+.input-field.light-theme input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #0000007e;
+}
+.input-field.light-theme input::-ms-input-placeholder { /* Microsoft Edge */
+   color:    #0000007e;
+}
+.input-field.light-theme input::placeholder { /* Most modern browsers support this now. */
+   color:    #0000007e;
 }
 
 .input-wrapper {
@@ -35,10 +63,7 @@ input {
     background-color: rgba(0, 0, 0, 0.5);
     outline: none;
 
-    flex: 1;
-
     font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
 }
 
 label {

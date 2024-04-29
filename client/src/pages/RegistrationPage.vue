@@ -18,14 +18,14 @@
 					<label for="terms">Я согласен(-на) с условиями предоставления услуг</label>
 				</div>
 			</div> -->
-			<input type="submit" id="submitbtn" class="submit_btn" name="submit" value="Зарегистрироваться" />
+			<input :class="$store.state.theme" type="submit" name="submit" value="Зарегистрироваться" />
 			<div class="no_account">Уже есть аккаунт? - <router-link to="/login">Войти</router-link></div>
 		</form>
 	</auth-block>
 </template>
 
 <script>
-import { saveToken, checkToken } from '../modules/auth';
+import { checkToken } from '../modules/auth';
 
 export default {
 	data() {
@@ -63,9 +63,8 @@ export default {
 				const data = await response.json();
 				console.log(data);
 
-				if (data['token']) {
-					saveToken(data['token']);
-					this.$router.push('/');
+				if (data['id']) {
+					this.$router.push('/login');
 				}
 
 			} catch (error) {
@@ -84,14 +83,37 @@ export default {
 
 input {
 	line-height: 28px;
-	font-size: 17px;
-	border: 1px #ffffff solid;
-	border-radius: 30px;
-	margin: 20px auto;
 	padding: 5px;
 	width: 100%;
-	text-align: center;
+	margin: 20px auto;
+
+	border: 1px #ffffff solid;
+	border-radius: 30px;
+
+	font-family: 'Montserrat', sans-serif;
+	font-size: 17px;
+	text-decoration: none;
 	color: #ffffff;
+	background: none;
+
+	transition: color, background .3s linear;
+}
+
+input.light-theme {
+	border: 1px #000000 solid;
+	color: #000 !important;
+}
+
+input:hover {
+	background-color: #ffffff;
+	color: #000000 !important;
+
+	transition: color, background .3s linear;
+}
+
+input.light-theme:hover {
+	background-color: #000000;
+	color: #ffffff !important;
 
 	transition: color, background .3s linear;
 }

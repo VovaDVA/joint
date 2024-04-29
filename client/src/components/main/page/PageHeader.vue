@@ -1,5 +1,5 @@
 <template>
-    <div class="header">
+    <div class="header" :class="$store.state.theme">
         <div class="header_inner">
 
             <div class="right-container">
@@ -10,10 +10,6 @@
             </div>
 
             <div class="nav" :class="{ 'active': isActive }">
-                <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 0 }" @click="selectTab(0)">
-                    <div>?</div>
-                    <div class="tab-circle"></div>
-                </router-link>
                 <router-link to="/about" class="nav-item" :class="{ selected: selectedTab === 1 }"
                     @click="selectTab(1)">
                     <div>О нас</div>
@@ -40,6 +36,7 @@
             <div class="user_info">
                 <div class="user_top">
                     <div class="user_icons">
+                        <icon-button icon-name="sun" @click="changeTheme()"></icon-button>
                         <router-link to="/profile-settings" @click="changePage()">
                             <icon-button icon-name="gear"></icon-button>
                         </router-link>
@@ -49,8 +46,7 @@
                         <icon-button icon-name="right-from-bracket" @click="logoutUser()"></icon-button>
                     </div>
 
-                    <router-link to="/" class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) :
-                        '-' }}</router-link>
+                    <router-link to="/" class="username">{{ getName() }}</router-link>
                 </div>
 
                 <router-link to="/" @click="changePage()">
@@ -63,25 +59,14 @@
 </template>
 
 <script>
-import { deleteSession } from '../../../modules/auth';
+import { deleteSession, getUserName } from '../../../modules/auth';
 
 export default {
     name: 'page-header',
     data() {
         return {
-            user: {
-                firstName: '',
-                lastName: '',
-            },
             selectedTab: null,
             isActive: false,
-        }
-    },
-    created() {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            this.user = JSON.parse(userData);
-            console.log(this.user);
         }
     },
     methods: {
@@ -98,6 +83,12 @@ export default {
         },
         toggleNav() {
             this.isActive = !this.isActive;
+        },
+        changeTheme() {
+            this.$store.commit('changeTheme');
+        },
+        getName() {
+            return getUserName();
         }
     }
 }
@@ -125,6 +116,55 @@ export default {
     z-index: 100;
 }
 
+.header.light-theme {
+    background: #fff;
+    color: #000;
+    border-image: radial-gradient(#000000 60%, transparent);
+    border-image-slice: 1;
+}
+
+.header.light-theme .nav {
+    background: #fff;
+}
+
+.header.light-theme .nav-item {
+    color: #000;
+}
+
+.header.light-theme .nav-item:hover {
+    color: #965000;
+    transition: color .2s linear;
+}
+
+.header.light-theme .nav-item.selected {
+    color: #965000;
+}
+
+.header.light-theme .tab-circle {
+    background: #965000;
+}
+
+.header.light-theme .nav-toggle_item {
+    background: #000;
+}
+
+.header.light-theme .nav-toggle_item::after {
+    background: #000;
+}
+
+.header.light-theme .nav-toggle_item::before {
+    background: #000;
+}
+
+.header.light-theme .username {
+    color: #000;
+}
+
+.header.light-theme .profile_photo {
+    background: #b9b9b9 !important;
+    border: 1px #000000 solid;
+}
+
 .header_inner {
     width: 100%;
     height: inherit;
@@ -135,6 +175,8 @@ export default {
 
 .right-container {
     display: flex;
+    gap: 10px;
+    margin-left: 10px;
     z-index: 101;
 }
 
@@ -176,7 +218,7 @@ export default {
 }
 
 .username:hover {
-    color: #6dff72;
+    color: #ffbf6c;
     transition: color .2s linear;
 }
 
@@ -207,10 +249,10 @@ export default {
 }
 
 .logo {
-    width: 70px;
-    height: 70px;
+    width: 40px;
+    height: 40px;
 
-    background: url(../../../assets/logo.png) center no-repeat;
+    background: url(../../../../public/icon.png) center no-repeat;
     background-size: contain;
     transition: filter .2s linear;
 }
@@ -286,7 +328,7 @@ a {
 
     font-size: 0;
     color: transparent;
- 
+
     border: 0;
     background: none;
     cursor: pointer;
@@ -359,6 +401,10 @@ a {
         border-bottom: 1px solid #ffffff7c;
         border-radius: 0 0 25px 25px;
         transition: top .2s, visibility .1s ease-out;
+    }
+
+    .header.light-theme .nav {
+        border-bottom: 1px solid #0000007c;
     }
 
     .nav.active {

@@ -3,16 +3,16 @@
         <messenger-action-icon icon-name="arrow-left" @click="openChatList"></messenger-action-icon>
         <static-panel-search-bar></static-panel-search-bar>
     </static-panel-header>
-    <chat-title>{{ chatName }}</chat-title>
+    <chat-title :status="status">{{ chatName }}</chat-title>
     <static-panel-content>
         <div class="message-container">
-            <single-message v-for="message in messages" :key="message._id" :message="message" />
+            <single-message v-for="message in messages" :key="message._id" :message="message" @click="selectMessage" />
         </div>
     </static-panel-content>
-    <div class="chat-input">
+    <div class="chat-input" :class="$store.state.theme">
         <icon-button icon-name="paperclip"></icon-button>
         <input class="message-input" type="text" placeholder="Напишите сообщение..." v-model="newMessage"
-            @keyup.enter="sendMessage">
+            @keyup.enter="sendMessage" @input="type()">
         <icon-button icon-name="face-smile"></icon-button>
         <icon-button class="right" icon-name="paper-plane" @click="sendMessage"></icon-button>
         <!-- <icon-button class="right" icon-name="microphone" @click="sendMessage"></icon-button> -->
@@ -38,7 +38,9 @@ export default {
                 //     "created_at": '2024-04 - 16T09: 54:00.063 +00:00'
                 // },
             ],
-            newMessage: ''
+            newMessage: '',
+            status: 'Был(а) в сети недавно',
+            typingTimeout: null,
         }
     },
     async mounted() {
@@ -73,6 +75,12 @@ export default {
         this.socket.on('message', (message) => {
             this.messages.unshift(message);
         });
+        this.socket.on('typing', () => {
+            this.status = 'Печатает...';
+        });
+        this.socket.on('stopTyping', () => {
+            this.status = 'Был(а) в сети недавно';
+        });
     },
     methods: {
         sendMessage() {
@@ -80,6 +88,7 @@ export default {
                 chat_id: this.chat._id,
                 sender_id: getUser().userId,
                 text: this.newMessage,
+                created_at: new Date(),
             }
             if (this.newMessage !== '') {
                 this.socket.emit('sendMessage', messageData);
@@ -88,6 +97,17 @@ export default {
         },
         openChatList() {
             this.$emit('open-chat-list');
+        },
+        type() {
+            clearTimeout(this.typingTimeout);
+            this.socket.emit('typing');
+
+            this.typingTimeout = setTimeout(() => {
+                this.socket.emit('stopTyping');
+            }, 1000);
+        },
+        selectMessage(message) {
+            console.log(message);
         }
     }
 }
@@ -119,9 +139,39 @@ export default {
     outline: none;
 }
 
+.chat-input.light-theme {
+    background: #fff;
+    border: 1px #0000004f solid;
+}
+
+.chat-input.light-theme input {
+    color: #000 !important;
+}
+
+.chat-input.light-theme input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #0000007e;
+}
+.chat-input.light-theme input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #0000007e;
+   opacity:  1;
+}
+.chat-input.light-theme input::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #0000007e;
+   opacity:  1;
+}
+.chat-input.light-theme input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #0000007e;
+}
+.chat-input.light-theme input::-ms-input-placeholder { /* Microsoft Edge */
+   color:    #0000007e;
+}
+.chat-input.light-theme input::placeholder { /* Most modern browsers support this now. */
+   color:    #0000007e;
+}
+
 .message-input {
     flex: 1;
-    font-size: 15px;
+    font-size: 17px;
     line-height: 15px;
     border: none;
     background-color: rgba(0, 0, 0, 0);

@@ -1,30 +1,22 @@
 <template>
-    <div class="user-info">
+    <div class="user-info" :class="$store.state.theme">
         <div class="avatar"></div>
         <div class="user-info-text">
-            <div class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) : 'Владимир Двойнишников'}}</div>
+            <div class="username">{{ getName() }}</div>
         </div>
     </div>
 </template>
 
 <script>
+import { getUserName } from '@/modules/auth';
+
 export default {
     name: 'user-avatar',
-    data() {
-        return {
-            user: {
-                firstName: '',
-                lastName: '',
-            },
+    methods: {
+        getName() {
+            return getUserName();
         }
-    },
-    created() {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            this.user = JSON.parse(userData);
-            console.log(this.user);
-        }
-    },
+    }
 }
 </script>
 
@@ -47,6 +39,16 @@ export default {
     background: #555555 center no-repeat;
     background-size: cover;
     transition: background .3s linear;
+}
+
+.user-info.light-theme {
+    color: #000;
+}
+
+.user-info.light-theme .avatar {
+    border: 1px #0000007c solid;
+    background: #a3a3a3 center no-repeat;
+    background-size: cover;
 }
 
 .avatar:hover {

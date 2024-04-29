@@ -1,5 +1,5 @@
 <template>
-    <div class="search-bar">
+    <div class="search-bar" :class="$store.state.theme">
         <div class="icon">
             <font-awesome-icon icon="search" />
         </div>
@@ -42,6 +42,36 @@ export default {
     border: 1px #ffffff4f solid;
     border-radius: 30px;
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+.search-bar.light-theme {
+    background: #fff;
+    border: 1px #0000004f solid;
+}
+
+.search-bar.light-theme input {
+    color: #000 !important;
+}
+
+.search-bar.light-theme input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #0000007e;
+}
+.search-bar.light-theme input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #0000007e;
+   opacity:  1;
+}
+.search-bar.light-theme input::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #0000007e;
+   opacity:  1;
+}
+.search-bar.light-theme input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #0000007e;
+}
+.search-bar.light-theme input::-ms-input-placeholder { /* Microsoft Edge */
+   color:    #0000007e;
+}
+.search-bar.light-theme input::placeholder { /* Most modern browsers support this now. */
+   color:    #0000007e;
 }
 
 .icon {

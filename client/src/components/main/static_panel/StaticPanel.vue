@@ -1,5 +1,5 @@
 <template>
-    <div class="static-panel" :class="{ 'active': $store.state.staticPanelVisible }">
+    <div class="static-panel" :class="[{ 'active': $store.state.staticPanelVisible }, $store.state.theme]">
         <component :is="currentSectionComponent" :key="currentSection" />
     </div>
     <div class="icon-container left">
@@ -41,7 +41,7 @@
     </div>
 
     <!-- Bottom buttons panel (screen width < 1000px) -->
-    <div class="bottom-container" :class="{ 'active': isBottomActive }">
+    <div class="bottom-container" :class="[{ 'active': isBottomActive }, $store.state.theme]">
         <div class="bottom-inner">
             <router-link to="/feed" class="nav-item" :class="{ selected: selectedTab === 0 }"
                 @click="$store.commit('hideStaticPanel')">
@@ -70,7 +70,7 @@ import StaticPanelNotifications from './content/StaticPanelNotifications.vue';
 import StaticPanelChatContainer from './content/StaticPanelChatContainer.vue';
 
 export default {
-    name: 'side-chat',
+    name: 'static-panel',
     props: ['isActive'],
     components: {
         StaticPanelPeople,
@@ -89,13 +89,18 @@ export default {
             isBottomActive: false,
         }
     },
+    created() {
+        this.emitter.on('create-chat', (data) => {
+            this.currentSection = 'chat';
+            setTimeout(this.emitter.emit('open-messenger', data), 100);
+        });
+    },
     computed: {
         isProfilePage() {
             return ['/', '/user-about', '/images', '/videos', '/music', '/books'].includes(this.$route.path);
         },
 
         currentSectionComponent() {
-            // Возвращаем компонент для текущего выбранного раздела
             switch (this.currentSection) {
                 case 'notifications':
                     return 'StaticPanelNotifications';
@@ -116,17 +121,10 @@ export default {
             }
         }
     },
-    mounted() {
-        // this.socket = io('http://127.0.0.1:3000');
-        // this.socket.on('chat message', (msg) => {
-        //     this.messages.push({ id: this.messages.length + 1, text: msg });
-        // });
-    },
     methods: {
         changeSection(section) {
             this.currentSection = section;
             this.$store.commit('showStaticPanel');
-            // this.isBottomActive = false;
         },
         toggleBottom() {
             this.isBottomActive = !this.isBottomActive;
@@ -152,6 +150,11 @@ export default {
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+.static-panel.light-theme {
+    border: 1px #0000007c solid;
+    background-color: #ebebeb;
 }
 
 .static-panel.active {
@@ -209,7 +212,13 @@ export default {
     transition: bottom .2s ease-out;
 }
 
-.bottom-inner, .bottom-menu {
+.bottom-container.light-theme {
+    border-top: 1px solid #0000007c;
+    background: #fff;
+}
+
+.bottom-inner,
+.bottom-menu {
     display: flex;
     justify-content: space-around;
     width: 100%;

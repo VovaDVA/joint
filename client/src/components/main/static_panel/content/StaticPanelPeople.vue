@@ -4,8 +4,8 @@
     </static-panel-header>
     <static-panel-header-menu>
         <icon-button icon-name="user"></icon-button>
-        <icon-button icon-name="user-tag"></icon-button>
-        <icon-button icon-name="wallet"></icon-button>
+        <icon-button icon-name="user-check"></icon-button>
+        <icon-button icon-name="user-tie"></icon-button>
     </static-panel-header-menu>
     <static-panel-content>
         <account-preview-block v-for="item in filteredContent" :key="item.id" :person="item"></account-preview-block>
@@ -19,14 +19,8 @@ export default {
     data() {
         return {
             items: [
-                { id: 1, firstName: 'Евгений Зойкин' },
-                { id: 2, firstName: 'Владимир Двойнишников' },
-                { id: 3, firstName: 'Алексей Ищенко' },
-                { id: 4, firstName: 'Анастасия Зубенко' },
-                { id: 5, firstName: 'Сергей Копытов' },
-                { id: 6, firstName: 'Максим Примак' },
-                { id: 7, firstName: 'Елизавета Рябухина' },
-                { id: 8, firstName: 'Кристина Плетюк' },
+                // { id: 1, firstName: 'Евгений Зойкин' },
+                // { id: 2, firstName: 'Владимир Двойнишников' },
             ],
             searchText: '',
         };
@@ -51,7 +45,6 @@ export default {
         }
     },
     computed: {
-        // Фильтруем чаты в соответствии с текстом поиска
         filteredContent() {
             return this.items.filter(item => {
                 return item.firstName.toLowerCase().includes(this.searchText.toLowerCase());
@@ -63,13 +56,13 @@ export default {
             if (typeof text === 'string') {
                 this.searchText = text;
             }
-            console.log(typeof this.searchText);
-        },
-        openChat() {
-            this.$emit('open-chat');
         }
     }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.icon-button {
+    font-size: 20px;
+}
+</style>

@@ -4,7 +4,7 @@
             <!-- <div class="author">Владимир</div> -->
             <div>{{ message.text }}</div>
             <div class="send-time">
-                <span>{{ message.created_at }}</span>
+                <span>{{ createdTime() }}</span>
                 <div class="icon">
                     <font-awesome-icon icon="check" />
                 </div>
@@ -36,7 +36,14 @@ export default {
         isMainUser() {
             const user = getUser();
             if (!user) return true;
-            return this.message['sender_id'] == user.userId; 
+            return this.message['sender_id'] == user.userId;
+        },
+        createdTime() {
+            const date = new Date(this.message.created_at);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const formattedTime = `${hours}:${minutes}`;
+            return formattedTime;
         }
     }
 }
@@ -45,11 +52,12 @@ export default {
 <style scoped>
 .message {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     width: auto;
     height: fit-content;
     /* min-height: 30px; */
     margin: 10px;
+    user-select: none;
 }
 
 .message.you {

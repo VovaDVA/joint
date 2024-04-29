@@ -1,5 +1,5 @@
 <template>
-    <div class="feed-block">
+    <div class="feed-block" :class="$store.state.theme">
         <div class="feed-preview"></div>
         <div class="feed-block-inner">
             <div class="feed-info">
@@ -35,6 +35,21 @@ export default {
     width: 100%;
     height: 13.5vw;
     margin-bottom: 20px;
+}
+
+.feed-block.light-theme .feed-title {
+    color: #af5d00;
+}
+
+.feed-block.light-theme .feed-preview {
+    border: 1px #0000007c solid;
+    background: #ebebeb;
+}
+
+.feed-block.light-theme .feed-info {
+    border: 1px #0000007c solid;
+    background: #ebebeb;
+    color: #000;
 }
 
 .feed-preview {
@@ -107,6 +122,16 @@ export default {
         background: rgba(0, 0, 0, 0.5);
     }
 
+    .feed-block.light-theme {
+        border: 1px #0000007c solid;
+        background: #ebebeb;
+        color: #000000;
+    }
+
+    .feed-block.light-theme .feed-preview {
+        background: #ffffff;
+    }
+
     .feed-preview {
         flex: 1;
         aspect-ratio: 16/9 !important;
@@ -114,8 +139,8 @@ export default {
 
     .feed-info {
         padding: 10px 0;
-        border: none;
-        background: none;
+        border: none !important;
+        background: none !important;
     }
 }
 

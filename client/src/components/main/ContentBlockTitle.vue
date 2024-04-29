@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-  <div class="content-block-title">
+  <div class="content-block-title" :class="$store.state.theme">
     <slot></slot>
   </div>
 </template>
@@ -20,6 +20,12 @@ export default {
 
   border-bottom: 1px solid transparent;
   border-image: radial-gradient(#ffbf6c 50%, transparent);
+  border-image-slice: 1;
+}
+
+.content-block-title.light-theme {
+  color: #965000;
+  border-image: radial-gradient(#965000 50%, transparent);
   border-image-slice: 1;
 }
 </style>

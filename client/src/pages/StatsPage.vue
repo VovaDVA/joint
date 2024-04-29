@@ -3,7 +3,7 @@
     <content-block>
         <content-block-title>Статистика профиля</content-block-title>
         <content-block-text>
-            <table>
+            <table :class="$store.state.theme">
                 <tbody>
                     <tr>
                         <td>Посты</td>
@@ -107,5 +107,9 @@ table tr:nth-last-child(-n+1) {
 table tr td:first-child {
     color: #ffbf6c;
     text-align: left;
+}
+
+table.light-theme tr td:first-child {
+    color: #965000;
 }
 </style>

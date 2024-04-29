@@ -1,12 +1,12 @@
 <template>
-    <div class="chat-preview-block">
+    <div class="chat-preview-block" :class="$store.state.theme">
         <div class="avatar"></div>
         <div class="chat-info">
             <div class="chat-header">
                 <div class="chat-title">{{ person.firstName + " " + person.lastName }}</div>
                 <div class="buttons">
                     <icon-button icon-name="phone"></icon-button>
-                    <icon-button icon-name="message"></icon-button>
+                    <icon-button icon-name="message" @click="openChat()"></icon-button>
                 </div>
             </div>
             <div class="account-info">
@@ -17,9 +17,18 @@
 </template>
 
 <script>
+import { getUser } from '@/modules/auth';
+
 export default {
     name: 'account-preview-block',
     props: ['person'],
+    methods: {
+        openChat() {
+            this.emitter.emit('create-chat', {
+                members: [this.person.id, getUser().userId]
+            });
+        }
+    }
 }
 </script>
 
@@ -39,14 +48,31 @@ export default {
     transition: background .2s linear;
 }
 
-.avatar,
-.last-message-avatar {
+.chat-preview-block.light-theme {
+    color: #000;
+}
+
+.chat-preview-block:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transition: background .2s linear;
+}
+
+.chat-preview-block.light-theme:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.avatar {
     width: 60px;
     height: 60px;
     margin-right: 20px;
     border: 1px #ffffff2f solid;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
+}
+
+.chat-preview-block.light-theme .avatar {
+    border: 1px #0000002f solid;
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .chat-info {

@@ -1,5 +1,5 @@
 <template>
-    <div class="content-stats-button">
+    <div class="content-stats-button" :class="$store.state.theme">
         <div class="icon">
             <font-awesome-icon :icon="iconName" />
         </div>
@@ -42,6 +42,11 @@ export default {
     background-color: rgba(0, 0, 0, 0.5);
     user-select: none;
     transition: color, background .3s linear;
+}
+
+.content-stats-button.light-theme {
+    background-color: #ffffff;
+    color: #000;
 }
 
 .content-stats-button:hover {
