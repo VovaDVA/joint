@@ -101,7 +101,6 @@ export default {
         },
 
         currentSectionComponent() {
-            // Возвращаем компонент для текущего выбранного раздела
             switch (this.currentSection) {
                 case 'notifications':
                     return 'StaticPanelNotifications';
@@ -218,7 +217,8 @@ export default {
     background: #fff;
 }
 
-.bottom-inner, .bottom-menu {
+.bottom-inner,
+.bottom-menu {
     display: flex;
     justify-content: space-around;
     width: 100%;

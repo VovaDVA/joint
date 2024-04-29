@@ -1,6 +1,5 @@
 import RegistrationPage from './pages/RegistrationPage.vue';
 import LoginPage from './pages/LoginPage.vue';
-// import HomePage from './pages/HomePage.vue';
 import ProfileSettingsPage from './pages/ProfileSettingsPage.vue';
 import AboutPage from './pages/AboutPage.vue';
 import GuidePage from './pages/GuidePage.vue';
@@ -10,6 +9,7 @@ import FeedPage from './pages/FeedPage.vue';
 import CalendarPage from './pages/CalendarPage.vue';
 import StatsPage from './pages/StatsPage.vue';
 
+import ProfileContentAbout from './components/profile/content/ProfileContentAbout.vue';
 import ProfileContentImages from './components/profile/content/ProfileContentImages.vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
@@ -28,7 +28,7 @@ const routes = [
   { path: '/stats', component: StatsPage },
   {
     path: '/', component: ProfilePage, children: [
-      { path: '/', component: ProfileContentImages },
+      { path: '/', component: ProfileContentAbout },
       { path: '/images', component: ProfileContentImages },
       { path: '/videos', component: ProfileContentImages },
       { path: '/music', component: ProfileContentMusic },

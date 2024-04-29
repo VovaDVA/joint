@@ -26,7 +26,6 @@ export default {
 <style scoped>
 .messenger-action-icon {
     display: flex;
-    /* height: auto; */
     aspect-ratio: 1/1;
     border-radius: 30px;
     margin-right: 10px;

@@ -218,7 +218,7 @@ export default {
 }
 
 .username:hover {
-    color: #6dff72;
+    color: #ffbf6c;
     transition: color .2s linear;
 }
 
