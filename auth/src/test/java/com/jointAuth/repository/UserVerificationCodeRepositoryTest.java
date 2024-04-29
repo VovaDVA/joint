@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
@@ -110,4 +111,74 @@ public class UserVerificationCodeRepositoryTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void findByUserId_WhenRecordDoesNotExist_ReturnsEmptyOptional() {
+        // Act
+        Optional<UserVerificationCode> result = userVerificationCodeRepository.findByUserId(999L);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByUserId_WhenUserIdIsNull_ReturnsEmptyOptional() {
+        // Act
+        Optional<UserVerificationCode> result = userVerificationCodeRepository.findByUserId(null);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByUserId_WhenNoRecordExists_ReturnsEmptyOptional() {
+        // Предполагается, что база данных пуста
+        Long userId = 1L;
+        Optional<UserVerificationCode> userVerificationCode = userVerificationCodeRepository.findByUserId(userId);
+        assertTrue(userVerificationCode.isEmpty());
+    }
+
+    @Test
+    void findByUserId_WhenMultipleRecordsWithDifferentUserId_ReturnsCorrectUserVerificationCode() {
+        User user1 = new User();
+        user1.setEmail("test1@example.com");
+        User savedUser1 = userRepository.save(user1);
+
+        User user2 = new User();
+        user2.setEmail("test2@example.com");
+        User savedUser2 = userRepository.save(user2);
+
+        UserVerificationCode verificationCode1 = new UserVerificationCode();
+        verificationCode1.setCode("123456");
+        verificationCode1.setUser(savedUser1);
+        userVerificationCodeRepository.save(verificationCode1);
+
+        UserVerificationCode verificationCode2 = new UserVerificationCode();
+        verificationCode2.setCode("654321");
+        verificationCode2.setUser(savedUser2);
+        userVerificationCodeRepository.save(verificationCode2);
+
+        Long userId = savedUser2.getId();
+        Optional<UserVerificationCode> userVerificationCode = userVerificationCodeRepository.findByUserId(userId);
+        assertTrue(userVerificationCode.isPresent());
+        assertEquals(userId, userVerificationCode.get().getUser().getId());
+    }
+
+    @Test
+    void findByUserId_WhenRecordExists_ReturnsCorrectUserVerificationCode() {
+        User user = new User();
+        user.setEmail("test@example.com");
+        User savedUser = userRepository.save(user);
+
+        UserVerificationCode verificationCode = new UserVerificationCode();
+        verificationCode.setCode("123456");
+        verificationCode.setUser(savedUser);
+        userVerificationCodeRepository.save(verificationCode);
+
+        Long userId = savedUser.getId();
+        Optional<UserVerificationCode> userVerificationCode = userVerificationCodeRepository.findByUserId(userId);
+        assertTrue(userVerificationCode.isPresent());
+        assertEquals(userId, userVerificationCode.get().getUser().getId());
+    }
+
 }
