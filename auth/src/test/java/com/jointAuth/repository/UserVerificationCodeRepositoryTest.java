@@ -374,4 +374,64 @@ public class UserVerificationCodeRepositoryTest {
         List<UserVerificationCode> allRecords = userVerificationCodeRepository.findAll();
         assertEquals(0, allRecords.size());
     }
+
+    @Test
+    public void testFindByUserIdAndRequestType() {
+        User user1 = new User();
+        User user2 = new User();
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        UserVerificationCode code1ForUser1 = new UserVerificationCode();
+        code1ForUser1.setCode("code1");
+        code1ForUser1.setUser(user1);
+        code1ForUser1.setRequestType(RequestType.PASSWORD_RESET);
+
+        UserVerificationCode codeForUser2 = new UserVerificationCode();
+        codeForUser2.setCode("code2");
+        codeForUser2.setUser(user2);
+        codeForUser2.setRequestType(RequestType.PASSWORD_RESET);
+
+        userVerificationCodeRepository.save(code1ForUser1);
+        userVerificationCodeRepository.save(codeForUser2);
+
+        Optional<UserVerificationCode> foundCodeForUser1AndPasswordReset = userVerificationCodeRepository.findByUserIdAndRequestType(user1.getId(), RequestType.PASSWORD_RESET);
+        assertTrue(foundCodeForUser1AndPasswordReset.isPresent());
+        assertEquals(code1ForUser1.getId(), foundCodeForUser1AndPasswordReset.get().getId());
+
+        Optional<UserVerificationCode> foundCodeForUser2AndPasswordReset = userVerificationCodeRepository.findByUserIdAndRequestType(user2.getId(), RequestType.PASSWORD_RESET);
+        assertTrue(foundCodeForUser2AndPasswordReset.isPresent());
+        assertEquals(codeForUser2.getId(), foundCodeForUser2AndPasswordReset.get().getId());
+    }
+
+    @Test
+    public void testFindByUserIdAndRequestTypeNoCodeForRequestType() {
+        User user = new User();
+        userRepository.save(user);
+
+        UserVerificationCode codeForOtherRequestType = new UserVerificationCode();
+        codeForOtherRequestType.setCode("code1");
+        codeForOtherRequestType.setUser(user);
+        codeForOtherRequestType.setRequestType(RequestType.ANOTHER_TYPE);
+        userVerificationCodeRepository.save(codeForOtherRequestType);
+
+        Optional<UserVerificationCode> foundCode = userVerificationCodeRepository.findByUserIdAndRequestType(user.getId(), RequestType.PASSWORD_RESET);
+        assertFalse(foundCode.isPresent());
+    }
+
+    @Test
+    public void testFindByUserIdAndRequestTypeUserNotFound() {
+        Optional<UserVerificationCode> foundCode = userVerificationCodeRepository.findByUserIdAndRequestType(-1L, RequestType.PASSWORD_RESET);
+        assertFalse(foundCode.isPresent());
+    }
+
+    @Test
+    public void testFindByUserIdAndRequestTypeNoCodesForUser() {
+        User user = new User();
+        userRepository.save(user);
+
+        Optional<UserVerificationCode> foundCode = userVerificationCodeRepository.findByUserIdAndRequestType(user.getId(), RequestType.PASSWORD_RESET);
+        assertFalse(foundCode.isPresent());
+    }
 }
