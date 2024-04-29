@@ -4,6 +4,7 @@ import com.jointAuth.model.user.User;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,21 +13,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
+@Data
 public class EmailService {
 
     @Value("${email.from}")
-    private String fromEmail;
+    protected String fromEmail;
 
     @Value("${email.password}")
-    private String password;
+    protected String password;
 
     @Value("${email.host}")
-    private String host;
+    protected String host;
 
     @Value("${email.port}")
-    private int port;
+    protected int port;
 
-    public void sendVerificationCodeByEmail(User user, String verificationCode) {
+    public boolean sendVerificationCodeByEmail(User user, String verificationCode) {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
@@ -42,7 +44,7 @@ public class EmailService {
 
         try {
             String emailSubject = createEmailSubjectFor2FA();
-            Message message = new MimeMessage(session);
+            MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromEmail));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
             message.setSubject(emailSubject);
@@ -51,8 +53,10 @@ public class EmailService {
             message.setText(emailContent);
 
             Transport.send(message);
+            return true;
         } catch (MessagingException e) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, "Error sending verification code email to " + user.getEmail(), e);
+            return false;
         }
     }
 
