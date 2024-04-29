@@ -519,11 +519,14 @@ public class VerificationCodeServiceTest {
     @Test
     void testCleanExpiredVerificationCodesForPasswordResetNoExpiredCodes() {
 
-        when(userVerificationCodeRepository.findAllByExpirationTimeBefore(any(LocalDateTime.class))).thenReturn(Collections.emptyList());
+        when(userVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(Collections.emptyList());
 
         verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
 
-        verify(userVerificationCodeRepository, never()).deleteAll();
+        verify(userVerificationCodeRepository, never())
+                .deleteAll();
     }
 
 
@@ -539,11 +542,14 @@ public class VerificationCodeServiceTest {
             expiredCodes.add(code);
         }
 
-        when(userVerificationCodeRepository.findAllByExpirationTimeBefore(any(LocalDateTime.class))).thenReturn(expiredCodes);
+        when(userVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(expiredCodes);
 
         verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
 
-        verify(userVerificationCodeRepository).deleteAll(expiredCodes);
+        verify(userVerificationCodeRepository)
+                .deleteAll(expiredCodes);
     }
 
     @Test
@@ -567,21 +573,27 @@ public class VerificationCodeServiceTest {
             validCodes.add(validCode);
         }
 
-        when(userVerificationCodeRepository.findAllByExpirationTimeBefore(any(LocalDateTime.class))).thenReturn(expiredCodes);
+        when(userVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(expiredCodes);
 
         verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
 
-        verify(userVerificationCodeRepository).deleteAll(expiredCodes);
+        verify(userVerificationCodeRepository)
+                .deleteAll(expiredCodes);
     }
 
     @Test
     void testCleanExpiredVerificationCodesForPasswordResetEmptyExpiredCodes() {
 
-        when(userVerificationCodeRepository.findAllByExpirationTimeBefore(any(LocalDateTime.class))).thenReturn(Collections.emptyList());
+        when(userVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(Collections.emptyList());
 
         verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
 
-        verify(userVerificationCodeRepository).deleteAll(Collections.emptyList());
+        verify(userVerificationCodeRepository)
+                .deleteAll(Collections.emptyList());
     }
 
     @Test
@@ -595,11 +607,14 @@ public class VerificationCodeServiceTest {
             expiredCodes.add(code);
         }
 
-        when(userVerificationCodeRepository.findAllByExpirationTimeBefore(any(LocalDateTime.class))).thenReturn(expiredCodes);
+        when(userVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(expiredCodes);
 
         verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
 
-        verify(userVerificationCodeRepository).deleteAll(expiredCodes);
+        verify(userVerificationCodeRepository)
+                .deleteAll(expiredCodes);
     }
 
     @Test
@@ -621,10 +636,13 @@ public class VerificationCodeServiceTest {
             validCodes.add(validCode);
         }
 
-        when(userVerificationCodeRepository.findAllByExpirationTimeBefore(any(LocalDateTime.class))).thenReturn(partiallyExpiredCodes);
+        when(userVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(partiallyExpiredCodes);
 
         verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
 
-        verify(userVerificationCodeRepository).deleteAll(partiallyExpiredCodes);
+        verify(userVerificationCodeRepository)
+                .deleteAll(partiallyExpiredCodes);
     }
 }
