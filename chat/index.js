@@ -8,7 +8,6 @@ const messageRouter = require('./routes/messageRoutes')
 
 //const models = require('./models');
 
-
 const { db, PORT } = require('./config');
 const app = express();
 const server = http.createServer(app);
