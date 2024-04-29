@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { saveToken, checkToken } from '../modules/auth';
+import { checkToken } from '../modules/auth';
 
 export default {
 	data() {
@@ -63,9 +63,8 @@ export default {
 				const data = await response.json();
 				console.log(data);
 
-				if (data['token']) {
-					saveToken(data['token']);
-					this.$router.push('/');
+				if (data['id']) {
+					this.$router.push('/login');
 				}
 
 			} catch (error) {
@@ -81,40 +80,41 @@ export default {
 	margin-top: 20px;
 	display: flex;
 }
+
 input {
 	line-height: 28px;
-    padding: 5px;
+	padding: 5px;
 	width: 100%;
 	margin: 20px auto;
 
-    border: 1px #ffffff solid;
-    border-radius: 30px;
+	border: 1px #ffffff solid;
+	border-radius: 30px;
 
-    font-family: 'Montserrat', sans-serif;
-    font-size: 17px;
-    text-decoration: none;
-    color: #ffffff;
-    background: none;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 17px;
+	text-decoration: none;
+	color: #ffffff;
+	background: none;
 
-    transition: color, background .3s linear;
+	transition: color, background .3s linear;
 }
 
 input.light-theme {
-    border: 1px #000000 solid;
-    color: #000 !important;
+	border: 1px #000000 solid;
+	color: #000 !important;
 }
 
 input:hover {
-    background-color: #ffffff;
-    color: #000000 !important;
+	background-color: #ffffff;
+	color: #000000 !important;
 
-    transition: color, background .3s linear;
+	transition: color, background .3s linear;
 }
 
 input.light-theme:hover {
-    background-color: #000000;
-    color: #ffffff !important;
+	background-color: #000000;
+	color: #ffffff !important;
 
-    transition: color, background .3s linear;
+	transition: color, background .3s linear;
 }
 </style>
