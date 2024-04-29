@@ -9,17 +9,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
+@DataJpaTest
 public class UserVerificationCodeRepositoryTest {
 
     @Autowired
@@ -288,7 +288,7 @@ public class UserVerificationCodeRepositoryTest {
 
         user.setId(userId);
 
-        userRepository.save(user);
+        user = userRepository.save(user);
 
         UserVerificationCode userVerificationCode1 = new UserVerificationCode();
 
@@ -298,6 +298,7 @@ public class UserVerificationCodeRepositoryTest {
         userVerificationCodeRepository.save(userVerificationCode1);
 
         userVerificationCodeRepository.deleteByUserId(userId);
+        userRepository.deleteById(userId);
 
         Optional<UserVerificationCode> deletedRecords = userVerificationCodeRepository.findByUserId(userId);
         assertTrue(deletedRecords.isEmpty());
@@ -308,6 +309,7 @@ public class UserVerificationCodeRepositoryTest {
         long userId = 1L;
 
         userVerificationCodeRepository.deleteByUserId(userId);
+        userRepository.deleteAll();
 
         List<UserVerificationCode> allRecords = userVerificationCodeRepository.findAll();
         assertEquals(0, allRecords.size());
@@ -316,60 +318,51 @@ public class UserVerificationCodeRepositoryTest {
     @Test
     @Transactional
     public void deleteByUserIdOnlyDeletesRecordsWithMatchingUserId() {
-        long userIdToDelete = 1L;
-        long otherUserId = 2L;
-
         User user1 = new User();
         User user2 = new User();
 
-        user1.setId(userIdToDelete);
-
-        user2.setId(otherUserId);
-
-        userRepository.save(user1);
-        userRepository.save(user2);
+        user1 = userRepository.save(user1);
+        user2 = userRepository.save(user2);
 
         UserVerificationCode userVerificationCode1 = new UserVerificationCode();
-
         userVerificationCode1.setCode("code1");
         userVerificationCode1.setUser(user1);
 
         UserVerificationCode userVerificationCode2 = new UserVerificationCode();
-
-        userVerificationCode2.setCode("code1");
+        userVerificationCode2.setCode("code2");
         userVerificationCode2.setUser(user2);
 
-        userVerificationCodeRepository.save(userVerificationCode1);
-        userVerificationCodeRepository.save(userVerificationCode2);
+        userVerificationCode1 = userVerificationCodeRepository.save(userVerificationCode1);
+        userVerificationCode2 = userVerificationCodeRepository.save(userVerificationCode2);
 
-        userVerificationCodeRepository.deleteByUserId(userIdToDelete);
+        assertNotNull(userVerificationCode1.getId());
+        assertNotNull(userVerificationCode2.getId());
+
+        userVerificationCodeRepository.deleteByUserId(user1.getId());
+
+        userRepository.deleteById(user1.getId());
 
         List<UserVerificationCode> remainingRecords = userVerificationCodeRepository.findAll();
         assertEquals(1, remainingRecords.size());
-        assertEquals(otherUserId, remainingRecords.get(0).getUser().getId());
+        assertEquals(user2.getId(), remainingRecords.get(0).getUser().getId());
     }
 
     @Test
     @Transactional
     public void deleteByUserIdAfterDeletionRecordsAreNotPresentInDatabase() {
-        long userId = 1L;
         User user = new User();
+        user.setEmail("user@example.com");
+        user = userRepository.save(user);
 
-        user.setId(userId);
+        UserVerificationCode verificationCode = new UserVerificationCode();
+        verificationCode.setCode("code");
+        verificationCode.setUser(user);
+        userVerificationCodeRepository.save(verificationCode);
 
-        userRepository.save(user);
+        userVerificationCodeRepository.deleteByUserId(user.getId());
 
-        UserVerificationCode userVerificationCode = new UserVerificationCode();
-
-        userVerificationCode.setCode("code1");
-        userVerificationCode.setUser(user);
-
-        userVerificationCodeRepository.save(userVerificationCode);
-
-        userVerificationCodeRepository.deleteByUserId(userId);
-
-        Optional<UserVerificationCode> deletedRecords = userVerificationCodeRepository.findByUserId(userId);
-        assertTrue(deletedRecords.isEmpty());
+        Optional<UserVerificationCode> deletedVerificationCode = userVerificationCodeRepository.findById(verificationCode.getId());
+        assertFalse(deletedVerificationCode.isPresent());
     }
 
     @Test
