@@ -25,6 +25,12 @@ spring:
   application:
     name: jointAuth
 
+email:
+  from: "jointtest05@gmail.com"
+  password: "iuah wxvg shum fjkq"
+  host: "smtp.gmail.com"
+  port: 587
+
 server:
   port: 8080
 
