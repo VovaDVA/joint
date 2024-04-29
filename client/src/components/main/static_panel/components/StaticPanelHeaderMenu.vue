@@ -1,5 +1,5 @@
 <template>
-    <div class="menu">
+    <div class="menu" :class="$store.state.theme">
         <slot></slot>
     </div>
 </template>
@@ -22,5 +22,10 @@ export default {
     background-color: rgba(0, 0, 0, 0.5);
     border: 1px #ffffff4f solid;
     border-radius: 50px;
+}
+
+.menu.light-theme {
+    background-color: #fff;
+    border: 1px #0000004f solid;
 }
 </style>
