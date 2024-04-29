@@ -94,6 +94,10 @@ public class VerificationCodeService {
     }
 
     public void saveOrUpdateVerificationCodeForResetPassword(Long userId, String verificationCode, RequestType requestType, LocalDateTime expirationTime) {
+        if (userId == null) {
+            throw new NullPointerException("User ID cannot be null");
+        }
+
         Optional<UserVerificationCode> existingCodeOptional = userVerificationCodeRepository.findByUserId(userId);
 
         UserVerificationCode userVerificationCode;
@@ -116,6 +120,10 @@ public class VerificationCodeService {
     }
 
     public void saveOrUpdateVerificationCodeForAccountDeletion(Long userId, String newVerificationCode, LocalDateTime expirationTime) {
+        if (userId == null) {
+            throw new NullPointerException("User ID cannot be null");
+        }
+
         Optional<UserVerificationCode> existingCodeOptional = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
 
         UserVerificationCode userVerificationCode;
