@@ -3,7 +3,7 @@
         <static-panel-search-bar @input="updateSearch"></static-panel-search-bar>
     </static-panel-header>
     <static-panel-content>
-        <chat-preview-block v-for="chat in filteredChats" :key="chat._id" @click="openChat(chat)"
+        <chat-preview-block v-for="chat in chats" :key="chat._id" @click="openChat(chat)"
             :chat="chat"></chat-preview-block>
     </static-panel-content>
 </template>
@@ -26,6 +26,26 @@ export default {
             searchText: '',
         };
     },
+    created() {
+        this.emitter.on('create-chat', async (members) => {
+            try {
+                const response = await fetch('/chat/createChat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(members)
+                });
+
+                const data = await response.json();
+                console.log(data);
+                this.openChat(data);
+
+            } catch (error) {
+                console.error(error);
+            }
+        });
+    },
     async mounted() {
         const user = getUser();
         if (!user) return;
@@ -46,7 +66,6 @@ export default {
         }
     },
     computed: {
-        // Фильтруем чаты в соответствии с текстом поиска
         filteredChats() {
             return this.chats;
             // return this.chats.filter(() => {
@@ -62,6 +81,7 @@ export default {
             }
         },
         openChat(chat) {
+            this.emitter.emit('open-messenger', chat);
             this.$emit('open-chat', chat);
         }
     }

@@ -89,6 +89,12 @@ export default {
             isBottomActive: false,
         }
     },
+    created() {
+        this.emitter.on('create-chat', (data) => {
+            this.currentSection = 'chat';
+            setTimeout(this.emitter.emit('open-messenger', data), 100);
+        });
+    },
     computed: {
         isProfilePage() {
             return ['/', '/user-about', '/images', '/videos', '/music', '/books'].includes(this.$route.path);
