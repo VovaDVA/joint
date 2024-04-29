@@ -10,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +34,7 @@ public class UserVerificationCodeRepositoryTest {
     }
 
     @Test
-    void findByUserIdAndCodeWhenCodeExistsReturnsUserVerificationCode() {
+    public void findByUserIdAndCodeWhenCodeExistsReturnsUserVerificationCode() {
         User curUser = new User();
         curUser.setEmail("test@gmail.com");
         User savedUser = userRepository.save(curUser);
@@ -53,7 +55,7 @@ public class UserVerificationCodeRepositoryTest {
     }
 
     @Test
-    void findByUserIdAndCodeWhenCodeDoesNotExistReturnsEmptyOptional() {
+    public void findByUserIdAndCodeWhenCodeDoesNotExistReturnsEmptyOptional() {
         User user = new User();
         user.setEmail("test@gmail.com");
         User savedUser = userRepository.save(user);
@@ -64,21 +66,21 @@ public class UserVerificationCodeRepositoryTest {
     }
 
     @Test
-    void findByUserIdAndCodeWhenUserIdIsNullReturnsEmptyOptional() {
+    public void findByUserIdAndCodeWhenUserIdIsNullReturnsEmptyOptional() {
         Optional<UserVerificationCode> result = userVerificationCodeRepository.findByUserIdAndCode(null, "123456");
 
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUserIdAndCodeWhenCodeIsNullReturnsEmptyOptional() {
+    public void findByUserIdAndCodeWhenCodeIsNullReturnsEmptyOptional() {
         Optional<UserVerificationCode> result = userVerificationCodeRepository.findByUserIdAndCode(1L, null);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUserIdAndCodeWhenIncorrectCodeForExistingUserReturnsEmptyOptional() {
+    public void findByUserIdAndCodeWhenIncorrectCodeForExistingUserReturnsEmptyOptional() {
         User curUser = new User();
         curUser.setEmail("test@gmail.com");
         User savedUser = userRepository.save(curUser);
@@ -98,35 +100,35 @@ public class UserVerificationCodeRepositoryTest {
     }
 
     @Test
-    void findByUserIdAndCodeWhenCorrectCodeForNonExistingUserReturnsEmptyOptional() {
+    public void findByUserIdAndCodeWhenCorrectCodeForNonExistingUserReturnsEmptyOptional() {
         Optional<UserVerificationCode> result = userVerificationCodeRepository.findByUserIdAndCode(9999L, "123456");
 
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUserIdAndCodeWhenIncorrectCodeForNonExistingUserReturnsEmptyOptional() {
+    public void findByUserIdAndCodeWhenIncorrectCodeForNonExistingUserReturnsEmptyOptional() {
         Optional<UserVerificationCode> result = userVerificationCodeRepository.findByUserIdAndCode(9999L, "654321");
 
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUserIdWhenRecordDoesNotExistReturnsEmptyOptional() {
+    public void findByUserIdWhenRecordDoesNotExistReturnsEmptyOptional() {
         Optional<UserVerificationCode> result = userVerificationCodeRepository.findByUserId(999L);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUserIdWhenUserIdIsNullReturnsEmptyOptional() {
+    public void findByUserIdWhenUserIdIsNullReturnsEmptyOptional() {
         Optional<UserVerificationCode> result = userVerificationCodeRepository.findByUserId(null);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUserIdWhenNoRecordExistsReturnsEmptyOptional() {
+    public void findByUserIdWhenNoRecordExistsReturnsEmptyOptional() {
         Long userId = 1L;
 
         Optional<UserVerificationCode> userVerificationCode = userVerificationCodeRepository.findByUserId(userId);
@@ -134,7 +136,7 @@ public class UserVerificationCodeRepositoryTest {
     }
 
     @Test
-    void findByUserIdWhenMultipleRecordsWithDifferentUserIdReturnsCorrectUserVerificationCode() {
+    public void findByUserIdWhenMultipleRecordsWithDifferentUserIdReturnsCorrectUserVerificationCode() {
         User user1 = new User();
         user1.setEmail("test1@gmail.com");
         User savedUser1 = userRepository.save(user1);
@@ -160,7 +162,7 @@ public class UserVerificationCodeRepositoryTest {
     }
 
     @Test
-    void findByUserIdWhenRecordExistsReturnsCorrectUserVerificationCode() {
+    public void findByUserIdWhenRecordExistsReturnsCorrectUserVerificationCode() {
         User user = new User();
         user.setEmail("test@gmail.com");
         User savedUser = userRepository.save(user);
@@ -176,4 +178,104 @@ public class UserVerificationCodeRepositoryTest {
         assertEquals(userId, userVerificationCode.get().getUser().getId());
     }
 
+    @Test
+    public void findAllByExpirationTimeBeforeWhenRecordsExistReturnsAllRecords() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expirationTime1 = currentTime.minusHours(10);
+        LocalDateTime expirationTime2 = currentTime.minusMinutes(30);
+        LocalDateTime expirationTime3 = currentTime.minusDays(1);
+
+        UserVerificationCode userVerificationCode1 = new UserVerificationCode();
+
+        userVerificationCode1.setCode("code1");
+        userVerificationCode1.setExpirationTime(expirationTime1);
+
+        UserVerificationCode userVerificationCode2 = new UserVerificationCode();
+
+        userVerificationCode2.setCode("code2");
+        userVerificationCode2.setExpirationTime(expirationTime2);
+
+        UserVerificationCode userVerificationCode3 = new UserVerificationCode();
+
+        userVerificationCode3.setCode("code3");
+        userVerificationCode3.setExpirationTime(expirationTime3);
+
+        userVerificationCodeRepository.save(userVerificationCode1);
+        userVerificationCodeRepository.save(userVerificationCode2);
+        userVerificationCodeRepository.save(userVerificationCode3);
+
+        List<UserVerificationCode> codes = userVerificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
+
+        assertEquals(3, codes.size());
+        assertTrue(codes.stream().allMatch(code -> code.getExpirationTime().isBefore(currentTime)));
+    }
+
+    @Test
+    public void findAllByExpirationTimeBeforeWhenNoRecordsBeforeCurrentTimeReturnsEmptyList() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expirationTime1 = currentTime.plusHours(1);
+        LocalDateTime expirationTime2 = currentTime.plusMinutes(30);
+        LocalDateTime expirationTime3 = currentTime.plusDays(1);
+
+        UserVerificationCode userVerificationCode1 = new UserVerificationCode();
+
+        userVerificationCode1.setCode("code1");
+        userVerificationCode1.setExpirationTime(expirationTime1);
+
+        UserVerificationCode userVerificationCode2 = new UserVerificationCode();
+
+        userVerificationCode2.setCode("code2");
+        userVerificationCode2.setExpirationTime(expirationTime2);
+
+        UserVerificationCode userVerificationCode3 = new UserVerificationCode();
+
+        userVerificationCode3.setCode("code3");
+        userVerificationCode3.setExpirationTime(expirationTime3);
+
+        userVerificationCodeRepository.save(userVerificationCode1);
+        userVerificationCodeRepository.save(userVerificationCode2);
+        userVerificationCodeRepository.save(userVerificationCode3);
+
+        List<UserVerificationCode> codes = userVerificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
+
+        assertTrue(codes.isEmpty());
+    }
+
+    @Test
+    public void findAllByExpirationTimeBeforeWhenNoRecordsReturnsEmptyList() {
+        List<UserVerificationCode> codes = userVerificationCodeRepository.findAllByExpirationTimeBefore(LocalDateTime.now());
+
+        assertTrue(codes.isEmpty());
+    }
+
+    @Test
+    public void findAllByExpirationTimeBeforeWhenRecordsExistBeforeCurrentTimeReturnsCorrectRecords() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expirationTime1 = currentTime.minusHours(1);
+        LocalDateTime expirationTime2 = currentTime.plusMinutes(30);
+        LocalDateTime expirationTime3 = currentTime.plusDays(1);
+
+        UserVerificationCode userVerificationCode1 = new UserVerificationCode();
+
+        userVerificationCode1.setCode("code1");
+        userVerificationCode1.setExpirationTime(expirationTime1);
+
+        UserVerificationCode userVerificationCode2 = new UserVerificationCode();
+
+        userVerificationCode2.setCode("code2");
+        userVerificationCode2.setExpirationTime(expirationTime2);
+
+        UserVerificationCode userVerificationCode3 = new UserVerificationCode();
+
+        userVerificationCode3.setCode("code3");
+        userVerificationCode3.setExpirationTime(expirationTime3);
+
+        userVerificationCodeRepository.save(userVerificationCode1);
+        userVerificationCodeRepository.save(userVerificationCode2);
+        userVerificationCodeRepository.save(userVerificationCode3);
+
+        List<UserVerificationCode> codes = userVerificationCodeRepository.findAllByExpirationTimeBefore(LocalDateTime.now());
+
+        assertEquals(1, codes.size());
+    }
 }
