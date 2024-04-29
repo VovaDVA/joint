@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -757,4 +756,114 @@ public class VerificationCodeServiceTest {
         assertEquals(requestType, savedCode.getRequestType());
         assertEquals(expirationTime, savedCode.getExpirationTime());
     }
+
+    @Test
+    void testSaveOrUpdateVerificationCodeForAccountDeletionNewCode() {
+        User curUser = new User();
+        Long userId = 1L;
+        String newVerificationCode = "123456";
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
+
+        curUser.setId(userId);
+
+        when(userVerificationCodeRepository
+                .findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION))
+                .thenReturn(Optional.empty());
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(curUser));
+
+        verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, newVerificationCode, expirationTime);
+
+        verify(userVerificationCodeRepository)
+                .findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
+        verify(userRepository)
+                .findById(userId);
+        verify(userVerificationCodeRepository)
+                .save(any(UserVerificationCode.class));
+    }
+
+    @Test
+    void testSaveOrUpdateVerificationCodeForAccountDeletionExistingCode() {
+        User cureUser = new User();
+        Long userId = 1L;
+        String newVerificationCode = "123456";
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
+
+        cureUser.setId(userId);
+
+        UserVerificationCode existingCode = new UserVerificationCode();
+        existingCode.setUser(cureUser);
+        existingCode.setCode("oldCode");
+        existingCode.setRequestType(RequestType.ACCOUNT_DELETION);
+        existingCode.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+
+        when(userVerificationCodeRepository
+                .findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION))
+                .thenReturn(Optional.of(existingCode));
+
+        verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, newVerificationCode, expirationTime);
+
+        verify(userVerificationCodeRepository)
+                .findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
+        verify(userVerificationCodeRepository)
+                .save(existingCode);
+
+        assertEquals(newVerificationCode, existingCode.getCode());
+        assertEquals(expirationTime, existingCode.getExpirationTime());
+    }
+
+    @Test
+    void testSaveOrUpdateVerificationCodeForAccountDeletionInvalidInputs() {
+        Long invalidUserId = null;
+        String newVerificationCode = "123456";
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
+
+        assertThrows(NullPointerException.class, () -> {
+            verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(invalidUserId, newVerificationCode, expirationTime);
+        });
+    }
+
+    @Test
+    void testSaveOrUpdateVerificationCodeForAccountDeletionNullInputs() {
+        Long userId = null;
+        String newVerificationCode = null;
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
+
+        assertThrows(NullPointerException.class, () -> {
+            verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, newVerificationCode, expirationTime);
+        });
+    }
+
+    @Test
+    void testSaveOrUpdateVerificationCodeForAccountDeletionExistingCodeSameValues() {
+        User curUser = new User();
+        Long userId = 1L;
+        String newVerificationCode = "123456";
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
+
+        curUser.setId(userId);
+
+        UserVerificationCode existingCode = new UserVerificationCode();
+        existingCode.setUser(curUser);
+        existingCode.setCode(newVerificationCode);
+        existingCode.setRequestType(RequestType.ACCOUNT_DELETION);
+        existingCode.setExpirationTime(expirationTime);
+
+        when(userVerificationCodeRepository
+                .findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION))
+                .thenReturn(Optional.of(existingCode));
+
+        verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, newVerificationCode, expirationTime);
+
+        ArgumentCaptor<UserVerificationCode> captor = ArgumentCaptor.forClass(UserVerificationCode.class);
+        verify(userVerificationCodeRepository)
+                .save(captor.capture());
+
+        UserVerificationCode savedCode = captor.getValue();
+        assertEquals(userId, savedCode.getUser().getId());
+        assertEquals(newVerificationCode, savedCode.getCode());
+        assertEquals(expirationTime, savedCode.getExpirationTime());
+    }
+
 }
