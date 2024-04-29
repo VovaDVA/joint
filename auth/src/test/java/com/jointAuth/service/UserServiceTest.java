@@ -12,16 +12,12 @@ import com.jointAuth.repository.UserVerificationCodeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -1090,7 +1086,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.of(user));
 
         when(verificationCodeService
-                .verifyUserVerificationCode(userId, verificationCode))
+                .verifyUserVerificationCodeForUser(userId, verificationCode))
                 .thenReturn(false);
 
         boolean result = userService.deleteUser(userId, verificationCode);
@@ -1109,7 +1105,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.of(user));
 
         when(verificationCodeService
-                .verifyUserVerificationCode(userId, verificationCode))
+                .verifyUserVerificationCodeForUser(userId, verificationCode))
                 .thenReturn(true);
 
         boolean result = userService.deleteUser(userId, verificationCode);
@@ -1135,7 +1131,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.of(user));
 
         when(verificationCodeService
-                .verifyUserVerificationCode(userId, verificationCode))
+                .verifyUserVerificationCodeForUser(userId, verificationCode))
                 .thenReturn(false);
 
         boolean result = userService.deleteUser(userId, verificationCode);

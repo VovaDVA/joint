@@ -60,7 +60,7 @@ public class VerificationCodeService {
         return false;
     }
 
-    public boolean verifyUserVerificationCode(Long userId, String code) {
+    public boolean verifyUserVerificationCodeForUser(Long userId, String code) {
         Optional<UserVerificationCode> optionalVerificationCode = userVerificationCodeRepository.findByUserId(userId);
 
         if (optionalVerificationCode.isEmpty()) {
