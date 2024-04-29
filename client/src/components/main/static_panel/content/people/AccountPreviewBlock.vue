@@ -6,7 +6,7 @@
                 <div class="chat-title">{{ person.firstName + " " + person.lastName }}</div>
                 <div class="buttons">
                     <icon-button icon-name="phone"></icon-button>
-                    <icon-button icon-name="message"></icon-button>
+                    <icon-button icon-name="message" @click="openChat()"></icon-button>
                 </div>
             </div>
             <div class="account-info">
@@ -17,9 +17,18 @@
 </template>
 
 <script>
+import { getUser } from '@/modules/auth';
+
 export default {
     name: 'account-preview-block',
     props: ['person'],
+    methods: {
+        openChat() {
+            this.emitter.emit('create-chat', {
+                members: [this.person.id, getUser().userId]
+            });
+        }
+    }
 }
 </script>
 

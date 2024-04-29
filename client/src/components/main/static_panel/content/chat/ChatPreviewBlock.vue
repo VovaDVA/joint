@@ -27,9 +27,9 @@ export default {
     },
     async mounted() {
         const otherUserId = this.chat.members.find(id => getUserId(id));
-        console.log(this.chat.members, otherUserId);
+        // console.log(this.chat.members, otherUserId);
         this.otherUser = await getUserById(otherUserId);
-        console.log(this.otherUser)
+        // console.log(this.otherUser)
     },
     methods: {
         getUserName() {

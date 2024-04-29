@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import mitt from 'mitt';
 import { createStore } from 'vuex';
 import PrimeVue from 'primevue/config';
 import 'primevue/resources/themes/vela-green/theme.css'
@@ -8,13 +9,16 @@ import pages from "@/pages";
 import components from "@/components";
 import './assets/index.css';
 
+const emitter = mitt();
 const app = createApp(App);
+// const eventBus = new Vue();
+// eventBus.$on("onAppStarted", () => console.log("App Started!"))
 
 const store = createStore({
     state() {
         return {
             staticPanelVisible: false,
-            theme: 'light-theme',
+            theme: localStorage.getItem('ui_theme') ?? 'light-theme',
         }
     },
     mutations: {
@@ -26,6 +30,7 @@ const store = createStore({
         },
         changeTheme(state) {
             state.theme = (state.theme == 'dark-theme') ? 'light-theme' : 'dark-theme';
+            localStorage.setItem('ui_theme', state.theme);
         }
     }
 })
@@ -37,4 +42,5 @@ app.use(PrimeVue);
 app.use(router);
 app.use(store);
 
+app.config.globalProperties.emitter = emitter;
 app.mount('#app');

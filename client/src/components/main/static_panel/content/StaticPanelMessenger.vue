@@ -6,7 +6,7 @@
     <chat-title :status="status">{{ chatName }}</chat-title>
     <static-panel-content>
         <div class="message-container">
-            <single-message v-for="message in messages" :key="message._id" :message="message" />
+            <single-message v-for="message in messages" :key="message._id" :message="message" @click="selectMessage" />
         </div>
     </static-panel-content>
     <div class="chat-input" :class="$store.state.theme">
@@ -88,6 +88,7 @@ export default {
                 chat_id: this.chat._id,
                 sender_id: getUser().userId,
                 text: this.newMessage,
+                created_at: new Date(),
             }
             if (this.newMessage !== '') {
                 this.socket.emit('sendMessage', messageData);
@@ -105,6 +106,9 @@ export default {
                 this.socket.emit('stopTyping');
             }, 1000);
         },
+        selectMessage(message) {
+            console.log(message);
+        }
     }
 }
 </script>
@@ -167,7 +171,7 @@ export default {
 
 .message-input {
     flex: 1;
-    font-size: 15px;
+    font-size: 17px;
     line-height: 15px;
     border: none;
     background-color: rgba(0, 0, 0, 0);

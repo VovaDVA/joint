@@ -19,14 +19,14 @@ export default {
     data() {
         return {
             items: [
-                { id: 1, firstName: 'Евгений Зойкин' },
-                { id: 2, firstName: 'Владимир Двойнишников' },
-                { id: 3, firstName: 'Алексей Ищенко' },
-                { id: 4, firstName: 'Анастасия Зубенко' },
-                { id: 5, firstName: 'Сергей Копытов' },
-                { id: 6, firstName: 'Максим Примак' },
-                { id: 7, firstName: 'Елизавета Рябухина' },
-                { id: 8, firstName: 'Кристина Плетюк' },
+                // { id: 1, firstName: 'Евгений Зойкин' },
+                // { id: 2, firstName: 'Владимир Двойнишников' },
+                // { id: 3, firstName: 'Алексей Ищенко' },
+                // { id: 4, firstName: 'Анастасия Зубенко' },
+                // { id: 5, firstName: 'Сергей Копытов' },
+                // { id: 6, firstName: 'Максим Примак' },
+                // { id: 7, firstName: 'Елизавета Рябухина' },
+                // { id: 8, firstName: 'Кристина Плетюк' },
             ],
             searchText: '',
         };
@@ -63,10 +63,6 @@ export default {
             if (typeof text === 'string') {
                 this.searchText = text;
             }
-            console.log(typeof this.searchText);
-        },
-        openChat() {
-            this.$emit('open-chat');
         }
     }
 }
