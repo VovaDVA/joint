@@ -229,4 +229,92 @@ class EmailServiceTest {
 
         assertFalse(result);
     }
+
+    @Test
+    void sendAccountDeletionConfirmationEmailSuccess() throws Exception {
+        Transport mockTransport = mock(Transport.class);
+        Session mockSession = mock(Session.class);
+
+        EmailService emailService = new EmailService();
+        emailService.setHost("smtp.gmail.com");
+        emailService.setPort(587);
+        emailService.setFromEmail("jointtest05@gmail.com");
+        emailService.setPassword("iuah wxvg shum fjkq");
+
+        User user = new User();
+        user.setEmail("recipient@gmail.com");
+
+        when(mockSession.getTransport("smtp")).thenReturn(mockTransport);
+
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            assertEquals(emailService.getFromEmail(), ((InternetAddress) args[0]).getAddress());
+            assertEquals(user.getEmail(), ((InternetAddress) args[1]).getAddress());
+            assertEquals("Подтверждение удаления аккаунта", ((MimeMessage) args[2]).getSubject());
+            assertNotNull(((MimeMessage) args[2]).getContent());
+            return null;
+        }).when(mockTransport).sendMessage(any(), any());
+
+        boolean result = emailService.sendAccountDeletionConfirmationEmail(user, "123456");
+
+        assertTrue(result);
+
+        assertNotNull(mockSession);
+    }
+
+    @Test
+    void sendAccountDeletionConfirmationEmailInvalidEmail() throws Exception {
+        EmailService emailService = new EmailService();
+        emailService.host = "smtp.example.com";
+        emailService.port = 587;
+        emailService.fromEmail = "test@example.com";
+        emailService.password = "password123";
+
+        User user = new User();
+        user.setEmail("invalid_email");
+
+        Transport mockTransport = mock(Transport.class);
+        when(mockSession.getTransport("smtp")).thenReturn(mockTransport);
+
+        emailService.sendAccountDeletionConfirmationEmail(user, "123456");
+
+        verify(mockSession, never()).getTransport("smtp");
+        verify(mockTransport, never()).sendMessage(any(), any());
+    }
+
+    @Test
+    void sendAccountDeletionConfirmationEmailSendError() throws Exception {
+        EmailService emailService = new EmailService();
+        emailService.host = "smtp.gmail.com";
+        emailService.port = 587;
+        emailService.fromEmail = "test@gmail.com";
+        emailService.password = "password123";
+
+        User user = new User();
+        user.setEmail("recipient@gmail.com");
+
+        doThrow(new MessagingException("Error sending message")).when(mockTransport).sendMessage(any(), any());
+
+        boolean result = emailService.sendAccountDeletionConfirmationEmail(user, "123456");
+
+        assertFalse(result);
+    }
+
+    @Test
+    void sendAccountDeletionConfirmationEmailConnectionError() throws Exception {
+        EmailService emailService = new EmailService();
+        emailService.host = "smtp.gmail.com";
+        emailService.port = 587;
+        emailService.fromEmail = "test@gmail.com";
+        emailService.password = "password123";
+
+        User user = new User();
+        user.setEmail("recipient@gmail.com");
+
+        doThrow(new MessagingException("Error connecting to mail server")).when(mockTransport).connect(any(), any());
+
+        boolean result = emailService.sendAccountDeletionConfirmationEmail(user, "123456");
+
+        assertFalse(result);
+    }
 }
