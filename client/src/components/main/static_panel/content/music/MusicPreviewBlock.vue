@@ -1,5 +1,5 @@
 <template>
-    <div class="music-preview-block">
+    <div class="music-preview-block" :class="$store.state.theme">
         <div class="music-cover"></div>
         <div class="music-info">
             <div class="music-header">
@@ -40,6 +40,19 @@ export default {
     transition: background .2s linear;
 }
 
+.music-preview-block.light-theme {
+    color: #000;
+}
+
+.music-preview-block:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transition: background .2s linear;
+}
+
+.music-preview-block.light-theme:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
 .music-cover {
     width: 60px;
     flex: 0 0 60px;
@@ -50,6 +63,15 @@ export default {
     border-radius: 10px;
 }
 
+.music-preview-block.light-theme .music-cover {
+    border: 1px #0000002f solid;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.music-preview-block.light-theme .music-title {
+    color: #965000;
+}
+
 .music-info {
     flex: 1;
     display: flex;
@@ -58,7 +80,7 @@ export default {
 }
 .music-header {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
 }
 
 .music-title {
@@ -94,6 +116,10 @@ export default {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 2px;
     margin-left: 10px;
+}
+
+.music-preview-block.light-theme .music-scale {
+    background: rgba(0, 0, 0, 0.2);
 }
 
 </style>

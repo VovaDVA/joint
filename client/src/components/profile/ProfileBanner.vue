@@ -1,5 +1,5 @@
 <template>
-    <div class="banner">
+    <div class="banner" :class="$store.state.theme">
         <div class="banner-inner">
             <div class="banner-content">
                 <filled-icon-button>Изменить обложку</filled-icon-button>
@@ -36,6 +36,16 @@ export default {
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
+}
+
+.banner.light-theme .banner-inner {
+    border: 1px #0000007c solid;
+    background: #fff;
+}
+
+.banner.light-theme .banner-ad {
+    border: 1px #0000007c solid;
+    background: #fff;
 }
 
 .banner-promo {
@@ -91,6 +101,11 @@ export default {
         border-bottom: 1px #ffffff7c solid;
         border-radius: 0 0 20px 20px;
         background: rgba(0, 0, 0, 0.5);
+    }
+
+    .banner.light-theme {
+        border-bottom: 1px #0000007c solid;
+        background: #ebebeb;
     }
 
     .banner-inner {

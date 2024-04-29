@@ -45,7 +45,7 @@ export default {
 <style scoped>
 .message {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     width: auto;
     height: fit-content;
     /* min-height: 30px; */

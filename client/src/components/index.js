@@ -9,11 +9,13 @@ import ContentBlockText from "@/components/main/ContentBlockText.vue";
 
 // Input
 import FormInput from '@/components/account/FormInput.vue';
+import FormTextArea from '@/components/account/FormTextArea.vue';
 import AuthBlock from '@/components/account/AuthBlock.vue';
 import PasswordInput from "./account/PasswordInput.vue";
 import EmailInput from "./account/EmailInput.vue";
 import NumberInput from "./account/NumberInput.vue";
 import DateInput from "./account/DateInput.vue";
+import SubmitButton from "./main/buttons/SubmitButton.vue";
 
 import BarChart from "@/components/main/BarChart.vue";
 import CalendarBlock from "@/components/main/CalendarBlock.vue";
@@ -60,7 +62,7 @@ export default [
     FormBlock,
     ContentBlockTitle, ContentBlockText,
     BarChart, CalendarBlock,
-    ContentBlock, FormInput, AuthBlock, PasswordInput, EmailInput, NumberInput, DateInput,
+    ContentBlock, FormInput, FormTextArea, AuthBlock, PasswordInput, EmailInput, NumberInput, DateInput, SubmitButton,
     TokenCheck,
     // Buttons
     SingleIcon, IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton,

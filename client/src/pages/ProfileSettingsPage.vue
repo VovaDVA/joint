@@ -1,40 +1,49 @@
 <template>
     <token-check></token-check>
-    <content-block>
+    <!-- <content-block>
         <content-block-title>Зачем указывать свои данные?</content-block-title>
         <content-block-text>
-            <p>Указывать свои данные необязательно.</p>
-
-            <p>Персонал компании состоит всего из двух человек: отца и сына, которые захотели посвятить свое
-                свободное время созданию чего-то нового и интересного. Решили создать свою полноценную
-                браузерную стратегию, в которой смогли бы воплотить в жизнь то, чего нам не хватало в других
-                играх: больше локаций, больше персонажей, больше юнитов, больше ресурсов и, самое главное,
-                длинного и непредсказуемого сюжета о далеких мирах, о путешествии по незнакомым планетам, о
-                дикой неизвестной природе.</p>
         </content-block-text>
-    </content-block>
+    </content-block> -->
 
     <content-block>
         <content-block-title>Настройки</content-block-title>
 
         <form class="settings-form" enctype="multipart/form-data">
-			<form-input v-model="firstName">Имя</form-input>
-			<form-input v-model="firstName">Фамилия</form-input>
-			<date-input v-model="firstName">Дата рождения</date-input>
-			<form-input v-model="firstName">Страна</form-input>
-			<form-input v-model="firstName">Город</form-input>
-			<email-input v-model="firstName">Почта</email-input>
-			<password-input v-model="firstName">Пароль</password-input>
+			<form-text-area v-model="firstName" :value="user.description" :data="'Расскажите о себе...'">Обо мне</form-text-area>
+			<form-input v-model="firstName" :value="user.firstName">Имя</form-input>
+			<form-input v-model="firstName" :value="user.lastName">Фамилия</form-input>
+			<date-input v-model="firstName" :value="user.birthday">Дата рождения</date-input>
+			<form-input v-model="firstName" :value="user.country" data="Укажите страну">Страна</form-input>
+			<form-input v-model="firstName" :value="user.city" data="Укажите город">Город</form-input>
+			<email-input v-model="firstName" :value="user.email">Почта</email-input>
+			<password-input class="password" v-model="firstName" data="**********" style="pointer-events: none;">Пароль</password-input>
 
-            <div class="input_wrapper">
-                <input type="submit" id="submitbtn" class="submit_btn" name="submit" value="Сохранить изменения" />
-                <router-link to="/" class="settings_cancel">Отмена</router-link>
-            </div>
+            
+			<div class="toggle-wrapper">
+				<input name="terms" id="terms" type="checkbox" value="0" required>
+				<label for="terms">Включить двухфакторнуй аутентификацию</label>
+			</div>
+
+            <submit-button class="submit" data="Сохранить изменения"></submit-button>
+            <div class="delete">Удалить аккаунт</div>
         </form>
     </content-block>
 </template>
 
-<script></script>
+<script>
+import { getUser } from '@/modules/auth';
+export default {
+    data() {
+        return {
+            user: {}
+        }
+    },
+    mounted() {
+        this.user = getUser();
+    }
+}
+</script>
 
 <style scoped>
 .settings-form {
@@ -64,10 +73,22 @@ input {
     margin-left: 0;
 }
 
-.settings_cancel:hover {
-    background: #ffffff;
-    color: #000000;
+.password {
+    margin-bottom: 20px;
+}
 
-    transition: color, background .3s linear;
+.submit {
+    margin-top: 30px;
+}
+
+.toggle-wrapper {
+    display: flex;
+    margin-left: 20px;
+    text-align: left;
+}
+
+.delete {
+    margin-top: 20px;
+    color: #ff6161;
 }
 </style>

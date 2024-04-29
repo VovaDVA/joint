@@ -1,5 +1,5 @@
 <template>
-    <div class="icon-button">
+    <div class="icon-button" :class="$store.state.theme">
         <font-awesome-icon :icon="iconName" />
     </div>
 </template>
@@ -31,9 +31,12 @@ export default {
     transition: color .2s linear;
 }
 
+.icon-button.light-theme {
+    color: #000;
+}
+
 .icon-button:hover {
-    /* color: #ffd900; */
-    color: rgb(0, 255, 42);
+    color: #ffa600;
     transition: color .2s linear;
 }
 </style>

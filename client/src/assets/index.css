@@ -36,12 +36,12 @@ body {
     background-size: cover;
 
     user-select: none;
+    /* transition: background .2s linear; */
 }
 
-/* .intro_fade {
-    height: 100%;
-    background: linear-gradient(transparent -300px, #333333)
-} */
+.intro.light-theme {
+    background-color: #d4d4d4;
+}
 
 /* ============================================================================= */
 /* Форма входа на сайт ========================================================= */
@@ -59,13 +59,9 @@ h2 {
 #terms {
     width: 30px;
     margin: 0 20px 0 0;
-    /* margin: 10px 0; */
-    /* padding: 10px 0; */
 
     border: none;
     outline: none;
-    /* border-image: radial-gradient(#ffffff 50%, transparent); */
-    /* border-image-slice: 1; */
 }
 
 .input_wrapper {
@@ -125,7 +121,7 @@ button[type="submit"] {
 
 a {
     text-decoration: none;
-    color: #6dff72;
+    color: #ffbb00;
 }
 
 template {
@@ -141,21 +137,6 @@ template {
 
 input {
     color: white !important;
-}
-
-.submit_btn {
-    background: none;
-    color: #ffffff;
-    line-height: 20px;
-
-    transition: color, background .3s linear;
-}
-
-.submit_btn:hover {
-    color: #000000 !important;
-    background-color: #ffffff;
-
-    transition: color, background .3s linear;
 }
 
 button {

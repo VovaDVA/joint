@@ -1,5 +1,5 @@
 <template>
-    <div class="user-info">
+    <div class="user-info" :class="$store.state.theme">
         <div class="avatar"></div>
         <div class="user-info-text">
             <div class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) : 'Владимир Двойнишников'}}</div>
@@ -47,6 +47,16 @@ export default {
     background: #555555 center no-repeat;
     background-size: cover;
     transition: background .3s linear;
+}
+
+.user-info.light-theme {
+    color: #000;
+}
+
+.user-info.light-theme .avatar {
+    border: 1px #0000007c solid;
+    background: #a3a3a3 center no-repeat;
+    background-size: cover;
 }
 
 .avatar:hover {

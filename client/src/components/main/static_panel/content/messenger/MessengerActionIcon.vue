@@ -1,5 +1,5 @@
 <template>
-    <div class="messenger-action-icon">
+    <div class="messenger-action-icon" :class="$store.state.theme">
         <div class="icon">
             <font-awesome-icon :icon="iconName" />
         </div>
@@ -37,6 +37,11 @@ export default {
     background-color: rgba(0, 0, 0, 0.5);
     user-select: none;
     transition: color, background .3s linear;
+}
+
+.messenger-action-icon.light-theme {
+    background: #fff;
+    color: #000;
 }
 
 .messenger-action-icon.right {

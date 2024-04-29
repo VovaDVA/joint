@@ -13,7 +13,8 @@ const app = createApp(App);
 const store = createStore({
     state() {
         return {
-            staticPanelVisible: false
+            staticPanelVisible: false,
+            theme: 'light-theme',
         }
     },
     mutations: {
@@ -22,6 +23,9 @@ const store = createStore({
         },
         hideStaticPanel(state) {
             state.staticPanelVisible = false;
+        },
+        changeTheme(state) {
+            state.theme = (state.theme == 'dark-theme') ? 'light-theme' : 'dark-theme';
         }
     }
 })
