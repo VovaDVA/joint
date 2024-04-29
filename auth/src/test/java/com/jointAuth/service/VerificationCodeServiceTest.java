@@ -14,7 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -393,5 +394,125 @@ public class VerificationCodeServiceTest {
         assertFalse(result, "Null code should return false");
         verify(userVerificationCodeRepository, never())
                 .delete(verificationCode);
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesFor2FANoExpiredCodes() {
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(new ArrayList<>());
+
+        verificationCodeService.cleanExpiredVerificationCodesFor2FA();
+
+        verify(verificationCodeRepository)
+                .deleteAll(new ArrayList<>());
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesFor2FAExpiredCodesPresent() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expiredTime = currentTime.minus(1, ChronoUnit.DAYS);
+
+        List<TwoFactorAuthVerificationCode> expiredCodes = new ArrayList<>();
+        TwoFactorAuthVerificationCode expiredCode1 = new TwoFactorAuthVerificationCode();
+        expiredCode1.setExpirationTime(expiredTime);
+        expiredCodes.add(expiredCode1);
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(expiredCodes);
+
+        verificationCodeService.cleanExpiredVerificationCodesFor2FA();
+
+        verify(verificationCodeRepository)
+                .deleteAll(expiredCodes);
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesFor2FAMixedCodes() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expiredTime = currentTime.minus(1, ChronoUnit.DAYS);
+        LocalDateTime validTime = currentTime.plus(1, ChronoUnit.DAYS);
+
+        List<TwoFactorAuthVerificationCode> codes = new ArrayList<>();
+        TwoFactorAuthVerificationCode expiredCode = new TwoFactorAuthVerificationCode();
+        expiredCode.setExpirationTime(expiredTime);
+        codes.add(expiredCode);
+
+        TwoFactorAuthVerificationCode validCode = new TwoFactorAuthVerificationCode();
+        validCode.setExpirationTime(validTime);
+        codes.add(validCode);
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(List.of(expiredCode));
+
+        verificationCodeService.cleanExpiredVerificationCodesFor2FA();
+
+        verify(verificationCodeRepository)
+                .deleteAll(List.of(expiredCode));
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesFor2FAEmptyExpiredCodes() {
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(new ArrayList<>());
+
+        verificationCodeService.cleanExpiredVerificationCodesFor2FA();
+
+        verify(verificationCodeRepository)
+                .deleteAll(Collections.emptyList());
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesFor2FALargeNumberOfExpiredCodes() {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<TwoFactorAuthVerificationCode> expiredCodes = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            TwoFactorAuthVerificationCode code = new TwoFactorAuthVerificationCode();
+            code.setExpirationTime(currentTime.minusDays(1));
+            expiredCodes.add(code);
+        }
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(expiredCodes);
+
+        verificationCodeService.cleanExpiredVerificationCodesFor2FA();
+
+        verify(verificationCodeRepository)
+                .deleteAll(expiredCodes);
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesFor2FACodesPartiallyExpired() {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<TwoFactorAuthVerificationCode> partiallyExpiredCodes = new ArrayList<>();
+        List<TwoFactorAuthVerificationCode> validCodes = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            TwoFactorAuthVerificationCode expiredCode = new TwoFactorAuthVerificationCode();
+            expiredCode.setExpirationTime(currentTime.minusDays(1));
+            partiallyExpiredCodes.add(expiredCode);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            TwoFactorAuthVerificationCode validCode = new TwoFactorAuthVerificationCode();
+            validCode.setExpirationTime(currentTime.plusDays(1));
+            validCodes.add(validCode);
+        }
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(partiallyExpiredCodes);
+
+        verificationCodeService.cleanExpiredVerificationCodesFor2FA();
+
+        verify(verificationCodeRepository)
+                .deleteAll(partiallyExpiredCodes);
     }
 }
