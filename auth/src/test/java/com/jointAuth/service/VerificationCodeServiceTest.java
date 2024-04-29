@@ -2,8 +2,10 @@ package com.jointAuth.service;
 
 import com.jointAuth.model.user.TwoFactorAuthVerificationCode;
 import com.jointAuth.model.user.User;
+import com.jointAuth.model.user.UserVerificationCode;
 import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.repository.UserRepository;
+import com.jointAuth.repository.UserVerificationCodeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,15 +27,20 @@ public class VerificationCodeServiceTest {
     private UserRepository userRepository;
     private VerificationCodeService verificationCodeService;
 
+    private UserVerificationCodeRepository userVerificationCodeRepository;
+
+
     @BeforeEach
     public void setUp() {
         verificationCodeRepository = mock(TwoFactorAuthVerificationCodeRepository.class);
+        userVerificationCodeRepository = mock(UserVerificationCodeRepository.class);
         userRepository = mock(UserRepository.class);
 
         verificationCodeService = new VerificationCodeService(verificationCodeRepository,
                 userRepository,
-                null);
+                userVerificationCodeRepository);
 
+        verificationCodeRepository.deleteAll();
         verificationCodeRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -270,5 +277,121 @@ public class VerificationCodeServiceTest {
         });
 
         assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
+    }
+
+    @Test
+    public void testVerifyUserVerificationCodeForUserSuccessfulVerification() {
+        Long userId = 1L;
+        String code = "12345";
+
+        UserVerificationCode verificationCode = new UserVerificationCode();
+        verificationCode.setCode(code);
+        verificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(10));
+
+        when(userVerificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(verificationCode));
+
+        boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, code);
+
+        assertTrue(result, "Code should be valid and return true");
+        verify(userVerificationCodeRepository)
+                .delete(verificationCode);
+    }
+
+    @Test
+    public void testVerifyUserVerificationCodeForUserCodeExpired() {
+        Long userId = 1L;
+        String code = "12345";
+
+        UserVerificationCode verificationCode = new UserVerificationCode();
+        verificationCode.setCode(code);
+        verificationCode.setExpirationTime(LocalDateTime.now().minusMinutes(10));
+
+        when(userVerificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(verificationCode));
+
+        boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, code);
+
+        assertFalse(result, "Code should be expired and return false");
+        verify(userVerificationCodeRepository, never())
+                .delete(verificationCode);
+    }
+
+    @Test
+    public void testVerifyUserVerificationCodeForUserInvalidCode() {
+        Long userId = 1L;
+        String invalidCode = "54321";
+
+        UserVerificationCode verificationCode = new UserVerificationCode();
+        verificationCode.setCode("12345");
+        verificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(10));
+
+        when(userVerificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(verificationCode));
+
+        boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, invalidCode);
+
+        assertFalse(result, "Invalid code should return false");
+        verify(userVerificationCodeRepository, never())
+                .delete(verificationCode);
+    }
+
+    @Test
+    public void testVerifyUserVerificationCodeForUserUserNotFound() {
+        Long userId = 1L;
+        String code = "12345";
+
+        when(userVerificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            verificationCodeService.verifyUserVerificationCodeForUser(userId, code);
+        });
+
+        assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
+    }
+
+    @Test
+    public void testVerifyUserVerificationCodeForUserEmptyCode() {
+        Long userId = 1L;
+        String emptyCode = "";
+
+        UserVerificationCode verificationCode = new UserVerificationCode();
+        verificationCode.setCode("12345");
+        verificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(10));
+
+        when(userVerificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(verificationCode));
+
+        boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, emptyCode);
+
+        assertFalse(result, "Empty code should return false");
+        verify(userVerificationCodeRepository, never())
+                .delete(verificationCode);
+    }
+
+    @Test
+    public void testVerifyUserVerificationCodeForUserNullCode() {
+        Long userId = 1L;
+        String nullCode = null;
+
+        UserVerificationCode verificationCode = new UserVerificationCode();
+        verificationCode.setCode("12345");
+        verificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(10));
+
+        when(userVerificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(verificationCode));
+
+        boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, nullCode);
+
+        assertFalse(result, "Null code should return false");
+        verify(userVerificationCodeRepository, never())
+                .delete(verificationCode);
     }
 }
