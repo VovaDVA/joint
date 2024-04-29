@@ -147,7 +147,6 @@ public class VerificationCodeService {
         userVerificationCodeRepository.save(userVerificationCode);
     }
 
-
     @Scheduled(fixedRate = 1209600000)
     public void cleanExpiredVerificationCodesForPasswordReset() {
         LocalDateTime currentTime = LocalDateTime.now();
