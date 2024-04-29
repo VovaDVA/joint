@@ -3,6 +3,7 @@ package com.jointAuth.repository;
 import com.jointAuth.model.user.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.model.user.UserVerificationCode;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -277,5 +278,107 @@ public class UserVerificationCodeRepositoryTest {
         List<UserVerificationCode> codes = userVerificationCodeRepository.findAllByExpirationTimeBefore(LocalDateTime.now());
 
         assertEquals(1, codes.size());
+    }
+
+    @Test
+    @Transactional
+    public void deleteByUserIdWhenRecordsExistForGivenUserIdDeletesAllRecordsWithMatchingUserId() {
+        User user = new User();
+        long userId = 1L;
+
+        user.setId(userId);
+
+        userRepository.save(user);
+
+        UserVerificationCode userVerificationCode1 = new UserVerificationCode();
+
+        userVerificationCode1.setCode("code1");
+        userVerificationCode1.setUser(user);
+
+        userVerificationCodeRepository.save(userVerificationCode1);
+
+        userVerificationCodeRepository.deleteByUserId(userId);
+
+        Optional<UserVerificationCode> deletedRecords = userVerificationCodeRepository.findByUserId(userId);
+        assertTrue(deletedRecords.isEmpty());
+    }
+
+    @Test
+    public void deleteByUserIdWhenNoRecordsExistForGivenUserIdDoesNothing() {
+        long userId = 1L;
+
+        userVerificationCodeRepository.deleteByUserId(userId);
+
+        List<UserVerificationCode> allRecords = userVerificationCodeRepository.findAll();
+        assertEquals(0, allRecords.size());
+    }
+
+    @Test
+    @Transactional
+    public void deleteByUserIdOnlyDeletesRecordsWithMatchingUserId() {
+        long userIdToDelete = 1L;
+        long otherUserId = 2L;
+
+        User user1 = new User();
+        User user2 = new User();
+
+        user1.setId(userIdToDelete);
+
+        user2.setId(otherUserId);
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        UserVerificationCode userVerificationCode1 = new UserVerificationCode();
+
+        userVerificationCode1.setCode("code1");
+        userVerificationCode1.setUser(user1);
+
+        UserVerificationCode userVerificationCode2 = new UserVerificationCode();
+
+        userVerificationCode2.setCode("code1");
+        userVerificationCode2.setUser(user2);
+
+        userVerificationCodeRepository.save(userVerificationCode1);
+        userVerificationCodeRepository.save(userVerificationCode2);
+
+        userVerificationCodeRepository.deleteByUserId(userIdToDelete);
+
+        List<UserVerificationCode> remainingRecords = userVerificationCodeRepository.findAll();
+        assertEquals(1, remainingRecords.size());
+        assertEquals(otherUserId, remainingRecords.get(0).getUser().getId());
+    }
+
+    @Test
+    @Transactional
+    public void deleteByUserIdAfterDeletionRecordsAreNotPresentInDatabase() {
+        long userId = 1L;
+        User user = new User();
+
+        user.setId(userId);
+
+        userRepository.save(user);
+
+        UserVerificationCode userVerificationCode = new UserVerificationCode();
+
+        userVerificationCode.setCode("code1");
+        userVerificationCode.setUser(user);
+
+        userVerificationCodeRepository.save(userVerificationCode);
+
+        userVerificationCodeRepository.deleteByUserId(userId);
+
+        Optional<UserVerificationCode> deletedRecords = userVerificationCodeRepository.findByUserId(userId);
+        assertTrue(deletedRecords.isEmpty());
+    }
+
+    @Test
+    public void deleteByUserIdWithInvalidUserIdDoesNothing() {
+        long invalidUserId = 999L;
+
+        userVerificationCodeRepository.deleteByUserId(invalidUserId);
+
+        List<UserVerificationCode> allRecords = userVerificationCodeRepository.findAll();
+        assertEquals(0, allRecords.size());
     }
 }
