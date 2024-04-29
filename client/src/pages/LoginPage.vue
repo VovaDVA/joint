@@ -5,7 +5,7 @@
 			<email-input v-model="email">Почта</email-input>
 			<password-input v-model="password">Пароль</password-input>
 			
-			<input id="submit" class="submit_btn" type="submit" name="submit" value="Войти">
+			<input :class="$store.state.theme" type="submit" name="submit" value="Войти">
 		</form>
 		<div class="no_account">Нет аккаунта? - <router-link to="/register">Зарегистрироваться</router-link></div>
 		<div class="lost_password"><a href="">Забыли пароль?</a></div>
@@ -59,15 +59,38 @@ export default {
 <style scoped>
 input {
 	line-height: 28px;
-	font-size: 17px;
-	border: 1px #ffffff solid;
-	border-radius: 30px;
-	margin: 20px auto;
-	padding: 5px;
+    padding: 5px;
 	width: 100%;
-	text-align: center;
-	color: #ffffff;
+	margin: 20px auto;
 
-	transition: color, background .3s linear;
+    border: 1px #ffffff solid;
+    border-radius: 30px;
+
+    font-family: 'Montserrat', sans-serif;
+    font-size: 17px;
+    text-decoration: none;
+    color: #ffffff;
+    background: none;
+
+    transition: color, background .3s linear;
+}
+
+input.light-theme {
+    border: 1px #000000 solid;
+    color: #000 !important;
+}
+
+input:hover {
+    background-color: #ffffff;
+    color: #000000 !important;
+
+    transition: color, background .3s linear;
+}
+
+input.light-theme:hover {
+    background-color: #000000;
+    color: #ffffff !important;
+
+    transition: color, background .3s linear;
 }
 </style>
