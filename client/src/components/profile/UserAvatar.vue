@@ -2,29 +2,21 @@
     <div class="user-info" :class="$store.state.theme">
         <div class="avatar"></div>
         <div class="user-info-text">
-            <div class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) : 'Владимир Двойнишников'}}</div>
+            <div class="username">{{ getName() }}</div>
         </div>
     </div>
 </template>
 
 <script>
+import { getUserName } from '@/modules/auth';
+
 export default {
     name: 'user-avatar',
-    data() {
-        return {
-            user: {
-                firstName: '',
-                lastName: '',
-            },
+    methods: {
+        getName() {
+            return getUserName();
         }
-    },
-    created() {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            this.user = JSON.parse(userData);
-            console.log(this.user);
-        }
-    },
+    }
 }
 </script>
 

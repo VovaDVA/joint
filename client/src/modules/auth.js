@@ -62,6 +62,12 @@ export function getUserId(id) {
     return id != getUser().userId;
 }
 
+export function getUserName() {
+    const user = getUser();
+    if (!user) return '-';
+    return user.firstName + ' ' + user.lastName;
+}
+
 export function deleteSession() {
     const user = getUser();
     if (user) {

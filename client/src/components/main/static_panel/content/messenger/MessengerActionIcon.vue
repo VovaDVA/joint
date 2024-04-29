@@ -36,7 +36,7 @@ export default {
 
     background-color: rgba(0, 0, 0, 0.5);
     user-select: none;
-    transition: color, background .3s linear;
+    transition: color .2s, background .2s linear;
 }
 
 .messenger-action-icon.light-theme {
@@ -52,7 +52,13 @@ export default {
 .messenger-action-icon:hover {
     color: black;
     background-color: white;
-    transition: color, background .3s linear;
+    transition: color .2s, background .2s linear;
+}
+
+.messenger-action-icon.light-theme:hover {
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 0, 0);
+    transition: color .2s, background .2s linear;
 }
 
 .icon {

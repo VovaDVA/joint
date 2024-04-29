@@ -10,10 +10,6 @@
             </div>
 
             <div class="nav" :class="{ 'active': isActive }">
-                <!-- <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 0 }" @click="selectTab(0)">
-                    <div>Магазин</div>
-                    <div class="tab-circle"></div>
-                </router-link> -->
                 <router-link to="/about" class="nav-item" :class="{ selected: selectedTab === 1 }"
                     @click="selectTab(1)">
                     <div>О нас</div>
@@ -50,8 +46,7 @@
                         <icon-button icon-name="right-from-bracket" @click="logoutUser()"></icon-button>
                     </div>
 
-                    <router-link to="/" class="username">{{ user.firstName ? (user.firstName + ' ' + user.lastName) :
-                        '-' }}</router-link>
+                    <router-link to="/" class="username">{{ getName() }}</router-link>
                 </div>
 
                 <router-link to="/" @click="changePage()">
@@ -64,25 +59,14 @@
 </template>
 
 <script>
-import { deleteSession } from '../../../modules/auth';
+import { deleteSession, getUserName } from '../../../modules/auth';
 
 export default {
     name: 'page-header',
     data() {
         return {
-            user: {
-                firstName: '',
-                lastName: '',
-            },
             selectedTab: null,
             isActive: false,
-        }
-    },
-    created() {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            this.user = JSON.parse(userData);
-            console.log(this.user);
         }
     },
     methods: {
@@ -102,6 +86,9 @@ export default {
         },
         changeTheme() {
             this.$store.commit('changeTheme');
+        },
+        getName() {
+            return getUserName();
         }
     }
 }
