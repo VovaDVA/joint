@@ -316,7 +316,7 @@ public class UserService {
             return false;
         }
 
-        boolean isVerified = verificationCodeService.verifyUserVerificationCode(userId, verificationCode);
+        boolean isVerified = verificationCodeService.verifyUserVerificationCodeForUser(userId, verificationCode);
 
         if (!isVerified) {
             return false;

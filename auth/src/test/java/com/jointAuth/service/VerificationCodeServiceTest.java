@@ -33,6 +33,9 @@ public class VerificationCodeServiceTest {
         verificationCodeService = new VerificationCodeService(verificationCodeRepository,
                 userRepository,
                 null);
+
+        verificationCodeRepository.deleteAll();
+        userRepository.deleteAll();
     }
     @Test
     public void testSaveOrUpdateVerificationCodeFor2FANewCode() {
@@ -157,5 +160,115 @@ public class VerificationCodeServiceTest {
         assertNotNull(expirationTime);
         assertTrue(expirationTime.isAfter(LocalDateTime.now()));
         assertTrue(expirationTime.isBefore(LocalDateTime.now().plusHours(1)));
+    }
+
+    @Test
+    void testVerifyVerificationCodeFor2FASuccessful() {
+        Long userId = 1L;
+        String code = "123456";
+        TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
+        verificationCode.setCode(code);
+        verificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
+        verificationCode.setUser(userRepository.getById(userId));
+
+        when(verificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(verificationCode));
+
+        boolean result = verificationCodeService.verifyVerificationCodeFor2FA(userId, code);
+
+        assertTrue(result);
+        verify(verificationCodeRepository)
+                .delete(verificationCode);
+    }
+
+    @Test
+    void testVerifyVerificationCodeFor2FAInvalidCode() {
+        Long userId = 1L;
+        String code = "654321";
+        TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
+        verificationCode.setCode("123456");
+        verificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+        verificationCode.setUser(userRepository.getById(userId));
+
+        when(verificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(verificationCode));
+
+        boolean result = verificationCodeService.verifyVerificationCodeFor2FA(userId, code);
+
+        assertFalse(result);
+        verify(verificationCodeRepository, never())
+                .delete(verificationCode);
+    }
+
+    @Test
+    void testVerifyVerificationCodeFor2FAExpiredCode() {
+        Long userId = 1L;
+        String code = "123456";
+        TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
+        verificationCode.setCode(code);
+        verificationCode.setExpirationTime(LocalDateTime.now().minusMinutes(5));
+        verificationCode.setUser(userRepository.getById(userId));
+
+        when(verificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.of(verificationCode));
+
+        boolean result = verificationCodeService.verifyVerificationCodeFor2FA(userId, code);
+
+        assertFalse(result);
+        verify(verificationCodeRepository, never()).delete(verificationCode);
+    }
+
+    @Test
+    void testVerifyVerificationCodeFor2FACodeNotFound() {
+        Long userId = 1L;
+        String code = "123456";
+
+        when(verificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> verificationCodeService.verifyVerificationCodeFor2FA(userId, code));
+    }
+
+    @Test
+    public void testVerifyVerificationCodeFor2FAUserNotFound() {
+        Long userId = 1L;
+        String code = "12345";
+
+        when(verificationCodeRepository
+                .findByUserId(userId))
+                .thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            verificationCodeService.verifyVerificationCodeFor2FA(userId, code);
+        });
+
+        assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
+    }
+
+    @Test
+    public void testVerifyVerificationCodeFor2FAEmptyCode() {
+        Long userId = 1L;
+        String emptyCode = "";
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            verificationCodeService.verifyVerificationCodeFor2FA(userId, emptyCode);
+        });
+
+        assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
+    }
+
+    @Test
+    public void testVerifyVerificationCodeFor2FANullCode() {
+        Long userId = 1L;
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            verificationCodeService.verifyVerificationCodeFor2FA(userId, null);
+        });
+
+        assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
     }
 }
