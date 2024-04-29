@@ -471,9 +471,9 @@ public class UserServiceTest {
                 .matches(password, encodedPassword))
                 .thenReturn(true);
 
-        doNothing()
-                .when(emailService)
-                .sendVerificationCodeByEmail(eq(user), anyString());
+        doAnswer(invocation -> {
+            return null;
+        }).when(emailService).sendVerificationCodeByEmail(eq(user), anyString());
 
         User loggedInUser = userService.login(email, password);
 

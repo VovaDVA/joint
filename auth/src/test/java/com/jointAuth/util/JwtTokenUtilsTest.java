@@ -9,12 +9,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
@@ -24,8 +21,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@DataJpaTest
-@ExtendWith(MockitoExtension.class)
 public class JwtTokenUtilsTest {
     @InjectMocks
     private JwtTokenUtils jwtTokenUtils;
@@ -47,42 +42,44 @@ public class JwtTokenUtilsTest {
         ReflectionTestUtils.setField(jwtTokenUtils, "secret", secret);
     }
 
+
     @Test
     public void testGenerateTokenSuccessful() {
-        // Настройка моков для User
-        when(mockUser.getEmail()).thenReturn("IvanPetrov@gmail.com");
-        when(mockUser.getId()).thenReturn(153L);
-        when(mockUser.getFirstName()).thenReturn("Ivan");
-        when(mockUser.getLastName()).thenReturn("Petrov");
+        // Arrange
+        User mockUser = new User();
+        mockUser.setEmail("IvanPetrov@gmail.com");
+        mockUser.setId(153L);
+        mockUser.setFirstName("Ivan");
+        mockUser.setLastName("Petrov");
 
-        // Создайте объект Profile для мока ProfileRepository
         Profile mockProfile = new Profile();
-        mockProfile.setId(1L);
+        mockProfile.setId(153L);
+        mockProfile.setUser(mockUser);
 
-        // Настройка мока ProfileRepository
         when(profileRepository.findByUserId(153L)).thenReturn(Optional.of(mockProfile));
 
-        // Генерация токена для мока User
+        // Act
         String token = jwtTokenUtils.generateToken(mockUser);
 
-        // Получение утверждений из токена
+        // Assert
         Claims claims = Jwts.parser()
-                .setSigningKey(secret)
+                .setSigningKey("yourSecretKey") // Replace with your actual secret key
                 .parseClaimsJws(token)
                 .getBody();
 
-        // Проверка данных в токене
         assertEquals("IvanPetrov@gmail.com", claims.get("email", String.class));
         assertEquals(153L, claims.get("userId", Long.class));
         assertEquals("Ivan", claims.get("firstName", String.class));
         assertEquals("Petrov", claims.get("lastName", String.class));
-        assertEquals(1L, claims.get("profileId", Long.class));
+        assertEquals(153L, claims.get("profileId", Long.class));
 
-        // Проверка времени жизни токена
+        assertNotNull(claims.get("profileId", Long.class));
+
         Date issuedDate = claims.getIssuedAt();
         Date expiredDate = claims.getExpiration();
         long tokenLifetimeMillis = expiredDate.getTime() - issuedDate.getTime();
-        assertEquals(jwtLifetime.toMillis(), tokenLifetimeMillis);
+
+        assertEquals(Duration.ofMinutes(30).toMillis(), tokenLifetimeMillis);
     }
 
     @Test
