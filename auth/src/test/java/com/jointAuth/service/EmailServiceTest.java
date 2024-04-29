@@ -46,7 +46,9 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        when(mockSession.getTransport("smtp")).thenReturn(mockTransport);
+        when(mockSession
+                .getTransport("smtp"))
+                .thenReturn(mockTransport);
 
         doAnswer(invocation -> {
             Object[] args = invocation.getArguments();
@@ -55,7 +57,8 @@ class EmailServiceTest {
             assertEquals("Разовый код для авторизации", ((MimeMessage) args[2]).getSubject());
             assertNotNull(((MimeMessage) args[2]).getContent());
             return null;
-        }).when(mockTransport).sendMessage(any(), any());
+        }).when(mockTransport)
+                .sendMessage(any(), any());
 
         boolean result = emailService.sendVerificationCodeByEmail(user, "123456");
 
@@ -76,12 +79,16 @@ class EmailServiceTest {
         user.setEmail("invalid_email");
 
         Transport mockTransport = mock(Transport.class);
-        when(mockSession.getTransport("smtp")).thenReturn(mockTransport);
+        when(mockSession
+                .getTransport("smtp"))
+                .thenReturn(mockTransport);
 
         emailService.sendVerificationCodeByEmail(user, "123456");
 
-        verify(mockSession, never()).getTransport("smtp");
-        verify(mockTransport, never()).sendMessage(any(), any());
+        verify(mockSession, never())
+                .getTransport("smtp");
+        verify(mockTransport, never())
+                .sendMessage(any(), any());
     }
 
     @Test
@@ -95,7 +102,9 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        doThrow(new MessagingException("Error sending message")).when(mockTransport).sendMessage(any(), any());
+        doThrow(new MessagingException("Error sending message"))
+                .when(mockTransport)
+                .sendMessage(any(), any());
 
         boolean result = emailService.sendVerificationCodeByEmail(user, "123456");
 
@@ -113,7 +122,9 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        doThrow(new MessagingException("Error connecting to mail server")).when(mockTransport).connect(any(), any());
+        doThrow(new MessagingException("Error connecting to mail server"))
+                .when(mockTransport)
+                .connect(any(), any());
 
         boolean result = emailService.sendVerificationCodeByEmail(user, "123456");
 
