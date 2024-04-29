@@ -8,9 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,6 +25,8 @@ public class TwoFactorAuthVerificationCodeRepositoryTest {
     @BeforeEach
     void setUp() {
         verificationCodeRepository = mock(TwoFactorAuthVerificationCodeRepository.class);
+
+        verificationCodeRepository.deleteAll();
     }
 
     @Test
@@ -149,4 +150,106 @@ public class TwoFactorAuthVerificationCodeRepositoryTest {
                 .findByUserId(userId);
     }
 
+    @Test
+    public void testFindAllByExpirationTimeBeforeSuccessful() {
+        LocalDateTime expirationTime = LocalDateTime.now();
+        List<TwoFactorAuthVerificationCode> codes = new ArrayList<>();
+        codes.add(mockVerificationCode);
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(expirationTime))
+                .thenReturn(codes);
+
+        List<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findAllByExpirationTimeBefore(expirationTime);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(mockVerificationCode, result.get(0));
+        verify(verificationCodeRepository, times(1))
+                .findAllByExpirationTimeBefore(expirationTime);
+    }
+
+    @Test
+    public void testFindAllByExpirationTimeBeforeEmptyResult() {
+        LocalDateTime expirationTime = LocalDateTime.now();
+        List<TwoFactorAuthVerificationCode> codes = new ArrayList<>();
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(expirationTime))
+                .thenReturn(codes);
+
+        List<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findAllByExpirationTimeBefore(expirationTime);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(verificationCodeRepository, times(1))
+                .findAllByExpirationTimeBefore(expirationTime);
+    }
+
+    @Test
+    public void testFindAllByExpirationTimeBeforeNotEmptyList() {
+        LocalDateTime expirationTime = LocalDateTime.now().plusDays(1);
+        TwoFactorAuthVerificationCode code1 = new TwoFactorAuthVerificationCode();
+        code1.setExpirationTime(LocalDateTime.now().plusHours(1));
+        TwoFactorAuthVerificationCode code2 = new TwoFactorAuthVerificationCode();
+        code2.setExpirationTime(LocalDateTime.now().plusMinutes(30));
+        List<TwoFactorAuthVerificationCode> codes = Arrays.asList(code1, code2);
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(expirationTime))
+                .thenReturn(codes);
+
+        List<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findAllByExpirationTimeBefore(expirationTime);
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(code1));
+        assertTrue(result.contains(code2));
+    }
+
+    @Test
+    public void testFindAllByExpirationTimeBeforeEmptyList() {
+        LocalDateTime expirationTime = LocalDateTime.now().minusDays(1);
+        List<TwoFactorAuthVerificationCode> codes = Collections.emptyList();
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(expirationTime))
+                .thenReturn(codes);
+
+        List<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findAllByExpirationTimeBefore(expirationTime);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testFindAllByExpirationTimeBeforeCodesExpiringExactlyAtSpecifiedTime() {
+        LocalDateTime expirationTime = LocalDateTime.now();
+        TwoFactorAuthVerificationCode code1 = new TwoFactorAuthVerificationCode();
+        code1.setExpirationTime(expirationTime);
+        TwoFactorAuthVerificationCode code2 = new TwoFactorAuthVerificationCode();
+        code2.setExpirationTime(expirationTime);
+        List<TwoFactorAuthVerificationCode> codes = Arrays.asList(code1, code2);
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(expirationTime))
+                .thenReturn(codes);
+
+        List<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findAllByExpirationTimeBefore(expirationTime);
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(code1));
+        assertTrue(result.contains(code2));
+    }
+
+    @Test
+    public void testFindAllByExpirationTimeBeforeNoCodesExpiringBeforeSpecifiedTime() {
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
+        List<TwoFactorAuthVerificationCode> codes = Collections.emptyList();
+
+        when(verificationCodeRepository
+                .findAllByExpirationTimeBefore(expirationTime))
+                .thenReturn(codes);
+
+        List<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findAllByExpirationTimeBefore(expirationTime);
+
+        assertTrue(result.isEmpty());
+    }
 }
