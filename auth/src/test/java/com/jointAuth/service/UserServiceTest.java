@@ -1231,6 +1231,22 @@ public class UserServiceTest {
 
     //Enable2FA
     @Test
+    public void testEnableTwoFactorAuthAlreadyEnabled() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        user.setTwoFactorVerified(true);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.enableTwoFactorAuth(userId);
+        });
+
+        assertEquals("Two-factor authentication already enabled", exception.getMessage());
+    }
+
+    @Test
     public void testEnableTwoFactorAuthSuccess() {
         Long userId = 1L;
         User user = new User();
