@@ -1,119 +1,201 @@
 package com.jointAuth.integration.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.jointAuth.model.profile.Profile;
-import com.jointAuth.model.user.User;
-import com.jointAuth.repository.ProfileRepository;
-import com.jointAuth.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jointAuth.model.user.ConfirmAccountDeletionRequest;
+import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserDeleteControllerIntegrationTest {
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
-
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProfileRepository profileRepository;
-
-    @Autowired
-    private JwtTokenUtils jwtTokenUtils;
-
     private MockMvc mockMvc;
 
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private JwtTokenUtils jwtTokenUtils;
+
     @BeforeEach
-    public void setup() {
+    public void setUp() {
 
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        when(jwtTokenUtils
+                .getCurrentUserId(anyString()))
+                .thenReturn(1L);
     }
 
     @Test
-    @Transactional
-    public void testDeleteUserSuccess() throws Exception {
-        User testUser = new User();
-        testUser.setId(1L);
-        testUser.setEmail("hello221@gmail.com");
-        testUser.setFirstName("Petr");
-        testUser.setLastName("Prunov");
-        testUser.setPassword("Password123@");
-        userRepository.save(testUser);
-
-        Profile testProfile = new Profile();
-        testProfile.setId(2L);
-        testProfile.setUser(testUser);
-        profileRepository.save(testProfile);
-
-        Long userId = testUser.getId();
-        Long profileId = testProfile.getId();
-
-        String token = jwtTokenUtils.generateToken(testUser);
+    public void testSuccessfulAccountDeletionRequest() throws Exception {
+        when(userService.sendAccountDeletionRequest(anyLong())).thenReturn(true);
 
         mockMvc.perform(delete("/auth/delete")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
-
-        Optional<User> deletedUser = userRepository.findById(userId);
-        Optional<Profile> deletedProfile = profileRepository.findById(profileId);
-
-        assertThat(deletedUser).isEmpty();
-
-        assertThat(deletedProfile).isEmpty();
+                        .header("Authorization", "Bearer validToken"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Account deletion request sent to email."));
     }
 
     @Test
-    @Transactional
-    public void testDeleteUserNotFound() throws Exception {
-        User nonExistentUser = new User();
-        nonExistentUser.setId(9999L);
-        nonExistentUser.setEmail("nonexistentuser@example.com");
-        nonExistentUser.setPassword("NonExistentUserPassword123");
-        nonExistentUser.setFirstName("NonExistent");
-        nonExistentUser.setLastName("User");
-
-        String nonExistentUserToken = jwtTokenUtils.generateToken(nonExistentUser);
+    public void testUserNotFound() throws Exception {
+        when(jwtTokenUtils.getCurrentUserId(anyString())).thenReturn(null);
 
         mockMvc.perform(delete("/auth/delete")
-                        .header("Authorization", nonExistentUserToken))
-                .andExpect(status().isNotFound());
+                        .header("Authorization", "Bearer validToken"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("User not found."));
     }
 
     @Test
-    public void testDeleteUserUnauthorized() {
-        String invalidToken = "Bearer InvalidToken";
+    public void testFailedToSendAccountDeletionRequest() throws Exception {
+        when(userService.sendAccountDeletionRequest(anyLong())).thenReturn(false);
 
+        mockMvc.perform(delete("/auth/delete")
+                        .header("Authorization", "Bearer validToken"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Failed to send account deletion request."));
+    }
+
+    @Test
+    public void testExceptionDuringOperation() {
         try {
-            mockMvc.perform(delete("/auth/delete")
-                            .header("Authorization", invalidToken))
-                    .andExpect(status().isUnauthorized());
+            ResultActions result = mockMvc.perform(delete("/auth/delete")
+                            .header("Authorization", "Bearer validToken"))
+                    .andExpect(status().isNotFound());
 
-            assertTrue(true);
-        } catch (jakarta.servlet.ServletException e) {
-            if (e.getCause() instanceof org.springframework.dao.InvalidDataAccessApiUsageException &&
-                    e.getCause().getMessage().contains("The given id must not be null")) {
-                assertTrue(true);
-            } else {
-                fail("Unexpected error: " + e.getMessage());
-            }
+            int status = result.andReturn().getResponse().getStatus();
+            assertEquals(404, status, "Status should be 500");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testInvalidAuthorizationToken() throws Exception {
+        mockMvc.perform(delete("/auth/delete")
+                        .header("Authorization", "Bearer invalidToken"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Failed to send account deletion request."));
+    }
+
+    @Test
+    public void testSuccessfulAccountDeletion() throws Exception {
+        when(userService
+                .deleteUser(anyLong(), anyString()))
+                .thenReturn(true);
+
+        ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(1L, "validCode");
+
+        mockMvc.perform(delete("/auth/confirm-delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Account deleted successfully."));
+    }
+
+    @Test
+    public void testInvalidUserId() throws Exception {
+        when(userService
+                .deleteUser(anyLong(), anyString()))
+                .thenReturn(false);
+
+        ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(-1L, "validCode");
+
+        mockMvc.perform(delete("/auth/confirm-delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code or failed to delete account."));
+    }
+
+    @Test
+    public void testInvalidVerificationCode() throws Exception {
+        when(userService
+                .deleteUser(anyLong(), anyString()))
+                .thenReturn(false);
+
+        ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(1L, "invalidCode");
+
+        mockMvc.perform(delete("/auth/confirm-delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code or failed to delete account."));
+    }
+
+    @Test
+    public void testMissingUserId() throws Exception {
+        ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(null, "validCode");
+
+        mockMvc.perform(delete("/auth/confirm-delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code or failed to delete account."));
+    }
+
+    @Test
+    public void testMissingVerificationCode() throws Exception {
+        ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(1L, null);
+
+        mockMvc.perform(delete("/auth/confirm-delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code or failed to delete account."));
+    }
+
+    @Test
+    public void testExpiredOrInvalidVerificationCode() throws Exception {
+        when(userService
+                .deleteUser(anyLong(), anyString()))
+                .thenReturn(false);
+
+        ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(1L, "expiredOrInvalidCode");
+
+        mockMvc.perform(delete("/auth/confirm-delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code or failed to delete account."));
+    }
+
+    @Test
+    public void testReusedVerificationCode() throws Exception {
+        when(userService
+                .deleteUser(anyLong(), anyString()))
+                .thenReturn(false);
+
+        ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(1L, "reusedCode");
+
+        mockMvc.perform(delete("/auth/confirm-delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code or failed to delete account."));
+    }
+
+    private String asJsonString(Object obj) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

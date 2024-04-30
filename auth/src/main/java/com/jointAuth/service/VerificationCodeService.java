@@ -107,7 +107,7 @@ public class VerificationCodeService {
             userVerificationCode = existingCodeOptionalForPassword.get();
         } else if (existingCodeOptionalForDeletion.isPresent()) {
             userVerificationCode = existingCodeOptionalForDeletion.get();
-            userVerificationCode.setRequestType(requestType); // Change the request type to PASSWORD_RESET
+            userVerificationCode.setRequestType(requestType);
         } else {
             userVerificationCode = new UserVerificationCode();
             userVerificationCode.setUser(userRepository.getById(userId));
@@ -134,7 +134,7 @@ public class VerificationCodeService {
             userVerificationCode = existingCodeOptionalForDeletion.get();
         } else if (existingCodeOptionalForPassword.isPresent()) {
             userVerificationCode = existingCodeOptionalForPassword.get();
-            userVerificationCode.setRequestType(RequestType.ACCOUNT_DELETION); // Change the request type to ACCOUNT_DELETION
+            userVerificationCode.setRequestType(RequestType.ACCOUNT_DELETION);
         } else {
             userVerificationCode = new UserVerificationCode();
             userVerificationCode.setUser(userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found")));
