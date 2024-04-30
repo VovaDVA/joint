@@ -51,8 +51,6 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        userVerificationCodeRepository.deleteAll();
-        userRepository.deleteAll();
 
         testUser = new User();
         testUser.setFirstName("Максим");
