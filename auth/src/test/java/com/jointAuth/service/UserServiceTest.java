@@ -1332,7 +1332,7 @@ public class UserServiceTest {
             userService.disableTwoFactorAuth(userId);
         });
 
-        assertEquals("Two-factor authentication is already disabled", exception.getMessage());
+        assertEquals("Two-factor authentication already disabled", exception.getMessage());
     }
 
     @Test
