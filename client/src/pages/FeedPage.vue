@@ -1,14 +1,19 @@
 <template>
     <token-check></token-check>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
+    <post-grid>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+    </post-grid>
 </template>
 
 <script></script>

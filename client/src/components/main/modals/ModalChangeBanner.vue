@@ -1,40 +1,37 @@
 <template>
-    <div class="modal-change-banner"> 
-    <div class="window">
-        <div class="content">
-            <div class="head">
-            Редактирование обложки
-             </div>
-             <icon-button icon-name="close"></icon-button>
-        </div>
-       
-        <div class="content">
-            
-            <div class="photo">
-                <div class="square">
-            
+    <div class="modal-change-banner">
+        <div class="window">
+            <div class="content">
+                <div class="head">
+                    Редактирование обложки
                 </div>
-             </div>
-        </div>
-        <div class="buttons">
-            <div class="block" >
-                <div class="button" id="load">
-                Загрузить обложку
-                </div>
-                <div class="button">
-                Сохранить
-                </div> 
+                <icon-button icon-name="close"></icon-button>
             </div>
-            <div class="block" >
-                <div class="button" id="back">
-                Отмена
+
+            <div class="content">
+
+                <div class="photo">
+                    <div class="square">
+
+                    </div>
                 </div>
             </div>
-            
-            
-            
+            <div class="buttons">
+                <div class="block">
+                    <div class="button" id="load">
+                        Загрузить обложку
+                    </div>
+                    <div class="button">
+                        Сохранить
+                    </div>
+                </div>
+                <div class="block">
+                    <div class="button" id="back">
+                        Отмена
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
     </div>
 </template>
 
@@ -47,7 +44,7 @@ export default {
 
 <style scoped>
 .modal-change-banner {
-    display: flex; 
+    display: flex;
     position: fixed;
     top: 0px;
     left: 0px;
@@ -57,6 +54,7 @@ export default {
     border-radius: 15px;
     transition: background .2s linear;
 }
+
 .window {
     display: flex;
     margin: auto;
@@ -66,19 +64,22 @@ export default {
     flex-direction: column;
     padding: 5px;
 }
+
 .content {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 5px 10px 5px 10px;
     font-size: 15px;
-    
-    
+
+
 }
+
 .head {
     font-size: 15px;
 }
-.photo{
+
+.photo {
     display: flex;
     align-items: center;
     height: 360px;
@@ -86,17 +87,20 @@ export default {
     background-color: rgba(0, 0, 0, 0.437);
     border-radius: 15px;
 }
-.buttons{
+
+.buttons {
     display: flex;
     align-items: center;
     margin: 5px 10px 5px 10px;
     font-size: 15px;
     justify-content: space-between;
 }
-.block{
+
+.block {
     display: flex;
 }
-.button{
+
+.button {
     padding: 5px 10px 5px 10px;
     margin: 5px;
     border: 1px #ffffff2f solid;
@@ -104,16 +108,19 @@ export default {
     background: rgb(238, 238, 238);
     color: rgb(11, 10, 10);
 }
+
 #back {
 
     color: rgb(239, 237, 237);
     background: rgb(66, 66, 76);
     margin: 5px 0px 5px 50px;
 }
+
 #load {
-margin: 5px 5px 5px 0px;
+    margin: 5px 5px 5px 0px;
 }
-.square{
+
+.square {
     width: 99%;
     height: 200px;
     margin: auto;

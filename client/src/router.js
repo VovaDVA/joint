@@ -11,6 +11,7 @@ import StatsPage from './pages/StatsPage.vue';
 
 import ProfileContentAbout from './components/profile/content/ProfileContentAbout.vue';
 import ProfileContentImages from './components/profile/content/ProfileContentImages.vue';
+import ProfileContentVideos from './components/profile/content/ProfileContentVideos.vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
 import ProfileContentMusic from './components/profile/content/ProfileContentMusic.vue';
@@ -30,7 +31,7 @@ const routes = [
     path: '/', component: ProfilePage, children: [
       { path: '/', component: ProfileContentAbout },
       { path: '/images', component: ProfileContentImages },
-      { path: '/videos', component: ProfileContentImages },
+      { path: '/videos', component: ProfileContentVideos },
       { path: '/music', component: ProfileContentMusic },
       { path: '/books', component: ProfileContentImages },
     ]

@@ -35,6 +35,16 @@ export default {
     width: 100%;
     height: 13.5vw;
     margin-bottom: 20px;
+    padding: 15px;
+
+    border: 1px #ffffff7c solid;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.feed-block.light-theme {
+    border: 1px #0000007c solid;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .feed-block.light-theme .feed-title {
@@ -43,12 +53,10 @@ export default {
 
 .feed-block.light-theme .feed-preview {
     border: 1px #0000007c solid;
-    background: #ebebeb;
+    background: #ffffff;
 }
 
 .feed-block.light-theme .feed-info {
-    border: 1px #0000007c solid;
-    background: #ebebeb;
     color: #000;
 }
 
@@ -71,10 +79,7 @@ export default {
     position: relative;
     flex: 1;
     height: calc(100% - 45px);
-    padding: 15px 20px;
-    border: 1px #ffffff7c solid;
-    border-radius: 20px;
-    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
 }
 
 .feed-title {
@@ -115,21 +120,6 @@ export default {
     .feed-block {
         flex-direction: column;
         height: fit-content;
-        padding: 15px;
-
-        border: 1px #ffffff7c solid;
-        border-radius: 20px;
-        background: rgba(0, 0, 0, 0.5);
-    }
-
-    .feed-block.light-theme {
-        border: 1px #0000007c solid;
-        background: #ebebeb;
-        color: #000000;
-    }
-
-    .feed-block.light-theme .feed-preview {
-        background: #ffffff;
     }
 
     .feed-preview {
@@ -139,8 +129,6 @@ export default {
 
     .feed-info {
         padding: 10px 0;
-        border: none !important;
-        background: none !important;
     }
 }
 

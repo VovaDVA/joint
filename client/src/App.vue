@@ -18,6 +18,7 @@
     <div class="intro" :class="$store.state.theme">
         <div class="intro_fade"></div>
     </div>
+    <modal-change-avatar></modal-change-avatar>
 </template>
 
 <script>

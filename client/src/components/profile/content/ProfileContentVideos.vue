@@ -4,5 +4,7 @@
         <feed-block-media></feed-block-media>
         <feed-block-media></feed-block-media>
         <feed-block-media></feed-block-media>
+        <feed-block-media></feed-block-media>
+        <feed-block-media></feed-block-media>
     </content-grid>
 </template>

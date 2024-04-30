@@ -55,6 +55,11 @@ export default {
     transition: color, background .3s linear;
 }
 
+.content-stats-button.light-theme:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
 .icon-button-text {
     white-space: nowrap;
     margin-right: 10px;

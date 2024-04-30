@@ -16,6 +16,7 @@ export default {
 .profile-content {
     width: 100%;
     margin-top: 70px;
+    margin-bottom: 20px;
 }
 
 .profile-inner {

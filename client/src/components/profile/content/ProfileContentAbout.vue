@@ -5,10 +5,12 @@
             <p>Меня зовут Владимир и я занимаюсь разработкой соцсети Joint.</p>
         </content-block-text>
     </content-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
-    <feed-block></feed-block>
+    <post-grid>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+        <feed-block-post></feed-block-post>
+    </post-grid>
 </template>
 
 <script>
