@@ -168,7 +168,7 @@ public class UserService {
             User user = optionalUser.get();
 
             if (!user.getTwoFactorVerified()) {
-                throw new IllegalArgumentException("Two-factor authentication is already disabled");
+                throw new IllegalArgumentException("Two-factor authentication already disabled");
             }
 
             user.setTwoFactorVerified(false);
