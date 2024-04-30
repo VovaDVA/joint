@@ -11,21 +11,21 @@
 - **chats**
 ```json
 {
-    "_id": "ObjectId(some id)",                        // ID чата (создаётся автоматически при создании чата)
-    "members": ["user_id1", "user_id2"],               // Участники чата 
-    "created_at": 2024-04-16T09:21:52.696+00:00,       // Дата создания чата
-    "last_message_at" : 2024-04-16T09:21:52.696+00:00  // Дата последнего сообщения
+    "_id": "ObjectId(some id)",                        
+    "members": ["user_id1", "user_id2"],                
+    "created_at": "2024-04-16T09:21:52.696+00:00",       
+    "last_message_at" : "2024-04-16T09:21:52.696+00:00"  
 }
 ```
 
 - **messages**
 ```json
 {
-    "chat_id": "some id",                     // ID чата
-    "sender_id": "some id",                   // ID отправителя
-    "text": "text example",                   // Текст сообщения
-    "created_at": 2024-04-17T09:57:18.635Z,   // Дата отправки 
-    "_id": 661f9cfe52089975174cd93c           // ID сообщения в БД (созздается автоматически)
+    "chat_id": "some id",                     
+    "sender_id": "some id",                   
+    "text": "text example",                   
+    "created_at": "2024-04-17T09:57:18.635Z",   
+    "_id": "ObjectId(some id)"       
 }
 ```
 
@@ -63,7 +63,7 @@
 
 ```json
 {
-    "members": ["user_id1", "user_id2"] // Участники чата 
+    "members": ["user_id1", "user_id2"] 
 }
 ```
 
@@ -71,10 +71,10 @@
 
 ```json
 {
-    "_id": "ObjectId(some id)",                        // ID чата (создаётся автоматически при создании чата)
-    "members": ["user_id1", "user_id2"],               // Участники чата 
-    "created_at": 2024-04-16T09:21:52.696+00:00,       // Дата создания чата
-    "last_message_at" : 2024-04-16T09:21:52.696+00:00  // Дата последнего сообщения
+    "_id": "ObjectId(some id)",                        
+    "members": ["user_id1", "user_id2"],               
+    "created_at": "2024-04-16T09:21:52.696+00:00",       
+    "last_message_at" : "2024-04-16T09:21:52.696+00:00"  
 }
 ```
 
@@ -98,7 +98,7 @@
         "chat_id": "some id",
         "sender_id": "some id",
         "text": "text example",
-        "created_at": 2024-04-16T09:54:00.063+00:00
+        "created_at": "2024-04-16T09:54:00.063+00:00"
     },
 
     {
@@ -106,7 +106,7 @@
         "chat_id": "some id",
         "sender_id": "some id",
         "text": "text example",
-        "created_at": 2024-04-16T09:54:00.063+00:00
+        "created_at": "2024-04-16T09:54:00.063+00:00"
     }
 ]
 ```
@@ -128,15 +128,15 @@
     {
         "_id": "ObjectId(some id)",                        
         "members": ["user_id1", "user_id2"],                
-        "created_at": 2024-04-16T09:21:52.696+00:00,       
-        "last_message_at" : 2024-04-16T09:21:52.696+00:00 
+        "created_at": "2024-04-16T09:21:52.696+00:00",       
+        "last_message_at" : "2024-04-16T09:21:52.696+00:00" 
     },  
 
     {
         "_id": "ObjectId(some id)",                        
         "members": ["user_id1", "user_id2"],                
-        "created_at": 2024-04-16T09:21:52.696+00:00,       
-        "last_message_at" : 2024-04-16T09:21:52.696+00:00 
+        "created_at": "2024-04-16T09:21:52.696+00:00",       
+        "last_message_at" : "2024-04-16T09:21:52.696+00:00"
     },
 ]
 ```
@@ -158,8 +158,8 @@
 {
     "_id": "ObjectId(some id)",                        
     "members": ["user_id1", "user_id2"],                
-    "created_at": 2024-04-16T09:21:52.696+00:00,       
-    "last_message_at" : 2024-04-16T09:21:52.696+00:00 
+    "created_at": "2024-04-16T09:21:52.696+00:00",       
+    "last_message_at" : "2024-04-16T09:21:52.696+00:00"
 }
 ```
 
@@ -183,10 +183,10 @@
 
 ```json
 {
-    "chat_id": "some id",                     // ID чата
-    "sender_id": "some id",                   // ID отправителя
-    "text": "text example",                   // Текст сообщения
-    "created_at": 2024-04-17T09:57:18.635Z,   // Дата отправки 
-    "_id": 661f9cfe52089975174cd93c           // ID сообщения в БД (созздается автоматически)
+    "chat_id": "some id",                     
+    "sender_id": "some id",                   
+    "text": "text example",                   
+    "created_at": "2024-04-17T09:57:18.635Z",   
+    "_id": "661f9cfe52089975174cd93c"          
 }
 ```
