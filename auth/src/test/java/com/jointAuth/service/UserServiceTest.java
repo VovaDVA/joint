@@ -1312,7 +1312,7 @@ public class UserServiceTest {
                 .findById(userId))
                 .thenReturn(Optional.of(user));
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.disableTwoFactorAuth(userId);
         });
 

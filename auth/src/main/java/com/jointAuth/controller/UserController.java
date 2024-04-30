@@ -88,17 +88,35 @@ public class UserController {
 
     @PostMapping(path = "/two-factor/enable")
     public ResponseEntity<?> enableTwoFactorAuth(@RequestHeader("Authorization") String token) {
-        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
-        userService.enableTwoFactorAuth(currentUserId);
-        return ResponseEntity.ok("Two-factor authentication enabled successfully");
+        try {
+            Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+            userService.enableTwoFactorAuth(currentUserId);
+            return ResponseEntity.ok("Two-factor authentication enabled successfully");
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Two-factor authentication already enabled")) {
+                return ResponseEntity.ok(e.getMessage());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
+        }
     }
+
 
     @PostMapping(path = "/two-factor/disable")
     public ResponseEntity<?> disableTwoFactorAuth(@RequestHeader("Authorization") String token) {
-        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
-        userService.disableTwoFactorAuth(currentUserId);
-        return ResponseEntity.ok("Two-factor authentication disabled successfully");
+        try {
+            Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+            userService.disableTwoFactorAuth(currentUserId);
+            return ResponseEntity.ok("Two-factor authentication disabled successfully");
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Two-factor authentication already disabled")) {
+                return ResponseEntity.ok(e.getMessage());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
+        }
     }
+
 
     @GetMapping(path = "/user")
     public ResponseEntity<UserProfileBom> getUserByIdWithToken(@RequestHeader("Authorization") String token) {
