@@ -149,6 +149,11 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+
+            if (user.getTwoFactorVerified()) {
+                throw new IllegalArgumentException("Two-factor authentication already enabled");
+            }
+
             user.setTwoFactorVerified(true);
             userRepository.save(user);
         } else {
@@ -156,13 +161,14 @@ public class UserService {
         }
     }
 
+
     public void disableTwoFactorAuth(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
             if (!user.getTwoFactorVerified()) {
-                throw new IllegalStateException("Two-factor authentication is already disabled");
+                throw new IllegalArgumentException("Two-factor authentication is already disabled");
             }
 
             user.setTwoFactorVerified(false);
