@@ -217,6 +217,32 @@ public class UserServiceTest {
     }
 
     @Test
+    public void testRegisterFirstNameEmpty() {
+        User user = new User();
+        user.setFirstName("");
+        user.setLastName("Дорамин");
+        user.setEmail("oneTo@gmail.com");
+        user.setPassword("StrongPassword123!");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.register(user);
+        }, "First name cannot be empty or contain only whitespace");
+    }
+
+    @Test
+    public void testRegisterFirstNameWhitespace() {
+        User user = new User();
+        user.setFirstName("   ");
+        user.setLastName("Форламов");
+        user.setEmail("hello0001@gmail.com");
+        user.setPassword("StrongPassword123!");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.register(user);
+        }, "First name cannot be empty or contain only whitespace");
+    }
+
+    @Test
     public void testRegisterUserWithInvalidEmailThrowsException() {
         User newUser = new User();
 
@@ -282,6 +308,32 @@ public class UserServiceTest {
                 .save(any());
         verify(profileRepository, never())
                 .save(any());
+    }
+
+    @Test
+    public void testRegisterInvalidEmailNull() {
+        User user = new User();
+        user.setFirstName("Виктор");
+        user.setLastName("Ворламов");
+        user.setEmail(null);
+        user.setPassword("StrongPassword123!");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.register(user);
+        }, "Invalid email format");
+    }
+
+    @Test
+    public void testRegisterInvalidEmailFormat() {
+        User user = new User();
+        user.setFirstName("Джон");
+        user.setLastName("Киришев");
+        user.setEmail("john.doe@com");
+        user.setPassword("StrongPassword123!");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.register(user);
+        }, "Invalid email format");
     }
 
     @Test

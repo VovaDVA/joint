@@ -45,7 +45,6 @@ public class UserEnable2FAControllerIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        userRepository.deleteAll();
 
         testUser = new User();
         testUser.setFirstName("Даниил");

@@ -32,12 +32,6 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    @BeforeEach
-    void setUp() {
-        profileRepository.deleteAll();
-        userRepository.deleteAll();
-    }
-
     @Autowired
     private ProfileRepository profileRepository;
 
