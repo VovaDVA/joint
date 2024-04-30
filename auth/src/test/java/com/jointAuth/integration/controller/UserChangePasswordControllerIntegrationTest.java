@@ -1,5 +1,6 @@
 package com.jointAuth.integration.controller;
 
+import com.jointAuth.model.user.ConfirmPasswordResetRequest;
 import com.jointAuth.model.user.User;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -18,8 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,6 +46,8 @@ public class UserChangePasswordControllerIntegrationTest {
 
     private User testUser;
     private String validToken;
+    private ConfirmPasswordResetRequest validRequest;
+
 
     @BeforeEach
     public void setUp() {
@@ -60,6 +62,12 @@ public class UserChangePasswordControllerIntegrationTest {
 
         testUser = userRepository.save(testUser);
         validToken = jwtTokenUtils.generateToken(testUser);
+
+        validRequest = new ConfirmPasswordResetRequest();
+        validRequest.setUserId(testUser.getId());
+        validRequest.setVerificationCode("VALID_VERIFICATION_CODE");
+        validRequest.setNewPassword("NewPassword123@");
+        validRequest.setCurrentPassword("Password123@");
     }
 
     @Test
@@ -114,5 +122,114 @@ public class UserChangePasswordControllerIntegrationTest {
         mockMvc.perform(post("/auth/change-password")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testConfirmPasswordResetSuccess() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword()))
+                .thenReturn(true);
+
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Password reset successfully."));
+
+        verify(userService)
+                .resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword());
+    }
+
+    @Test
+    public void testConfirmPasswordResetInvalidCode() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                "INVALID_VERIFICATION_CODE",
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword()))
+                .thenReturn(false);
+
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"INVALID_VERIFICATION_CODE\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code."));
+
+        verify(userService)
+                .resetPassword(validRequest.getUserId(),
+                "INVALID_VERIFICATION_CODE",
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword());
+    }
+
+    @Test
+    public void testConfirmPasswordResetInvalidCurrentPassword() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                validRequest.getNewPassword(),
+                "InvalidPassword"))
+                .thenReturn(false);
+
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"InvalidPassword\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code."));
+
+        verify(userService)
+                .resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                validRequest.getNewPassword(),
+                "InvalidPassword");
+    }
+
+    @Test
+    public void testConfirmPasswordResetInvalidNewPassword() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                "weakpassword",
+                validRequest.getCurrentPassword()))
+                .thenReturn(false);
+
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"weakpassword\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code."));
+
+        verify(userService)
+                .resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                "weakpassword",
+                validRequest.getCurrentPassword());
+    }
+
+    @Test
+    public void testConfirmPasswordResetExpiredVerificationCode() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                "EXPIRED_VERIFICATION_CODE",
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword()))
+                .thenReturn(false);
+
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"EXPIRED_VERIFICATION_CODE\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code."));
+
+        verify(userService).resetPassword(validRequest.getUserId(),
+                "EXPIRED_VERIFICATION_CODE",
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword());
     }
 }
