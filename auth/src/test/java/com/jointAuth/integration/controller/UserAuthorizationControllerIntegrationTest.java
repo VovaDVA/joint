@@ -42,12 +42,10 @@ public class UserAuthorizationControllerIntegrationTest {
     @Test
     public void testLoginUserSuccess() throws Exception {
         User user = new User();
-        String password = passwordEncoder.encode("Password123@");
-
-        user.setFirstName("Maxim");
-        user.setLastName("Volsin");
+        user.setFirstName("Максим");
+        user.setLastName("Волсин");
         user.setEmail("maxVol@gmail.com");
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode("Password123@"));
 
         userRepository.save(user);
 
@@ -65,11 +63,31 @@ public class UserAuthorizationControllerIntegrationTest {
                     Long userId = jwtTokenUtils.getCurrentUserId(token);
                     User decodedUser = userRepository.findById(userId).orElse(null);
 
-                    assert decodedUser != null;
-                    assert decodedUser.getFirstName().equals(user.getFirstName());
-                    assert decodedUser.getLastName().equals(user.getLastName());
-                    assert decodedUser.getEmail().equals(user.getEmail());
+                    assertTrue(decodedUser != null);
+                    assertTrue(decodedUser.getFirstName().equals(user.getFirstName()));
+                    assertTrue(decodedUser.getLastName().equals(user.getLastName()));
+                    assertTrue(decodedUser.getEmail().equals(user.getEmail()));
                 });
+    }
+
+    @Test
+    public void testLoginUserWithTwoFactorAuthentication() throws Exception {
+        User user = new User();
+        user.setFirstName("Иван");
+        user.setLastName("Петров");
+        user.setEmail("ivan.petrov@example.com");
+        user.setPassword(passwordEncoder.encode("Password123@"));
+        user.setTwoFactorVerified(true);
+
+        userRepository.save(user);
+
+        String loginRequestJson = "{\"email\": \"ivan.petrov@example.com\", \"password\": \"Password123@\"}";
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequestJson))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Two-factor authentication enabled. Verification code sent."));
     }
 
     @Test
@@ -77,8 +95,8 @@ public class UserAuthorizationControllerIntegrationTest {
         User currentUser = new User();
         String password = passwordEncoder.encode("Password123@");
 
-        currentUser.setFirstName("Denis");
-        currentUser.setLastName("Stomin");
+        currentUser.setFirstName("Денис");
+        currentUser.setLastName("Стомин");
         currentUser.setEmail("DenSto@gmail.com");
         currentUser.setPassword(password);
 
@@ -101,8 +119,8 @@ public class UserAuthorizationControllerIntegrationTest {
         User currentUser = new User();
         String password = passwordEncoder.encode("Password123@");
 
-        currentUser.setFirstName("Kostya");
-        currentUser.setLastName("Vershin");
+        currentUser.setFirstName("Костя");
+        currentUser.setLastName("Вершин");
         currentUser.setEmail("Kostya05@gmail.com");
         currentUser.setPassword(password);
 
@@ -125,8 +143,8 @@ public class UserAuthorizationControllerIntegrationTest {
         User currentUser = new User();
         String password = passwordEncoder.encode("CorrectPassword123@");
 
-        currentUser.setFirstName("Maxim");
-        currentUser.setLastName("Dorin");
+        currentUser.setFirstName("Максим");
+        currentUser.setLastName("Дорин");
         currentUser.setEmail("Maxik94@gmail.com");
         currentUser.setPassword(password);
 
