@@ -79,7 +79,9 @@ public class UserController {
 
             String token = jwtTokenUtils.generateToken(user);
             return  ResponseEntity.ok(new JwtResponse(token));
-        } else  {
+        } else if (verifyCodeRequest.getUserId() == null || verifyCodeRequest.getCode() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing verification code or userId");
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code.");
         }
     }
