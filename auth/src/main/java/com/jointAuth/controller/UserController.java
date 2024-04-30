@@ -84,6 +84,20 @@ public class UserController {
         }
     }
 
+    @PostMapping(path = "/two-factor/enable")
+    public ResponseEntity<?> enableTwoFactorAuth(@RequestHeader("Authorization") String token) {
+        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+        userService.enableTwoFactorAuth(currentUserId);
+        return ResponseEntity.ok("Two-factor authentication enabled successfully");
+    }
+
+    @PostMapping(path = "/two-factor/disable")
+    public ResponseEntity<?> disableTwoFactorAuth(@RequestHeader("Authorization") String token) {
+        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+        userService.disableTwoFactorAuth(currentUserId);
+        return ResponseEntity.ok("Two-factor authentication disabled successfully");
+    }
+
     @GetMapping(path = "/user")
     public ResponseEntity<UserProfileBom> getUserByIdWithToken(@RequestHeader("Authorization") String token) {
         Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
@@ -187,19 +201,5 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code or failed to delete account.");
         }
-    }
-
-    @PostMapping(path = "/two-factor/enable")
-    public ResponseEntity<?> enableTwoFactorAuth(@RequestHeader("Authorization") String token) {
-        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
-        userService.enableTwoFactorAuth(currentUserId);
-        return ResponseEntity.ok("Two-factor authentication enabled successfully");
-    }
-
-    @PostMapping(path = "/two-factor/disable")
-    public ResponseEntity<?> disableTwoFactorAuth(@RequestHeader("Authorization") String token) {
-        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
-        userService.disableTwoFactorAuth(currentUserId);
-        return ResponseEntity.ok("Two-factor authentication disabled successfully");
     }
 }

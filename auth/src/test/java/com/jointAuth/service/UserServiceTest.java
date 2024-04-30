@@ -82,8 +82,8 @@ public class UserServiceTest {
     public void testRegisterUserExistingEmailThrowsException() {
         User existingUser = new User();
 
-        existingUser.setFirstName("Karina");
-        existingUser.setLastName("Ivanova");
+        existingUser.setFirstName("Карина");
+        existingUser.setLastName("Иванова");
         existingUser.setEmail("Ivanova10@gmail.com");
         existingUser.setPassword("ExistingPassword123@");
 
@@ -93,8 +93,8 @@ public class UserServiceTest {
 
         User newUser = new User();
 
-        newUser.setFirstName("Irina");
-        newUser.setLastName("Ivanova");
+        newUser.setFirstName("Ирина");
+        newUser.setLastName("Иванова");
         newUser.setEmail("Ivanova10@gmail.com");
         newUser.setPassword("NewPassword123@");
 
@@ -113,8 +113,8 @@ public class UserServiceTest {
     public void testRegisterUserInvalidPasswordThrowsException() {
         User newUser = new User();
 
-        newUser.setFirstName("Vladimir");
-        newUser.setLastName("Proven");
+        newUser.setFirstName("Владимир");
+        newUser.setLastName("Провин");
         newUser.setEmail("vlprovin@gmail.com");
         newUser.setPassword("pass");
 
@@ -130,8 +130,8 @@ public class UserServiceTest {
     public void testRegisterUserValidUserReturnsRegisteredUser() {
         User newUser = new User();
 
-        newUser.setFirstName("Vladimir");
-        newUser.setLastName("Proven");
+        newUser.setFirstName("Владимир");
+        newUser.setLastName("Провин");
         newUser.setEmail("vlprovin@gmail.com");
         newUser.setPassword("PasswordTest123@");
 
@@ -151,8 +151,8 @@ public class UserServiceTest {
 
         assertNotNull(registeredUser);
 
-        assertEquals("Vladimir", registeredUser.getFirstName());
-        assertEquals("Proven", registeredUser.getLastName());
+        assertEquals("Владимир", registeredUser.getFirstName());
+        assertEquals("Провин", registeredUser.getLastName());
         assertEquals("vlprovin@gmail.com", registeredUser.getEmail());
         assertEquals("encodedPassword", registeredUser.getPassword());
 
@@ -167,7 +167,7 @@ public class UserServiceTest {
         User newUser = new User();
 
         newUser.setFirstName("");
-        newUser.setLastName("Simple");
+        newUser.setLastName("Симпл");
         newUser.setEmail("simpleemail@gmail.com");
         newUser.setPassword("PasswordTest123@");
 
@@ -183,7 +183,7 @@ public class UserServiceTest {
     public void testRegisterUserEmptyLastNameThrowsException() {
         User newUser = new User();
 
-        newUser.setFirstName("Polina");
+        newUser.setFirstName("Полина");
         newUser.setLastName("  ");
         newUser.setEmail("polinaR1@gmail.com");
         newUser.setPassword("NewPassword123@");
@@ -199,13 +199,12 @@ public class UserServiceTest {
                 .save(any());
     }
 
-
     @Test
     public void testRegisterUserWithEmptyEmailThrowsException() {
         User newUser = new User();
 
-        newUser.setFirstName("Danil");
-        newUser.setLastName("Korovin");
+        newUser.setFirstName("Данил");
+        newUser.setLastName("Коровин");
         newUser.setEmail("");
         newUser.setPassword("PasswordTest123@");
 
@@ -221,8 +220,8 @@ public class UserServiceTest {
     public void testRegisterUserWithInvalidEmailThrowsException() {
         User newUser = new User();
 
-        newUser.setFirstName("Kolya");
-        newUser.setLastName("Vinilov");
+        newUser.setFirstName("Коля");
+        newUser.setLastName("Винилов");
         newUser.setEmail("invalid_email");
         newUser.setPassword("PasswordTest123@");
 
@@ -238,8 +237,8 @@ public class UserServiceTest {
     public void testFirstNameContainsProhibitedCharacters() {
         User user = new User();
 
-        user.setFirstName("Vitya!");
-        user.setLastName("Larin");
+        user.setFirstName("Витя!");
+        user.setLastName("Ларин");
         user.setEmail("ViLa123@gmail.com");
         user.setPassword("Password123@");
 
@@ -255,8 +254,8 @@ public class UserServiceTest {
     public void testLastNameContainsProhibitedCharacters() {
         User user = new User();
 
-        user.setFirstName("Svetlana");
-        user.setLastName("Sovina#");
+        user.setFirstName("Светлана");
+        user.setLastName("Совина#");
         user.setEmail("Sveta01@gmail.com");
         user.setPassword("Password123@");
 
@@ -272,8 +271,8 @@ public class UserServiceTest {
     public void testFirstNameTooLong() {
         User user = new User();
 
-        user.setFirstName("AllaathanIsATooLongNameForThisTest");
-        user.setLastName("Yorina");
+        user.setFirstName("СЛИШКОМДЛИННЫЙТЕКСДЛЯИМЕНИ");
+        user.setLastName("Юрина");
         user.setEmail("allayo@gmail.com");
         user.setPassword("Password123@");
 
@@ -289,8 +288,8 @@ public class UserServiceTest {
     public void testLastNameTooLong() {
         User user = new User();
 
-        user.setFirstName("Karina");
-        user.setLastName("BostrovaIsATooLongLastNameForThisTest");
+        user.setFirstName("Карина");
+        user.setLastName("СЛИШКОМДЛИННЫЙТЕКСДЛЯФАМИЛИИ");
         user.setEmail("Bostrova2001@gmail.com");
         user.setPassword("Password123@");
 
@@ -309,8 +308,8 @@ public class UserServiceTest {
 
         User user = new User();
 
-        user.setFirstName("Vitally");
-        user.setLastName("Provin");
+        user.setFirstName("Виталий");
+        user.setLastName("Провин");
         user.setEmail(email);
         user.setPassword(encodedPassword);
 
@@ -341,8 +340,8 @@ public class UserServiceTest {
 
         User user = new User();
 
-        user.setFirstName("Karim");
-        user.setLastName("Valov");
+        user.setFirstName("Карим");
+        user.setLastName("Валов");
         user.setEmail("Karim03@gmail.com");
         user.setPassword(encodedPassword);
 
@@ -365,8 +364,8 @@ public class UserServiceTest {
 
         User user = new User();
 
-        user.setFirstName("Konstantin");
-        user.setLastName("Molin");
+        user.setFirstName("Константин");
+        user.setLastName("Молин");
         user.setEmail(email);
         user.setPassword(encodedPassword);
 
@@ -392,8 +391,8 @@ public class UserServiceTest {
 
         User user = new User();
 
-        user.setFirstName("Petr");
-        user.setLastName("Elov");
+        user.setFirstName("Петр");
+        user.setLastName("Елов");
         user.setEmail(null);
         user.setPassword(encodedPassword);
 
@@ -409,8 +408,8 @@ public class UserServiceTest {
 
         User user = new User();
 
-        user.setFirstName("Selim");
-        user.setLastName("Vanov");
+        user.setFirstName("Селим");
+        user.setLastName("Ванов");
         user.setEmail("");
         user.setPassword(encodedPassword);
 
@@ -425,8 +424,8 @@ public class UserServiceTest {
 
         User user = new User();
 
-        user.setFirstName("Maxim");
-        user.setLastName("Orlov");
+        user.setFirstName("Максим");
+        user.setLastName("Орлов");
         user.setEmail(email);
         user.setPassword(null);
 
@@ -441,8 +440,8 @@ public class UserServiceTest {
 
         User user = new User();
 
-        user.setFirstName("Vladimir");
-        user.setLastName("Krelin");
+        user.setFirstName("Владимир");
+        user.setLastName("Крелин");
         user.setEmail(email);
         user.setPassword("");
 
@@ -458,8 +457,8 @@ public class UserServiceTest {
         String encodedPassword = passwordEncoder.encode(password);
 
         User user = new User();
-        user.setFirstName("Vova");
-        user.setLastName("Petrov");
+        user.setFirstName("Вова");
+        user.setLastName("Петров");
         user.setEmail(email);
         user.setPassword(encodedPassword);
         user.setTwoFactorVerified(true);
@@ -522,8 +521,8 @@ public class UserServiceTest {
         User user = new User();
 
         user.setId(1L);
-        user.setFirstName("Volodymyr");
-        user.setLastName("Sovin");
+        user.setFirstName("Владимир");
+        user.setLastName("Совин");
         user.setEmail("volSol1093@gmail.com");
         user.setPassword("Password123+");
 
@@ -577,13 +576,13 @@ public class UserServiceTest {
         String password2 = "PassJane12@";
         String encodedPassword2 = passwordEncoder.encode(password2);
 
-        firstUser.setFirstName("Jennie");
-        firstUser.setLastName("Farina");
+        firstUser.setFirstName("Жанна");
+        firstUser.setLastName("Фарина");
         firstUser.setEmail("JennieEm@gmail.com");
         firstUser.setPassword(encodedPassword1);
 
-        secondUser.setFirstName("Jane");
-        secondUser.setLastName("janeSmith@gmail.com");
+        secondUser.setFirstName("Джейн");
+        secondUser.setLastName("Провина");
         secondUser.setEmail("janeSmith@gmail.com");
         secondUser.setPassword(encodedPassword2);
 
@@ -609,8 +608,8 @@ public class UserServiceTest {
         User user = new User();
 
         user.setId(1L);
-        user.setFirstName("Vanya");
-        user.setLastName("Prohorov");
+        user.setFirstName("Ваня");
+        user.setLastName("Прохоров");
         user.setEmail("ivanko@gmail.com");
         user.setLastLogin(new Date());
 
@@ -636,8 +635,8 @@ public class UserServiceTest {
 
         assertNotNull(result);
         assertEquals(1L, result.getUserId());
-        assertEquals("Vanya", result.getFirstName());
-        assertEquals("Prohorov", result.getLastName());
+        assertEquals("Ваня", result.getFirstName());
+        assertEquals("Прохоров", result.getLastName());
         assertEquals("ivanko@gmail.com", result.getEmail());
         assertEquals(user.getTwoFactorVerified(), result.getTwoFactorEnabled());
         assertEquals("01.01.2001", result.getBirthday());
@@ -661,8 +660,8 @@ public class UserServiceTest {
         User user = new User();
 
         user.setId(1L);
-        user.setFirstName("Vladislav");
-        user.setLastName("Pokov");
+        user.setFirstName("Владимир");
+        user.setLastName("Поков");
         user.setEmail("vlados@gmail.com");
 
         when(userRepository
@@ -681,8 +680,8 @@ public class UserServiceTest {
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
-        user.setFirstName("Vladislav");
-        user.setLastName("Pokov");
+        user.setFirstName("Владимир");
+        user.setLastName("Поков");
         user.setLastLogin(new Date());
 
         Profile userProfile = new Profile();
@@ -703,8 +702,8 @@ public class UserServiceTest {
         UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userId);
 
         assertNotNull(userDetailsDTO);
-        assertEquals("Vladislav", userDetailsDTO.getFirstName());
-        assertEquals("Pokov", userDetailsDTO.getLastName());
+        assertEquals("Владимир", userDetailsDTO.getFirstName());
+        assertEquals("Поков", userDetailsDTO.getLastName());
         assertEquals(userProfile.getDescription(), userDetailsDTO.getDescription());
         assertEquals(userProfile.getBirthday(), userDetailsDTO.getBirthday());
         assertEquals(userProfile.getCountry(), userDetailsDTO.getCountry());
@@ -728,8 +727,8 @@ public class UserServiceTest {
         User user = new User();
 
         user.setId(userId);
-        user.setFirstName("Leva");
-        user.setLastName("Durov");
+        user.setFirstName("Лёва");
+        user.setLastName("Дуров");
         user.setLastLogin(new Date());
 
         when(userRepository
