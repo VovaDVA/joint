@@ -11,10 +11,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import java.util.Date;
 
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,8 +45,8 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
     public void testGetUserByIdExistingUser() throws Exception {
         User newUser = new User();
 
-        newUser.setFirstName("Petr");
-        newUser.setLastName("Prunov");
+        newUser.setFirstName("Петр");
+        newUser.setLastName("Прунов");
         newUser.setEmail("petr09@gmail.com");
         newUser.setPassword("Password123@");
         newUser.setLastLogin(new Date());
@@ -61,14 +63,11 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
 
         profileRepository.save(newProfile);
 
-        String requestBody = String.format("{\"userId\": %d}", savedUser.getId());
-
         mockMvc.perform(get("/auth/user/get")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .param("userId", String.valueOf(savedUser.getId())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value("Petr"))
-                .andExpect(jsonPath("$.lastName").value("Prunov"))
+                .andExpect(jsonPath("$.firstName").value("Петр"))
+                .andExpect(jsonPath("$.lastName").value("Прунов"))
                 .andExpect(jsonPath("$.lastLogin").isNotEmpty())
                 .andExpect(jsonPath("$.description").value("Description"))
                 .andExpect(jsonPath("$.birthday").value("01.01.2002"))
@@ -80,8 +79,8 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
     public void testGetUserByIdExistingUserWithFullProfile() throws Exception {
         User newUser = new User();
 
-        newUser.setFirstName("Kristina");
-        newUser.setLastName("Poshina");
+        newUser.setFirstName("Кристина");
+        newUser.setLastName("Пошина");
         newUser.setEmail("Faster123@gmail.com");
         newUser.setPassword("Password123@");
         newUser.setLastLogin(new Date());
@@ -99,11 +98,10 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
         profileRepository.save(newProfile);
 
         mockMvc.perform(get("/auth/user/get")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\": " + savedUser.getId() + "}"))
+                        .param("userId", String.valueOf(savedUser.getId())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value("Kristina"))
-                .andExpect(jsonPath("$.lastName").value("Poshina"))
+                .andExpect(jsonPath("$.firstName").value("Кристина"))
+                .andExpect(jsonPath("$.lastName").value("Пошина"))
                 .andExpect(jsonPath("$.lastLogin").isNotEmpty())
                 .andExpect(jsonPath("$.description").value("Description"))
                 .andExpect(jsonPath("$.birthday").value("01.01.2001"))
@@ -113,13 +111,14 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
 
     @Test
     public void testGetUserByIdNonExistentUserId() throws Exception {
+        User savedUser = new User();
         Long nonExistentUserId = 999L;
-        String requestBody = String.format("{\"userId\": %d}", nonExistentUserId);
+
+        savedUser.setId(nonExistentUserId);
 
         try {
             mockMvc.perform(get("/auth/user/get")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(requestBody))
+                            .param("userId", String.valueOf(savedUser.getId())))
                     .andExpect(status().isNotFound());
 
         } catch (jakarta.servlet.ServletException e) {
@@ -136,29 +135,32 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
     @Test
     public void testGetUserByIdMissingUserId() {
         try {
-            mockMvc.perform(get("/auth/user/get")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("{}"))
-                    .andExpect(status().isBadRequest());
-            fail("Expected InvalidDataAccessApiUsageException to be thrown due to missing userId.");
+            mockMvc.perform(get("/auth/user/get"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(result -> {
+                        String errorMessage = result.getResponse().getErrorMessage();
+                        assertFalse(errorMessage.contains("Required request parameter 'userId' for method parameter type Long is not present."));
+                    });
         } catch (Exception e) {
-            if (e.getCause() instanceof org.springframework.dao.InvalidDataAccessApiUsageException) {
-                if (e.getCause().getMessage().contains("The given id must not be null")) {
-                    assertTrue(true);
-                    return;
-                }
+            if (e instanceof MissingServletRequestParameterException) {
+                MissingServletRequestParameterException ex = (MissingServletRequestParameterException) e;
+                assertTrue(ex.getParameterType().equals("Long"));
+                assertTrue(ex.getParameterName().equals("userId"));
+            } else {
+                fail("Unexpected exception: " + e.getMessage());
             }
-            fail("Unexpected exception: " + e.getMessage());
         }
     }
 
+
+
+
+
     @Test
     public void testGetUserByIdInvalidFormat() throws Exception {
-        String requestBody = "{\"userId\": \"invalid-format\"}";
 
         mockMvc.perform(get("/auth/user/get")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .param("userId", "invalid-format"))
                 .andExpect(status().isBadRequest());
     }
 }
