@@ -43,8 +43,8 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserSuccess() throws Exception {
-        String newUserJson = "{\"firstName\": \"Maxim\", " +
-                "\"lastName\": \"Volsin\", " +
+        String newUserJson = "{\"firstName\": \"Максим\", " +
+                "\"lastName\": \"Волсин\", " +
                 "\"email\": \"maxVol@gmail.com\", " +
                 "\"password\": \"Password123@\"}";
 
@@ -53,8 +53,8 @@ public class UserRegistrationControllerIntegrationTest {
                         .content(newUserJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.firstName").value("Maxim"))
-                .andExpect(jsonPath("$.lastName").value("Volsin"))
+                .andExpect(jsonPath("$.firstName").value("Максим"))
+                .andExpect(jsonPath("$.lastName").value("Волсин"))
                 .andExpect(jsonPath("$.email").value("maxVol@gmail.com"))
                 .andExpect(jsonPath("$.registrationDate").exists())
                 .andExpect(jsonPath("$.lastLogin").doesNotExist())
@@ -70,8 +70,8 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserInvalidEmail() throws Exception {
-        String newUserJson = "{\"firstName\": \"Alexandra\", " +
-                             "\"lastName\": \"Durova\", " +
+        String newUserJson = "{\"firstName\": \"Александра\", " +
+                             "\"lastName\": \"Дурова\", " +
                              "\"email\": \"invalid-email\", " +
                              "\"password\": \"Password123+\"}";
 
@@ -89,7 +89,7 @@ public class UserRegistrationControllerIntegrationTest {
     @Test
     public void testRegisterUserEmptyFirstName() throws Exception {
         String newUserJson = "{\"firstName\": \"\", " +
-                             "\"lastName\": \"Savalina\", " +
+                             "\"lastName\": \"Савалина\", " +
                              "\"email\": \"emptyfield@gmail.com\", " +
                              "\"password\": \"Password123@\"}";
 
@@ -106,7 +106,7 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserEmptyLastName() throws Exception {
-        String newUserJson = "{\"firstName\": \"Kolya\", " +
+        String newUserJson = "{\"firstName\": \"Коля\", " +
                              "\"lastName\": \"\", " +
                              "\"email\": \"kolyan1208@gmail.com\", " +
                              "\"password\": \"Password123@\"}";
@@ -124,8 +124,8 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserEmptyEmail() {
-        String newUserJson = "{\"firstName\": \"Ekaterina\", " +
-                             "\"lastName\": \"Petrovna\", " +
+        String newUserJson = "{\"firstName\": \"Екатерина\", " +
+                             "\"lastName\": \"Петровна\", " +
                              "\"email\": \"\", " +
                              "\"password\": \"Password123@\"}";
 
@@ -143,8 +143,8 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserInvalidPassword() throws Exception {
-        String newUserJson = "{\"firstName\": \"Darya\", " +
-                             "\"lastName\": \"Parova\", " +
+        String newUserJson = "{\"firstName\": \"Дарья\", " +
+                             "\"lastName\": \"Парова\", " +
                              "\"email\": \"DaHello@gmail.com\", " +
                              "\"password\": \"1234\"}";
 
@@ -165,15 +165,15 @@ public class UserRegistrationControllerIntegrationTest {
 
         User currentNewUser = new User();
 
-        currentNewUser.setFirstName("Vlada");
-        currentNewUser.setLastName("Astrova");
+        currentNewUser.setFirstName("Влада");
+        currentNewUser.setLastName("Астрова");
         currentNewUser.setEmail(existingEmail);
         currentNewUser.setPassword("Password123@");
 
         userRepository.save(currentNewUser);
 
-        String newUserJson = "{\"firstName\": \"Darina\", " +
-                             "\"lastName\": \"Dremina\", " +
+        String newUserJson = "{\"firstName\": \"Дарина\", " +
+                             "\"lastName\": \"Дремина\", " +
                              "\"email\": \"" + existingEmail + "\", " +
                              "\"password\": \"Password123@\"}";
 
@@ -190,10 +190,10 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserInvalidFirstNameLength() {
-        String longFirstName = "A".repeat(NAME_MAX_LENGTH + 1);
+        String longFirstName = "О".repeat(NAME_MAX_LENGTH + 1);
 
         String newUserJson = String.format("{\"firstName\": \"%s\", " +
-                                           "\"lastName\": \"Teodorovich\", " +
+                                           "\"lastName\": \"Теодорович\", " +
                                            "\"email\": \"knowingem@gmail.com\", " +
                                            "\"password\": \"Password123@\"}",
                                            longFirstName);
@@ -212,9 +212,9 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserInvalidLastNameLength() {
-        String longLastName = "B".repeat(NAME_MAX_LENGTH + 1);
+        String longLastName = "А".repeat(NAME_MAX_LENGTH + 1);
 
-        String newUserJson = String.format("{\"firstName\": \"Polina\", " +
+        String newUserJson = String.format("{\"firstName\": \"Полина\", " +
                                            "\"lastName\": \"%s\", " +
                                            "\"email\": \"polibeauty@gmail.com\", " +
                                            "\"password\": \"Password123@\"}",
@@ -234,10 +234,10 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserInvalidFirstNameCharacters() {
-        String invalidFirstName = "M@xim!";
+        String invalidFirstName = "М@ксим!";
 
         String newUserJson = String.format("{\"firstName\": \"%s\", " +
-                                           "\"lastName\": \"Forsin\", " +
+                                           "\"lastName\": \"Форсин\", " +
                                            "\"email\": \"Forsin2003@gmail.com\", " +
                                            "\"password\": \"Password123@\"}",
                                            invalidFirstName);
@@ -256,9 +256,9 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserInvalidLastNameCharacters() {
-        String invalidLastName = "V@ls!n";
+        String invalidLastName = "В@слин!n";
 
-        String newUserJson = String.format("{\"firstName\": \"Maxim\", " +
+        String newUserJson = String.format("{\"firstName\": \"Максим\", " +
                                            "\"lastName\": \"%s\", " +
                                            "\"email\": \"maxVol@gmail.com\", " +
                                            "\"password\": \"Password123@\"}",
@@ -278,8 +278,8 @@ public class UserRegistrationControllerIntegrationTest {
 
     @Test
     public void testRegisterUserProfileCreated() throws Exception {
-        String newUserJson = "{\"firstName\": \"Maxim\", " +
-                "\"lastName\": \"Volsin\", " +
+        String newUserJson = "{\"firstName\": \"Максим\", " +
+                "\"lastName\": \"Волсин\", " +
                 "\"email\": \"maxVol@gmail.com\", " +
                 "\"password\": \"Password123@\"}";
 
