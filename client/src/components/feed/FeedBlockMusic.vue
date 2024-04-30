@@ -1,20 +1,28 @@
 <template>
-    <div class="feed-block">
-        <div class="feed-preview"></div>
-        <div class="feed-block-inner">
-            <div class="feed-info">
-                <div class="music-info">
-                    <div class="music-title">Самая лучшая музыка всех времен</div>
-                    <div class="music-author">Владимир Двойнишников</div>
-                </div>
-                <div class="music-controls">
-                    <div class="music-timer">1:25</div>
-                    <div class="player-bar"></div>
-                    <div class="music-timer">1:25</div>
-                    <icon-button icon-name="play"></icon-button>
+    <div class="music-block" :class="$store.state.theme">
+        <div class="album">
+            <icon-button iconName="play"></icon-button>
+        </div>
+        <div class="feed-info">
+            <div class="music-info">
+                <div class="title">Песня</div>
+                <div class="author">Владимир Двойнишников</div>
+                <div class="time">5:02</div>
+            </div>
+            <div class="money">
+                <div class="cost">
+                    <content-stats-button iconName="ruble-sign">15</content-stats-button>
                 </div>
             </div>
-            <div class="music-buttons">
+
+            <!-- <div class="music-controls">
+                <div class="music-timer">1:25</div>
+                <div class="player-bar"></div>
+                <div class="music-timer">1:25</div>
+                <icon-button icon-name="play"></icon-button>
+            </div> -->
+        </div>
+        <!-- <div class="music-buttons">
                 <div class="feed-stats left">
                     <content-stats-button icon-name="heart">15k</content-stats-button>
                     <content-stats-button icon-name="share">93</content-stats-button>
@@ -22,8 +30,7 @@
                 <div class="feed-stats">
                     <content-stats-button icon-name="plus">Бесплатно</content-stats-button>
                 </div>
-            </div>
-        </div>
+            </div> -->
     </div>
 </template>
 
@@ -34,75 +41,93 @@ export default {
 </script>
 
 <style scoped>
-.feed-block {
+.music-block {
     display: flex;
-    width: 100%;
-    height: 100px;
-    margin-bottom: 20px;
-}
+    gap: 10px;
+    height: fit-content;
+    padding: 10px;
+    height: fit-content;
 
-.feed-preview {
-    flex: 0 0 100px;
-    margin-right: 10px;
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
 }
 
-.feed-block-inner {
-    flex: 1;
+.music-block.light-theme {
+    border: 1px #0000007c solid;
+    background: rgba(255, 255, 255, 0.5);
+    color: #000;
+}
+
+.album {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    width: 60px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px #ffffff4f solid;
+}
+.music-block.light-theme .album {
+    border: 1px #0000004f solid;
+    background: #fff;
 }
 
 .feed-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
     flex: 1;
-    height: calc(100% - 45px);
-    margin-bottom: 10px;
-    padding: 5px 20px;
-    border: 1px #ffffff7c solid;
-    border-radius: 20px;
-    background: rgba(0, 0, 0, 0.5);
 }
 
 .music-info {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
-.music-title {
+.title {
     font-size: 15px;
     color: #ffbf6c;
 }
+.music-block.light-theme .title {
+    color: #af5d00;
+}
 
-.music-author {
+.author {
     font-size: 13px;
     text-align: left;
 }
 
-.music-timer {
-    text-align: right;
-    margin-right: 10px;
+.time {
+    font-size: 15px;
+    color: #ffffff7c;
+}
+.music-block.light-theme .time {
+    color: #0000007c;
 }
 
-.feed-cost {
-    font-size: 13px;
-    text-align: right;
-    color: #6cff80;
+.money {
+    display: flex;
+    align-items: right;
+    flex-direction: column;
 }
 
-.music-buttons {
+.cost {
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+    /* color: #d9ff00; */
+}
+
+/* .music-buttons {
     display: flex;
     justify-content: space-between;
-}
+} */
 
-.feed-stats {
+/* .feed-stats {
     display: flex;
     justify-content: flex-end;
 }
@@ -114,7 +139,7 @@ export default {
 .feed-stats.left * {
     margin-right: 10px;
     margin-left: 0;
-}
+} */
 
 .music-controls {
     display: flex;
@@ -133,69 +158,11 @@ export default {
     transition: color, background .3s linear; */
 }
 
-.player-bar {
+/* .player-bar {
     margin: 0 20px 0 10px;
     flex: 1;
     height: 3px;
     border-radius: 2px;
     background-color: rgba(255, 255, 255, 0.555);
-}
-
-
-/* @media (max-width: 1000px) {
-    .feed-block {
-        height: 22.5vw;
-    }
-
-    .feed-preview {
-        flex: 0 0 40vw;
-    }
 } */
-
-@media (max-width: 800px) {
-    .feed-block {
-        flex-direction: column;
-        height: fit-content;
-        padding: 15px;
-
-        border: 1px #ffffff7c solid;
-        border-radius: 20px;
-        background: rgba(0, 0, 0, 0.5);
-    }
-
-    .feed-preview {
-        flex: 0 0 50px;
-        margin-right: 0;
-        aspect-ratio: 1/1 !important;
-        border: none;
-    }
-
-    .feed-info {
-        padding: 10px 0;
-        border: none;
-        background: none;
-    }
-}
-
-@media (max-width: 520px) {
-    .feed-stats {
-        flex-direction: column;
-    }
-
-    .feed-stats-container {
-        justify-content: space-between;
-    }
-
-    .feed-stats-container * {
-        width: 20%;
-        min-width: fit-content;
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-
-    .feed-stats-container.right * {
-        width: 100%;
-        margin-bottom: 0;
-    }
-}
 </style>

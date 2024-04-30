@@ -4,6 +4,8 @@ import ContentBlock from "@/components/main/ContentBlock.vue";
 import ContentBlockTitle from "@/components/main/ContentBlockTitle.vue";
 import ContentBlockText from "@/components/main/ContentBlockText.vue";
 
+import ContentGrid from "@/components/main/page/ContentGrid.vue";
+import PostGrid from "@/components/main/page/PostGrid.vue";
 // import ModalChangeBanner from "@/components/main/modals/ModalChangeBanner.vue";
 // import ModalChangeAvatar from "@/components/main/modals/ModalChangeAvatar.vue";
 
@@ -33,6 +35,9 @@ import UserAvatar from "@/components/profile/UserAvatar.vue";
 import ProfileContent from "./profile/ProfileContent.vue";
 // Feed
 import FeedBlock from "./feed/FeedBlock.vue";
+import FeedBlockTemplate from "./feed/FeedBlockTemplate.vue";
+import FeedBlockPost from "./feed/FeedBlockPost.vue";
+import FeedBlockMedia from "./feed/FeedBlockMedia.vue";
 import FeedBlockMusic from "@/components/feed/FeedBlockMusic.vue";
 // News
 import NewsBlock from "@/components/news/NewsBlock.vue";
@@ -58,7 +63,7 @@ import MusicPreviewBlock from "./main/static_panel/content/music/MusicPreviewBlo
 import NotificationPreviewBlock from "./main/static_panel/content/notifications/NotificationPreviewBlock.vue";
 
 export default [
-    PageHeader,//ModalChangeAvatar, ModalChangeBanner,
+    PageHeader, ContentGrid, PostGrid, //ModalChangeAvatar, ModalChangeBanner,
     FormBlock,
     ContentBlockTitle, ContentBlockText,
     BarChart, CalendarBlock,
@@ -69,7 +74,7 @@ export default [
     // Profile
     ProfileBanner, UserAvatar, ProfileContent,
     // Feed
-    FeedBlock, FeedBlockMusic,
+    FeedBlock, FeedBlockTemplate, FeedBlockPost, FeedBlockMedia, FeedBlockMusic,
     // News
     NewsBlock,
     // Static Panel

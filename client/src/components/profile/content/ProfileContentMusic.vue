@@ -1,5 +1,13 @@
 <template>
-    <feed-block-music></feed-block-music>
-    <feed-block-music></feed-block-music>
-    <feed-block-music></feed-block-music>
+    <post-grid>
+        <feed-block-music></feed-block-music>
+        <feed-block-music></feed-block-music>
+        <feed-block-music></feed-block-music>
+        <feed-block-music></feed-block-music>
+        <feed-block-music></feed-block-music>
+        <feed-block-music></feed-block-music>
+        <feed-block-music></feed-block-music>
+        <feed-block-music></feed-block-music>
+        <feed-block-music></feed-block-music>
+    </post-grid>
 </template>

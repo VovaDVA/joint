@@ -7,9 +7,7 @@
                 </div>
                 <icon-button icon-name="close"></icon-button>
             </div>
-
             <div class="content">
-
                 <div class="photo">
                     <div class="square">
 
@@ -26,7 +24,6 @@
                     </div>
                 </div>
                 <div class="block">
-
                     <div class="button" id="back">
                         Назад
                     </div>
@@ -54,6 +51,7 @@ export default {
     background-color: rgba(0, 0, 0, 0.512);
     border-radius: 15px;
     transition: background .2s linear;
+    z-index: 200;
 }
 
 .window {
