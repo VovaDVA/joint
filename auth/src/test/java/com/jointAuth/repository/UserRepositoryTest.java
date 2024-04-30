@@ -40,8 +40,8 @@ public class UserRepositoryTest {
 
         User user = new User();
         user.setId(1L);
-        user.setFirstName("Katya");
-        user.setLastName("Solovay");
+        user.setFirstName("Катя");
+        user.setLastName("Соловай");
         user.setEmail(email);
         user.setPassword(encodedPassword);
         when(userRepository

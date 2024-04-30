@@ -42,7 +42,7 @@ public class UserService {
     private static final String EMAIL_REGEX =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
-    private static final String NAME_REGEX = "^[a-zA-Zа-яА-ЯёЁ]+$";
+    private static final String NAME_REGEX = "^[а-яА-ЯёЁ]+$";
 
     private static final int NAME_MAX_LENGTH = 15;
 
@@ -143,6 +143,33 @@ public class UserService {
         }
 
         throw new IllegalArgumentException("Invalid email or password.");
+    }
+
+    public void enableTwoFactorAuth(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setTwoFactorVerified(true);
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
+    public void disableTwoFactorAuth(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            if (!user.getTwoFactorVerified()) {
+                throw new IllegalStateException("Two-factor authentication is already disabled");
+            }
+
+            user.setTwoFactorVerified(false);
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 
     public boolean passwordsMatch(String hashedPassword, String plainPassword) {
@@ -254,7 +281,6 @@ public class UserService {
     public String getUserEmailById(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
-        // Обработка случая, когда userOptional равен null или не найден
         if (userOptional == null || userOptional.isEmpty()) {
             return null;
         }
@@ -285,7 +311,6 @@ public class UserService {
         }).orElse(false);
     }
 
-
     public boolean sendAccountDeletionRequest(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
@@ -295,19 +320,14 @@ public class UserService {
         User user = optionalUser.get();
 
         try {
-            // Получаем и сохраняем код подтверждения
             String verificationCode = generateVerificationCode();
             verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, verificationCode, LocalDateTime.now().plusMinutes(2));
 
-            // Отправляем письмо с подтверждением удаления
-
             return emailService.sendAccountDeletionConfirmationEmail(user, verificationCode);
         } catch (Exception e) {
-            // Обработка исключения, выбрасываемого при сохранении или обновлении кода подтверждения
             return false;
         }
     }
-
 
     @Transactional
     public boolean deleteUser(Long userId, String verificationCode) {
@@ -339,33 +359,6 @@ public class UserService {
         profileRepository.deleteByUserId(userId);
 
         userRepository.deleteById(userId);
-    }
-
-    public void enableTwoFactorAuth(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setTwoFactorVerified(true);
-            userRepository.save(user);
-        } else {
-            throw new IllegalArgumentException("User not found");
-        }
-    }
-
-    public void disableTwoFactorAuth(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            if (!user.getTwoFactorVerified()) {
-                throw new IllegalStateException("Two-factor authentication is already disabled");
-            }
-
-            user.setTwoFactorVerified(false);
-            userRepository.save(user);
-        } else {
-            throw new IllegalArgumentException("User not found");
-        }
     }
 
     private String generateVerificationCode() {

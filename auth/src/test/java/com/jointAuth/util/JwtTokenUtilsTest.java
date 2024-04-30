@@ -45,12 +45,11 @@ public class JwtTokenUtilsTest {
 
     @Test
     public void testGenerateTokenSuccessful() {
-        // Arrange
         User mockUser = new User();
         mockUser.setEmail("IvanPetrov@gmail.com");
         mockUser.setId(153L);
-        mockUser.setFirstName("Ivan");
-        mockUser.setLastName("Petrov");
+        mockUser.setFirstName("Иван");
+        mockUser.setLastName("Петров");
 
         Profile mockProfile = new Profile();
         mockProfile.setId(153L);
@@ -58,19 +57,17 @@ public class JwtTokenUtilsTest {
 
         when(profileRepository.findByUserId(153L)).thenReturn(Optional.of(mockProfile));
 
-        // Act
         String token = jwtTokenUtils.generateToken(mockUser);
 
-        // Assert
         Claims claims = Jwts.parser()
-                .setSigningKey("yourSecretKey") // Replace with your actual secret key
+                .setSigningKey("yourSecretKey")
                 .parseClaimsJws(token)
                 .getBody();
 
         assertEquals("IvanPetrov@gmail.com", claims.get("email", String.class));
         assertEquals(153L, claims.get("userId", Long.class));
-        assertEquals("Ivan", claims.get("firstName", String.class));
-        assertEquals("Petrov", claims.get("lastName", String.class));
+        assertEquals("Иван", claims.get("firstName", String.class));
+        assertEquals("Петров", claims.get("lastName", String.class));
         assertEquals(153L, claims.get("profileId", Long.class));
 
         assertNotNull(claims.get("profileId", Long.class));
@@ -96,7 +93,7 @@ public class JwtTokenUtilsTest {
 
     @Test
     public void testGetFullNameSuccessful() {
-        Claims claims = Jwts.claims().setSubject("Vitally Novikov");
+        Claims claims = Jwts.claims().setSubject("Виталий Новиков");
 
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -105,7 +102,7 @@ public class JwtTokenUtilsTest {
 
         String fullName = jwtTokenUtils.getFullName(token);
 
-        assertEquals("Vitally Novikov", fullName);
+        assertEquals("Виталий Новиков", fullName);
     }
 
     @Test
@@ -162,7 +159,7 @@ public class JwtTokenUtilsTest {
     @Test
     public void testGetCurrentUserIdMissingId() {
         Claims claims = Jwts.claims();
-        claims.put("username", "Evelina_Matveeva");
+        claims.put("username", "Эвелина Матвеева");
 
         String token = "Bearer " + Jwts.builder()
                 .setClaims(claims)
@@ -206,7 +203,7 @@ public class JwtTokenUtilsTest {
     @Test
     public void testGetCurrentProfileIdMissingId() {
         Claims claims = Jwts.claims();
-        claims.put("username", "Evelina_Matveeva");
+        claims.put("username", "Эвелина Матвеева");
 
         String token = "Bearer " + Jwts.builder()
                 .setClaims(claims)
