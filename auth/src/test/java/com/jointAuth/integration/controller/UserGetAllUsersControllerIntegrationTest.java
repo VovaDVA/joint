@@ -65,8 +65,8 @@ public class UserGetAllUsersControllerIntegrationTest {
         User user1 = new User();
 
         user1.setId(1L);
-        user1.setFirstName("Danil");
-        user1.setLastName("Doramov");
+        user1.setFirstName("Данил");
+        user1.setLastName("Дорамов");
         user1.setEmail("simpleBoy1@gmail.com");
         user1.setPassword(encodedPassword1);
         user1.setRegistrationDate(new Date());
@@ -78,8 +78,8 @@ public class UserGetAllUsersControllerIntegrationTest {
         User user2 = new User();
 
         user2.setId(2L);
-        user2.setFirstName("Kristina");
-        user2.setLastName("Zorina");
+        user2.setFirstName("Кристина");
+        user2.setLastName("Зорина");
         user2.setEmail("KrisZOO@gmail.com");
         user2.setPassword(encodedPassword2);
         user2.setRegistrationDate(new Date());
@@ -127,8 +127,8 @@ public class UserGetAllUsersControllerIntegrationTest {
         User testUser = new User();
 
         testUser.setId(1L);
-        testUser.setFirstName("Valentin");
-        testUser.setLastName("Kravchuk");
+        testUser.setFirstName("Валентин");
+        testUser.setLastName("Кравчук");
         testUser.setEmail("valKra1@gmail.com");
         testUser.setPassword(encodedPassword);
         testUser.setRegistrationDate(new Date());

@@ -72,8 +72,8 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
     @Test
     public void testGetUserByIdSuccess() throws Exception {
         User newUser = new User();
-        newUser.setFirstName("Petr");
-        newUser.setLastName("Prunov");
+        newUser.setFirstName("Петр");
+        newUser.setLastName("Прунов");
         newUser.setEmail("Petr09@gmail.com");
         newUser.setPassword("Password123@");
 
@@ -101,8 +101,8 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(registeredUser.getId()))
-                .andExpect(jsonPath("$.firstName").value("Petr"))
-                .andExpect(jsonPath("$.lastName").value("Prunov"))
+                .andExpect(jsonPath("$.firstName").value("Петр"))
+                .andExpect(jsonPath("$.lastName").value("Прунов"))
                 .andExpect(jsonPath("$.email").value("Petr09@gmail.com"))
                 .andExpect(jsonPath("$.profileId").value(profile.getId()))
                 .andExpect(jsonPath("$.description").value(profile.getDescription()))

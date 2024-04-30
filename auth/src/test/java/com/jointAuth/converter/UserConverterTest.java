@@ -28,8 +28,8 @@ public class UserConverterTest {
 
         User user = new User();
 
-        user.setFirstName("Viktor");
-        user.setLastName("Doramov");
+        user.setFirstName("Виктор");
+        user.setLastName("Дорамов");
         user.setEmail("vidor@gmail.com");
         user.setPassword(encodedPassword);
         user.setId(1L);
@@ -53,7 +53,7 @@ public class UserConverterTest {
 
         User user = new User();
 
-        user.setFirstName("Alexander");
+        user.setFirstName("Александр");
         user.setLastName(null);
         user.setEmail("Sanya24@example.com");
         user.setPassword(encodedPassword);
@@ -88,7 +88,7 @@ public class UserConverterTest {
     public void testConvertToDtoMinimalUserData() {
         User minimalUser = new User();
         minimalUser.setId(1L);
-        minimalUser.setFirstName("Vladimir");
+        minimalUser.setFirstName("Владимир");
         minimalUser.setEmail("john@gmail.com");
 
         UserDTO dto = UserConverter.convertToDto(minimalUser);
