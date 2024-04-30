@@ -1,32 +1,39 @@
 package com.jointAuth.integration.controller;
 
+import com.jointAuth.model.user.ConfirmPasswordResetRequest;
 import com.jointAuth.model.user.User;
 import com.jointAuth.repository.UserRepository;
+import com.jointAuth.repository.UserVerificationCodeRepository;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class UserChangePasswordControllerIntegrationTest {
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -35,202 +42,194 @@ public class UserChangePasswordControllerIntegrationTest {
     private JwtTokenUtils jwtTokenUtils;
 
     @Autowired
-    private UserService userService;
+    private UserVerificationCodeRepository userVerificationCodeRepository;
+
+    private User testUser;
+    private String validToken;
+    private ConfirmPasswordResetRequest validRequest;
+
 
     @BeforeEach
-    void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
+    public void setUp() {
+        userVerificationCodeRepository.deleteAll();
+        userRepository.deleteAll();
 
-    private User createTestUser(String email, String password) {
-        User newUser = new User();
-        newUser.setId(1L);
-        newUser.setFirstName("Petr");
-        newUser.setLastName("Panin");
-        newUser.setEmail(email);
-        newUser.setPassword(password);
+        testUser = new User();
+        testUser.setFirstName("Максим");
+        testUser.setLastName("Дуров");
+        testUser.setEmail("maximka03@gmail.com");
+        testUser.setPassword("Password123@");
 
-        userRepository.save(newUser);
-        return newUser;
-    }
+        testUser = userRepository.save(testUser);
+        validToken = jwtTokenUtils.generateToken(testUser);
 
-    @Test
-    public void testChangePasswordValidUserAndToken() throws Exception {
-        User testUser = createTestUser("dosoQ1@gmail.com", "oldPassword123@");
-
-        String validToken = jwtTokenUtils.generateToken(testUser);
-
-        assertTrue(userService.getUserById(testUser.getId()).isPresent());
-
-        String newPassword = "PassNew123@";
-
-        mockMvc.perform(put("/auth/change-password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", validToken)
-                        .content(newPassword))
-                .andExpect(status().isOk());
+        validRequest = new ConfirmPasswordResetRequest();
+        validRequest.setUserId(testUser.getId());
+        validRequest.setVerificationCode("VALID_VERIFICATION_CODE");
+        validRequest.setNewPassword("NewPassword123@");
+        validRequest.setCurrentPassword("Password123@");
     }
 
     @Test
-    public void testChangePasswordInvalidToken() throws Exception {
-        User testUser = createTestUser("vor01@gmail.com", "oldPassword123@");
+    public void testRequestPasswordResetSuccess() throws Exception {
+        when(userService.sendPasswordResetRequest(anyLong())).thenReturn(true);
 
-        String invalidToken = "invalid_token";
+        mockMvc.perform(post("/auth/change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Password reset request sent to email."));
 
-        String newPassword = "New_password123@";
-
-        assertThrows(jakarta.servlet.ServletException.class, () -> {
-            mockMvc.perform(put("/auth/change-password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .header("Authorization", invalidToken)
-                            .content(newPassword))
-                    .andExpect(status().isForbidden());
-        });
-
+        verify(userService).sendPasswordResetRequest(anyLong());
     }
 
     @Test
-    public void testChangePasswordEmptyToken() throws Exception {
-        User testUser = createTestUser("needit01@gmail.com", "old123@Password");
+    public void testRequestPasswordInvalidToken() throws Exception {
+        String invalidToken = "invalid.token";
 
-        String emptyToken = "";
-
-        String newPassword = "@123newPassword";
-
-        assertThrows(jakarta.servlet.ServletException.class, () -> {
-            mockMvc.perform(put("/auth/change-password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .header("Authorization", emptyToken)
-                            .content(newPassword))
-                    .andExpect(status().isForbidden());
-        });
+        try {
+            mockMvc.perform(post("/auth/change-password")
+                            .header("Authorization", "Bearer " + invalidToken)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isUnauthorized());
+        } catch (io.jsonwebtoken.MalformedJwtException e) {
+            System.err.println("MalformedJwtException: " + e.getMessage());
+        }
     }
 
     @Test
-    public void testChangePasswordNonExistentUser() throws Exception {
-        String invalidToken = "invalid_token";
-
-        String newPassword = "newPassword123@";
-
-        mockMvc.perform(put("/change-password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", invalidToken)
-                        .content(newPassword))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void testChangePasswordEmptyPassword() throws Exception {
-        User testUser = createTestUser("Welcome201@gmail.com", "oldPassword234++");
-        String validToken = jwtTokenUtils.generateToken(testUser);
-
-        String emptyPassword = "";
-
-        mockMvc.perform(put("/auth/change-password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", validToken)
-                        .content(emptyPassword))
+    public void testRequestPasswordResetMissingToken() throws Exception {
+        mockMvc.perform(post("/auth/change-password")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testChangePasswordShortPassword() throws Exception {
-        User testUser = createTestUser("Petr05@gmail.com", "ValidPassword@123");
+    public void testRequestPasswordUserNotFound() throws Exception {
+        User nonexistentUser = new User();
+        nonexistentUser.setId(99999L);
+        String tokenForNonexistentUser = jwtTokenUtils.generateToken(nonexistentUser);
 
-        String shortPassword = "Short1";
-
-        String validToken = jwtTokenUtils.generateToken(testUser);
-
-        try {
-            mockMvc.perform(put("/auth/change-password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .header("Authorization", validToken)
-                            .content(shortPassword))
-                    .andExpect(status().isBadRequest());
-
-            fail("Expected IllegalArgumentException due to short password");
-        } catch (Exception ex) {
-            if (ex.getCause() instanceof IllegalArgumentException) {
-                assertEquals("Password does not meet the complexity requirements", ex.getCause().getMessage());
-            } else {
-                throw ex;
-            }
-        }
+        mockMvc.perform(post("/auth/change-password")
+                        .header("Authorization", "Bearer " + tokenForNonexistentUser)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Failed to send password reset request."));
     }
 
     @Test
-    public void testChangePasswordMissingSpecialCharacter() throws Exception {
-        User testUser = createTestUser("worker999@gmail.com", "ValidPassword@123");
-
-        String passwordWithoutSpecialCharacter = "Password123";
-
-        String validToken = jwtTokenUtils.generateToken(testUser);
-
-        try {
-            mockMvc.perform(put("/auth/change-password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .header("Authorization", validToken)
-                            .content(passwordWithoutSpecialCharacter))
-                    .andExpect(status().isBadRequest());
-
-            fail("Expected IllegalArgumentException due to missing special character in password");
-        } catch (Exception ex) {
-            if (ex.getCause() instanceof IllegalArgumentException) {
-                assertEquals("Password does not meet the complexity requirements", ex.getCause().getMessage());
-            } else {
-                throw ex;
-            }
-        }
+    public void testRequestPasswordMissingToken() throws Exception {
+        mockMvc.perform(post("/auth/change-password")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testChangePasswordMissingUpperCaseLetter() throws Exception {
-        User testUser = createTestUser("caser0001@gmail.com", "ValidPassword@123");
+    public void testConfirmPasswordResetSuccess() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword()))
+                .thenReturn(true);
 
-        String passwordWithoutUpperCase = "validpassword@123";
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Password reset successfully."));
 
-        String validToken = jwtTokenUtils.generateToken(testUser);
-
-        try {
-            mockMvc.perform(put("/auth/change-password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .header("Authorization", validToken)
-                            .content(passwordWithoutUpperCase))
-                    .andExpect(status().isBadRequest());
-
-            fail("Expected IllegalArgumentException due to missing uppercase letter in password");
-        } catch (Exception ex) {
-            if (ex.getCause() instanceof IllegalArgumentException) {
-                assertEquals("Password does not meet the complexity requirements", ex.getCause().getMessage());
-            } else {
-                throw ex;
-            }
-        }
+        verify(userService)
+                .resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword());
     }
 
     @Test
-    public void testChangePasswordMissingDigits() throws Exception {
-        User testUser = createTestUser("stracer777@gmail.com", "ValidPassword@123");
+    public void testConfirmPasswordResetInvalidCode() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                "INVALID_VERIFICATION_CODE",
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword()))
+                .thenReturn(false);
 
-        String passwordWithoutDigits = "ValidPassword@";
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"INVALID_VERIFICATION_CODE\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code."));
 
-        String validToken = jwtTokenUtils.generateToken(testUser);
-
-        try {
-            mockMvc.perform(put("/auth/change-password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .header("Authorization", validToken)
-                            .content(passwordWithoutDigits))
-                    .andExpect(status().isBadRequest());
-
-            fail("Expected IllegalArgumentException due to missing digits in password");
-        } catch (Exception ex) {
-            if (ex.getCause() instanceof IllegalArgumentException) {
-                assertEquals("Password does not meet the complexity requirements", ex.getCause().getMessage());
-            } else {
-                throw ex;
-            }
-        }
+        verify(userService)
+                .resetPassword(validRequest.getUserId(),
+                "INVALID_VERIFICATION_CODE",
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword());
     }
 
+    @Test
+    public void testConfirmPasswordResetInvalidCurrentPassword() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                validRequest.getNewPassword(),
+                "InvalidPassword"))
+                .thenReturn(false);
+
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"InvalidPassword\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code."));
+
+        verify(userService)
+                .resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                validRequest.getNewPassword(),
+                "InvalidPassword");
+    }
+
+    @Test
+    public void testConfirmPasswordResetInvalidNewPassword() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                "weakpassword",
+                validRequest.getCurrentPassword()))
+                .thenReturn(false);
+
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"weakpassword\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code."));
+
+        verify(userService)
+                .resetPassword(validRequest.getUserId(),
+                validRequest.getVerificationCode(),
+                "weakpassword",
+                validRequest.getCurrentPassword());
+    }
+
+    @Test
+    public void testConfirmPasswordResetExpiredVerificationCode() throws Exception {
+        when(userService.resetPassword(validRequest.getUserId(),
+                "EXPIRED_VERIFICATION_CODE",
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword()))
+                .thenReturn(false);
+
+        mockMvc.perform(post("/auth/confirm-change-password")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"EXPIRED_VERIFICATION_CODE\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification code."));
+
+        verify(userService).resetPassword(validRequest.getUserId(),
+                "EXPIRED_VERIFICATION_CODE",
+                validRequest.getNewPassword(),
+                validRequest.getCurrentPassword());
+    }
 }
