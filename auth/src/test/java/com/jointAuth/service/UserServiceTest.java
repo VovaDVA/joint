@@ -1,5 +1,6 @@
 package com.jointAuth.service;
 
+import com.jointAuth.model.verification.PasswordResetVerificationCode;
 import com.jointAuth.model.verification.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.model.profile.Profile;
@@ -612,6 +613,425 @@ public class UserServiceTest {
         assertFalse(result.isPresent());
     }
 
+    //получение пользователя по почте
+    @Test
+    void testGetUserByEmailUserFound() {
+        String email = "test@gmail.com";
+        User expectedUser = new User();
+        expectedUser.setEmail(email);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(expectedUser);
+
+        Optional<User> result = userService.getUserByEmail(email);
+
+        assertEquals(Optional.of(expectedUser), result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+    }
+
+    @Test
+    void testGetUserByEmailUserNotFound() {
+        String email = "notfound@gmail.com";
+        when(userRepository.findByEmail(email))
+                .thenReturn(null);
+
+        Optional<User> result = userService.getUserByEmail(email);
+
+        assertEquals(Optional.empty(), result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+    }
+
+    @Test
+    void testGetUserByEmailNullEmail() {
+        when(userRepository
+                .findByEmail(null))
+                .thenReturn(null);
+
+        Optional<User> result = userService.getUserByEmail(null);
+
+        assertEquals(Optional.empty(), result);
+        verify(userRepository, times(1))
+                .findByEmail(null);
+    }
+
+    @Test
+    void testGetUserByEmailEmptyEmail() {
+        String emptyEmail = "";
+        when(userRepository
+                .findByEmail(emptyEmail))
+                .thenReturn(null);
+
+        Optional<User> result = userService.getUserByEmail(emptyEmail);
+
+        assertEquals(Optional.empty(), result);
+        verify(userRepository, times(1))
+                .findByEmail(emptyEmail);
+    }
+
+    @Test
+    void testGetUserByEmailWithMultipleRequests() {
+
+        String email1 = "user1@gmail.com";
+        User user1 = new User();
+        user1.setEmail(email1);
+
+        String email2 = "user2@gmail.com";
+        User user2 = new User();
+        user2.setEmail(email2);
+
+        when(userRepository
+                .findByEmail(email1))
+                .thenReturn(user1);
+        when(userRepository
+                .findByEmail(email2))
+                .thenReturn(user2);
+
+        Optional<User> result1 = userService.getUserByEmail(email1);
+        Optional<User> result2 = userService.getUserByEmail(email2);
+
+        assertEquals(Optional.of(user1), result1);
+        assertEquals(Optional.of(user2), result2);
+
+        verify(userRepository, times(1))
+                .findByEmail(email1);
+        verify(userRepository, times(1))
+                .findByEmail(email2);
+    }
+
+    @Test
+    void testGetUserByEmailWhenRepositoryThrowsException() {
+        String email = "vanya0239@gmail.com";
+        when(userRepository
+                .findByEmail(email))
+                .thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            userService.getUserByEmail(email);
+        });
+
+        verify(userRepository, times(1))
+                .findByEmail(email);
+    }
+
+    //скрытие почты
+    @Test
+    void testMaskEmailCorrectMasking() {
+        String email = "user@gmail.com";
+        String expectedMaskedEmail = "u**r@gmail.com";
+
+        String maskedEmail = userService.maskEmail(email);
+
+        assertEquals(expectedMaskedEmail, maskedEmail);
+    }
+
+    @Test
+    void testMaskEmailSingleCharacterBeforeAt() {
+        String email = "u@gmail.com";
+        String expectedMaskedEmail = "u@gmail.com";
+
+        String maskedEmail = userService.maskEmail(email);
+
+        assertEquals(expectedMaskedEmail, maskedEmail);
+    }
+
+    @Test
+    void testMaskEmailNoAtSymbol() {
+        String email = "usergmail.com";
+        String expectedMaskedEmail = "usergmail.com";
+
+        String maskedEmail = userService.maskEmail(email);
+
+        assertEquals(expectedMaskedEmail, maskedEmail);
+    }
+
+    @Test
+    void testMaskEmailEmptyString() {
+        String email = "";
+        String expectedMaskedEmail = "";
+
+        String maskedEmail = userService.maskEmail(email);
+
+        assertEquals(expectedMaskedEmail, maskedEmail);
+    }
+
+    @Test
+    void testMaskEmailNullEmail() {
+        String email = null;
+
+        assertThrows(NullPointerException.class, () -> {
+            userService.maskEmail(email);
+        });
+    }
+
+    //reset pass request
+    @Test
+    void testSendPasswordResetRequestExistingUser() {
+        String email = "test@example.com";
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setEmail(email);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(existingUser);
+        when(emailService
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString()))
+                .thenReturn(true);
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertEquals(true, result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(verificationCodeService)
+                .saveOrUpdateVerificationCodeForPasswordReset(
+                eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
+        );
+        verify(emailService, times(1))
+                .sendPasswordResetConfirmationEmail(eq(existingUser), anyString());
+    }
+
+
+    @Test
+    void testSendPasswordResetRequestUserNotFound() {
+        String email = "notfound@gmail.com";
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(null);
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertEquals(false, result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(verificationCodeService, never())
+                .saveOrUpdateVerificationCodeForPasswordReset(anyLong(), anyString(), any(LocalDateTime.class));
+        verify(emailService, never())
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
+    }
+
+    @Test
+    void testSendPasswordResetRequestNullEmail() {
+        String email = null;
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertEquals(false, result);
+
+        verify(userRepository, times(1))
+                .findByEmail(null);
+        verify(verificationCodeService, never())
+                .saveOrUpdateVerificationCodeForPasswordReset(anyLong(), anyString(), any(LocalDateTime.class));
+        verify(emailService, never())
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
+    }
+
+    @Test
+    void testSendPasswordResetRequestEmailServiceException() {
+        String email = "vovan03@gmail.com";
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setEmail(email);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(existingUser);
+
+        when(emailService
+                .sendPasswordResetConfirmationEmail(eq(existingUser), anyString()))
+                .thenThrow(new RuntimeException("Email service error"));
+
+        boolean result = false;
+        try {
+            result = userService.sendPasswordResetRequest(email);
+        } catch (RuntimeException e) {
+            assertEquals("Email service error", e.getMessage());
+        }
+
+        assertFalse(result);
+
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(verificationCodeService, times(1))
+                .saveOrUpdateVerificationCodeForPasswordReset(
+                eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
+        );
+        verify(emailService, times(1))
+                .sendPasswordResetConfirmationEmail(eq(existingUser), anyString());
+    }
+
+    @Test
+    void testSendPasswordResetRequestEmailNotFound() {
+        String email = "nonexistent@gmail.com";
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(null);
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertFalse(result);
+
+        verify(userRepository, times(1))
+                .findByEmail(email);
+
+        verifyNoInteractions(verificationCodeService);
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void testSendPasswordResetRequestVerificationCodeNotSaved() {
+        String email = "tester228@gmail.com";
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setEmail(email);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(existingUser);
+
+        doNothing()
+                .when(verificationCodeService)
+                .saveOrUpdateVerificationCodeForPasswordReset(
+                eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
+        );
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertFalse(result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(verificationCodeService, times(1))
+                .saveOrUpdateVerificationCodeForPasswordReset(
+                eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
+        );
+    }
+
+    //resetPass
+    @Test
+    void testResetPasswordUserFoundAndVerificationCodeValid() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123@";
+
+        User user = new User();
+        user.setId(userId);
+        user.setPassword("oldPassword123@");
+
+        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
+        code.setUser(user);
+        code.setCode(verificationCode);
+        code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(passwordResetVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.of(code));
+        when(passwordEncoder
+                .encode(newPassword))
+                .thenReturn("encodedPassword");
+
+        boolean result = userService.resetPassword(userId, verificationCode, newPassword);
+
+        assertTrue(result);
+        verify(passwordResetVerificationCodeRepository, times(1))
+                .delete(code);
+        verify(userRepository, times(1))
+                .save(user);
+        assertEquals("encodedPassword", user.getPassword());
+    }
+
+    @Test
+    void testResetPasswordUserNotFound() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123@";
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword);
+        });
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
+    void testResetPasswordVerificationCodeNotFound() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123";
+
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(passwordResetVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword);
+        });
+        assertEquals("Invalid verification code", exception.getMessage());
+    }
+
+    @Test
+    void testResetPassword_VerificationCodeExpired() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123@";
+
+        User user = new User();
+        user.setId(userId);
+
+        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
+        code.setUser(user);
+        code.setCode(verificationCode);
+        code.setExpirationTime(LocalDateTime.now().minusMinutes(5));
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(passwordResetVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode)).thenReturn(Optional.of(code));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword);
+        });
+        assertEquals("Verification code has expired", exception.getMessage());
+    }
+
+    @Test
+    void testResetPasswordNewPasswordDoesNotMeetComplexityRequirements() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123";
+
+        User user = new User();
+        user.setId(userId);
+
+        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
+        code.setUser(user);
+        code.setCode(verificationCode);
+        code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(passwordResetVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.of(code));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword);
+        });
+        assertEquals("New password does not meet complexity requirements", exception.getMessage());
+    }
+
     //получение всех пользователей
     @Test
     public void getAllUsersEmptyListReturnsEmpty() {
@@ -801,7 +1221,7 @@ public class UserServiceTest {
 
     //change pass
     @Test
-    public void testResetPasswordUserNotFound() {
+    public void testChangePasswordUserNotFound() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123!";
@@ -819,7 +1239,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordInvalidVerificationCode() {
+    public void testChangePasswordInvalidVerificationCode() {
         Long userId = 1L;
         String verificationCode = "invalid";
         String newPassword = "NewPassword123!";
@@ -841,7 +1261,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordInvalidRequestType() {
+    public void testChangePasswordInvalidRequestType() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123!";
@@ -871,7 +1291,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordVerificationCodeExpired() {
+    public void testChangePasswordVerificationCodeExpired() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123!";
@@ -899,7 +1319,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordInvalidCurrentPassword() {
+    public void testChangePasswordInvalidCurrentPassword() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123!";
@@ -930,7 +1350,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordInvalidPassword() {
+    public void testChangePasswordInvalidPassword() {
         Long userId = 1L;
         String invalidVerificationCode = "validCode";
         String invalidPassword = "123";
@@ -962,7 +1382,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordSuccess() {
+    public void testChangePasswordSuccess() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123@";
@@ -1035,9 +1455,9 @@ public class UserServiceTest {
         assertNull(actualEmail);
     }
 
-    //resetRequestPass
+    //changeRequestPass
     @Test
-    public void testSendPasswordResetRequestUserNotFound() {
+    public void testSendPasswordChangeRequestUserNotFound() {
         Long userId = 1L;
 
         when(userService
@@ -1055,7 +1475,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSendPasswordResetRequestSuccess() {
+    public void testSendPasswordChangeRequestSuccess() {
         Long userId = 1L;
         String email = "Valera09@gmail.com";
 
@@ -1089,7 +1509,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSendPasswordResetRequestEmailSendingFailure() {
+    public void testSendPasswordChangeRequestEmailSendingFailure() {
         Long userId = 1L;
         String email = "DaryaVoronina@gmail.com";
 
@@ -1116,7 +1536,6 @@ public class UserServiceTest {
     }
 
     //delete
-
     @Test
     public void testDeleteUserUserNotFound() {
         Long userId = 1L;
