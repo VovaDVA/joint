@@ -1,9 +1,7 @@
 package com.jointAuth.service;
 
 import com.jointAuth.model.user.User;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
+import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +31,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendVerificationCodeByEmailSuccess() throws Exception {
+    public void sendVerificationCodeByEmailSuccess() throws Exception {
         Transport mockTransport = mock(Transport.class);
         Session mockSession = mock(Session.class);
 
@@ -68,7 +66,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendVerificationCodeByEmailInvalidEmail() throws Exception {
+    public void sendVerificationCodeByEmailInvalidEmail() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.example.com";
         emailService.port = 587;
@@ -92,7 +90,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendVerificationCodeByEmailSendError() throws Exception {
+    public void sendVerificationCodeByEmailSendError() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.gmail.com";
         emailService.port = 587;
@@ -112,7 +110,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendVerificationCodeByEmailConnectionError() throws Exception {
+    public void sendVerificationCodeByEmailConnectionError() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.gmail.com";
         emailService.port = 587;
@@ -132,7 +130,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendPasswordResetConfirmationEmailSuccess() throws Exception {
+    public void sendPasswordChangeConfirmationEmailSuccess() throws Exception {
         Transport mockTransport = mock(Transport.class);
         Session mockSession = mock(Session.class);
 
@@ -167,7 +165,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendPasswordResetConfirmationEmailInvalidEmail() throws Exception {
+    public void sendPasswordChangeConfirmationEmailInvalidEmail() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.example.com";
         emailService.port = 587;
@@ -191,7 +189,7 @@ class EmailServiceTest {
     }
 
     @Test
-        void sendPasswordResetConfirmationEmailSendError() throws Exception {
+    public void sendPasswordChangeConfirmationEmailSendError() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.gmail.com";
         emailService.port = 587;
@@ -211,7 +209,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendPasswordResetConfirmationEmailConnectionError() throws Exception {
+    public void sendPasswordChangeConfirmationEmailConnectionError() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.gmail.com";
         emailService.port = 587;
@@ -231,7 +229,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendAccountDeletionConfirmationEmailSuccess() throws Exception {
+    public void sendAccountDeletionConfirmationEmailSuccess() throws Exception {
         Transport mockTransport = mock(Transport.class);
         Session mockSession = mock(Session.class);
 
@@ -263,7 +261,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendAccountDeletionConfirmationEmailInvalidEmail() throws Exception {
+    public void sendAccountDeletionConfirmationEmailInvalidEmail() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.example.com";
         emailService.port = 587;
@@ -283,7 +281,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendAccountDeletionConfirmationEmailSendError() throws Exception {
+    public void sendAccountDeletionConfirmationEmailSendError() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.gmail.com";
         emailService.port = 587;
@@ -301,7 +299,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendAccountDeletionConfirmationEmailConnectionError() throws Exception {
+    public void sendAccountDeletionConfirmationEmailConnectionError() throws Exception {
         EmailService emailService = new EmailService();
         emailService.host = "smtp.gmail.com";
         emailService.port = 587;
@@ -314,6 +312,112 @@ class EmailServiceTest {
         doThrow(new MessagingException("Error connecting to mail server")).when(mockTransport).connect(any(), any());
 
         boolean result = emailService.sendAccountDeletionConfirmationEmail(user, "123456");
+
+        assertFalse(result);
+    }
+
+    @Test
+    void sendPasswordResetConfirmationEmailSuccess() throws Exception {
+        Transport mockTransport = mock(Transport.class);
+        Session mockSession = mock(Session.class);
+
+        EmailService emailService = new EmailService();
+        emailService.setHost("smtp.gmail.com");
+        emailService.setPort(587);
+        emailService.setFromEmail("jointtest05@gmail.com");
+        emailService.setPassword("iuah wxvg shum fjkq");
+
+        User user = new User();
+        user.setEmail("recipient@gmail.com");
+
+        when(mockSession
+                .getTransport("smtp"))
+                .thenReturn(mockTransport);
+
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            assertEquals(emailService.getFromEmail(), ((InternetAddress) args[0]).getAddress());
+            assertEquals(user.getEmail(), ((InternetAddress) args[1]).getAddress());
+            assertEquals("Подтверждение сброса пароля", ((MimeMessage) args[2]).getSubject());
+            assertNotNull(((MimeMessage) args[2]).getContent());
+            return null;
+        })
+                .when(mockTransport)
+                .sendMessage(any(), any());
+
+        boolean result = emailService.sendPasswordResetConfirmationEmail(user, "123456");
+
+        assertTrue(result);
+
+        assertNotNull(mockSession);
+    }
+
+    @Test
+    public void sendPasswordResetConfirmationEmailInvalidEmail() throws Exception {
+        EmailService emailService = new EmailService();
+        emailService.setHost("smtp.example.com");
+        emailService.setPort(587);
+        emailService.setFromEmail("test@example.com");
+        emailService.setPassword("password123");
+
+        User user = new User();
+        user.setEmail("invalid_email");
+
+        Transport mockTransport = mock(Transport.class);
+        Session mockSession = mock(Session.class);
+
+        when(mockSession
+                .getTransport("smtp"))
+                .thenReturn(mockTransport);
+
+        boolean result = emailService.sendPasswordResetConfirmationEmail(user, "123456");
+
+        assertFalse(result);
+
+        verify(mockSession, never())
+                .getTransport("smtp");
+        verify(mockTransport, never())
+                .sendMessage(any(), any());
+    }
+
+    @Test
+    public void sendPasswordResetConfirmationEmailSendError() throws Exception {
+        EmailService emailService = new EmailService();
+        emailService.setHost("smtp.gmail.com");
+        emailService.setPort(587);
+        emailService.setFromEmail("test@gmail.com");
+        emailService.setPassword("password123");
+
+        User user = new User();
+        user.setEmail("recipient@gmail.com");
+
+        Transport mockTransport = mock(Transport.class);
+        doThrow(new MessagingException("Error sending message"))
+                .when(mockTransport)
+                .sendMessage(any(Message.class), any(Address[].class));
+
+        boolean result = emailService.sendPasswordResetConfirmationEmail(user, "123456");
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void sendPasswordResetConfirmationEmailConnectionError() throws Exception {
+        EmailService emailService = new EmailService();
+        emailService.setHost("smtp.gmail.com");
+        emailService.setPort(587);
+        emailService.setFromEmail("test@gmail.com");
+        emailService.setPassword("password123");
+
+        User user = new User();
+        user.setEmail("recipient@gmail.com");
+
+        Transport mockTransport = mock(Transport.class);
+        doThrow(new MessagingException("Error connecting to mail server"))
+                .when(mockTransport)
+                .connect(String.valueOf(any(Address.class)), any(String.class));
+
+        boolean result = emailService.sendPasswordResetConfirmationEmail(user, "123456");
 
         assertFalse(result);
     }
