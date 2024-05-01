@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -74,7 +75,7 @@ public class EmailService {
                 user.getFirstName(), user.getLastName(), verificationCode);
     }
 
-    public boolean sendPasswordResetConfirmationEmail(User user, String confirmationCode) {
+    public boolean sendPasswordChangeConfirmationEmail(User user, String confirmationCode) {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
@@ -89,13 +90,13 @@ public class EmailService {
         });
 
         try {
-            String emailSubject = createEmailSubjectForResetPassword();
+            String emailSubject = createEmailSubjectForChangePassword();
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromEmail));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
             message.setSubject(emailSubject);
 
-            String emailContent = createEmailContentForResetPassword(user, confirmationCode);
+            String emailContent = createEmailContentForChangePassword(user, confirmationCode);
             message.setText(emailContent);
 
             Transport.send(message);
@@ -106,17 +107,17 @@ public class EmailService {
         }
     }
 
-    private String createEmailSubjectForResetPassword() {
+    private String createEmailSubjectForChangePassword() {
         return "Разовый код для обновления пароля";
     }
 
 
-    private String createEmailContentForResetPassword(User user, String confirmationCode) {
+    private String createEmailContentForChangePassword(User user, String confirmationCode) {
         return String.format(
                 "Здравствуйте, %s %s!\n\n" +
-                        "Мы получили запрос на сброс пароля для вашей учетной записи Joint.\n\n" +
-                        "Ваш код подтверждения для сброса пароля: %s\n\n" +
-                        "Если вы не запрашивали сброс пароля, никому не сообщайте этот код и обратитесь в службу поддержки учетных записей Joint.\n\n" +
+                        "Мы получили запрос на изменение пароля для вашей учетной записи Joint.\n\n" +
+                        "Ваш код подтверждения для изменения пароля: %s\n\n" +
+                        "Если вы не запрашивали изменение пароля, никому не сообщайте этот код и обратитесь в службу поддержки учетных записей Joint.\n\n" +
                         "С уважением,\n" +
                         "команда Joint",
                 user.getFirstName(),
@@ -172,6 +173,56 @@ public class EmailService {
                 user.getFirstName(),
                 user.getLastName(),
                 verificationCode
+        );
+    }
+
+    public boolean sendPasswordResetConfirmationEmail(User user, String resetCode) {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", String.valueOf(port));
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        });
+
+        try {
+            String emailSubject = createEmailSubjectForPasswordReset();
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(fromEmail));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
+            message.setSubject(emailSubject);
+
+            String emailContent = createEmailContentForPasswordReset(user, resetCode);
+            message.setText(emailContent);
+
+            Transport.send(message);
+            return true;
+        } catch (Exception e) {
+            Logger.getLogger(EmailService.class.getName()).log(Level.SEVERE, "Error sending password reset email to " + user.getEmail(), e);
+            return false;
+        }
+    }
+
+    private String createEmailSubjectForPasswordReset() {
+        return "Код для сброса пароля";
+    }
+
+    private String createEmailContentForPasswordReset(User user, String resetCode) {
+        return String.format(
+                "Здравствуйте, %s %s!\n\n" +
+                        "Мы получили запрос на сброс пароля для вашей учетной записи Joint.\n\n" +
+                        "Ваш код подтверждения для сброса пароля: %s\n\n" +
+                        "Если вы не запрашивали сброс пароля, никому не сообщайте этот код и обратитесь в службу поддержки учетных записей Joint.\n\n" +
+                        "С уважением,\n" +
+                        "Команда Joint",
+                user.getFirstName(),
+                user.getLastName(),
+                resetCode
         );
     }
 }

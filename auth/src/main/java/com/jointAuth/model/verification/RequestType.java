@@ -1,7 +1,7 @@
-package com.jointAuth.model.user;
+package com.jointAuth.model.verification;
 
 public enum RequestType {
-    PASSWORD_RESET,
+    PASSWORD_CHANGE,
     ACCOUNT_DELETION,
     ANOTHER_TYPE;
 }

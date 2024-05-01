@@ -1,8 +1,10 @@
 package com.jointAuth.service;
 
-import com.jointAuth.model.user.RequestType;
-import com.jointAuth.model.user.TwoFactorAuthVerificationCode;
-import com.jointAuth.model.user.UserVerificationCode;
+import com.jointAuth.model.verification.PasswordResetVerificationCode;
+import com.jointAuth.model.verification.RequestType;
+import com.jointAuth.model.verification.TwoFactorAuthVerificationCode;
+import com.jointAuth.model.verification.UserVerificationCode;
+import com.jointAuth.repository.PasswordResetVerificationCodeRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -23,12 +25,16 @@ public class VerificationCodeService {
 
     private final UserVerificationCodeRepository userVerificationCodeRepository;
 
+    private final PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
+
     public VerificationCodeService(@Autowired TwoFactorAuthVerificationCodeRepository verificationCodeRepository,
                                    @Autowired UserRepository userRepository,
-                                   @Autowired UserVerificationCodeRepository userVerificationCodeRepository) {
+                                   @Autowired UserVerificationCodeRepository userVerificationCodeRepository,
+                                   @Autowired PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository) {
         this.verificationCodeRepository = verificationCodeRepository;
         this.userRepository = userRepository;
         this.userVerificationCodeRepository = userVerificationCodeRepository;
+        this.passwordResetVerificationCodeRepository = passwordResetVerificationCodeRepository;
     }
 
     public void saveOrUpdateVerificationCodeFor2FA(Long userId, String newCode) {
@@ -93,7 +99,7 @@ public class VerificationCodeService {
         verificationCodeRepository.deleteAll(expiredCodes);
     }
 
-    public void saveOrUpdateVerificationCodeForResetPassword(Long userId, String verificationCode, RequestType requestType, LocalDateTime expirationTime) {
+    public void saveOrUpdateVerificationCodeForChangePassword(Long userId, String verificationCode, RequestType requestType, LocalDateTime expirationTime) {
         if (userId == null) {
             throw new NullPointerException("User ID cannot be null");
         }
@@ -127,7 +133,7 @@ public class VerificationCodeService {
         }
 
         Optional<UserVerificationCode> existingCodeOptionalForDeletion = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
-        Optional<UserVerificationCode> existingCodeOptionalForPassword = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.PASSWORD_RESET);
+        Optional<UserVerificationCode> existingCodeOptionalForPassword = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.PASSWORD_CHANGE);
         UserVerificationCode userVerificationCode;
 
         if (existingCodeOptionalForDeletion.isPresent()) {
@@ -154,6 +160,29 @@ public class VerificationCodeService {
         List<UserVerificationCode> expiredCodes = userVerificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
 
         userVerificationCodeRepository.deleteAll(expiredCodes);
+    }
+
+    public void saveOrUpdateVerificationCodeForPasswordReset(Long userId, String verificationCode, LocalDateTime expirationTime) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+
+        Optional<PasswordResetVerificationCode> existingCodeOptional = passwordResetVerificationCodeRepository.findByUserId(userId);
+
+        PasswordResetVerificationCode passwordResetVerificationCode;
+
+        if (existingCodeOptional.isPresent()) {
+            passwordResetVerificationCode = existingCodeOptional.get();
+            passwordResetVerificationCode.setCode(verificationCode);
+            passwordResetVerificationCode.setExpirationTime(expirationTime);
+        } else {
+            passwordResetVerificationCode = new PasswordResetVerificationCode();
+            passwordResetVerificationCode.setUser(userRepository.getById(userId));
+            passwordResetVerificationCode.setCode(verificationCode);
+            passwordResetVerificationCode.setExpirationTime(expirationTime);
+        }
+
+        passwordResetVerificationCodeRepository.save(passwordResetVerificationCode);
     }
 
 }

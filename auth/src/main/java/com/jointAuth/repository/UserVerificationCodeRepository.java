@@ -1,8 +1,7 @@
 package com.jointAuth.repository;
 
-import com.jointAuth.model.user.RequestType;
-import com.jointAuth.model.user.User;
-import com.jointAuth.model.user.UserVerificationCode;
+import com.jointAuth.model.verification.RequestType;
+import com.jointAuth.model.verification.UserVerificationCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

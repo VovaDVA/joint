@@ -1,9 +1,10 @@
 package com.jointAuth.service;
 
-import com.jointAuth.model.user.RequestType;
-import com.jointAuth.model.user.TwoFactorAuthVerificationCode;
+import com.jointAuth.model.verification.RequestType;
+import com.jointAuth.model.verification.TwoFactorAuthVerificationCode;
 import com.jointAuth.model.user.User;
-import com.jointAuth.model.user.UserVerificationCode;
+import com.jointAuth.model.verification.UserVerificationCode;
+import com.jointAuth.repository.PasswordResetVerificationCodeRepository;
 import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -31,6 +32,8 @@ public class VerificationCodeServiceTest {
 
     private UserVerificationCodeRepository userVerificationCodeRepository;
 
+    private PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
+
     @BeforeEach
     public void setUp() {
         verificationCodeRepository = mock(TwoFactorAuthVerificationCodeRepository.class);
@@ -39,7 +42,8 @@ public class VerificationCodeServiceTest {
 
         verificationCodeService = new VerificationCodeService(verificationCodeRepository,
                 userRepository,
-                userVerificationCodeRepository);
+                userVerificationCodeRepository,
+                passwordResetVerificationCodeRepository);
 
         verificationCodeRepository.deleteAll();
     }
@@ -648,14 +652,14 @@ public class VerificationCodeServiceTest {
     void testSaveOrUpdateVerificationCodeForResetPasswordNewCode() {
         Long userId = 1L;
         String verificationCode = "123456";
-        RequestType requestType = RequestType.PASSWORD_RESET;
+        RequestType requestType = RequestType.PASSWORD_CHANGE;
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
 
         when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, requestType)).thenReturn(Optional.empty());
         when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION)).thenReturn(Optional.empty());
         when(userRepository.getById(userId)).thenReturn(new User());
 
-        verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(userId, verificationCode, requestType, expirationTime);
+        verificationCodeService.saveOrUpdateVerificationCodeForChangePassword(userId, verificationCode, requestType, expirationTime);
 
         verify(userVerificationCodeRepository).findByUserIdAndRequestType(userId, requestType);
         verify(userVerificationCodeRepository).findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
@@ -667,18 +671,18 @@ public class VerificationCodeServiceTest {
     void testSaveOrUpdateVerificationCodeForResetPasswordExistingCode() {
         Long userId = 1L;
         String verificationCode = "123456";
-        RequestType requestType = RequestType.PASSWORD_RESET;
+        RequestType requestType = RequestType.PASSWORD_CHANGE;
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
 
         UserVerificationCode existingCode = new UserVerificationCode();
         existingCode.setUser(new User());
         existingCode.setCode("oldCode");
-        existingCode.setRequestType(RequestType.PASSWORD_RESET);
+        existingCode.setRequestType(RequestType.PASSWORD_CHANGE);
         existingCode.setExpirationTime(LocalDateTime.now().plusMinutes(5));
 
         when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, requestType)).thenReturn(Optional.of(existingCode));
 
-        verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(userId, verificationCode, requestType, expirationTime);
+        verificationCodeService.saveOrUpdateVerificationCodeForChangePassword(userId, verificationCode, requestType, expirationTime);
 
         verify(userVerificationCodeRepository).findByUserIdAndRequestType(userId, requestType);
         verify(userVerificationCodeRepository).save(existingCode);
@@ -691,7 +695,7 @@ public class VerificationCodeServiceTest {
     void testSaveOrUpdateVerificationCodeForResetPasswordExistingCodeForDeletion() {
         Long userId = 1L;
         String verificationCode = "123456";
-        RequestType requestType = RequestType.PASSWORD_RESET;
+        RequestType requestType = RequestType.PASSWORD_CHANGE;
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
 
         UserVerificationCode existingCodeForDeletion = new UserVerificationCode();
@@ -703,7 +707,7 @@ public class VerificationCodeServiceTest {
         when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, requestType)).thenReturn(Optional.empty());
         when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION)).thenReturn(Optional.of(existingCodeForDeletion));
 
-        verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(userId, verificationCode, requestType, expirationTime);
+        verificationCodeService.saveOrUpdateVerificationCodeForChangePassword(userId, verificationCode, requestType, expirationTime);
 
         verify(userVerificationCodeRepository).findByUserIdAndRequestType(userId, requestType);
         verify(userVerificationCodeRepository).findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
@@ -714,11 +718,11 @@ public class VerificationCodeServiceTest {
     void testSaveOrUpdateVerificationCodeForResetPasswordInvalidInputs() {
         Long invalidUserId = null;
         String verificationCode = "123456";
-        RequestType requestType = RequestType.PASSWORD_RESET;
+        RequestType requestType = RequestType.PASSWORD_CHANGE;
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
 
         assertThrows(NullPointerException.class, () -> {
-            verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(invalidUserId, verificationCode, requestType, expirationTime);
+            verificationCodeService.saveOrUpdateVerificationCodeForChangePassword(invalidUserId, verificationCode, requestType, expirationTime);
         });
     }
 
@@ -730,7 +734,7 @@ public class VerificationCodeServiceTest {
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
 
         assertThrows(NullPointerException.class, () -> {
-            verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(userId, verificationCode, requestType, expirationTime);
+            verificationCodeService.saveOrUpdateVerificationCodeForChangePassword(userId, verificationCode, requestType, expirationTime);
         });
     }
 
@@ -742,16 +746,16 @@ public class VerificationCodeServiceTest {
 
         UserVerificationCode existingCode = new UserVerificationCode();
         existingCode.setCode(newVerificationCode);
-        existingCode.setRequestType(RequestType.PASSWORD_RESET);
+        existingCode.setRequestType(RequestType.PASSWORD_CHANGE);
         existingCode.setExpirationTime(expirationTime);
 
         User curUser = new User();
         curUser.setId(userId);
         existingCode.setUser(curUser);
 
-        when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.PASSWORD_RESET)).thenReturn(Optional.of(existingCode));
+        when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.PASSWORD_CHANGE)).thenReturn(Optional.of(existingCode));
 
-        verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(userId, newVerificationCode, RequestType.PASSWORD_RESET, expirationTime);
+        verificationCodeService.saveOrUpdateVerificationCodeForChangePassword(userId, newVerificationCode, RequestType.PASSWORD_CHANGE, expirationTime);
 
         ArgumentCaptor<UserVerificationCode> captor = ArgumentCaptor.forClass(UserVerificationCode.class);
         verify(userVerificationCodeRepository).save(captor.capture());
@@ -760,7 +764,7 @@ public class VerificationCodeServiceTest {
         assertNotNull(savedCode.getUser());
         assertEquals(userId, savedCode.getUser().getId());
         assertEquals(newVerificationCode, savedCode.getCode());
-        assertEquals(RequestType.PASSWORD_RESET, savedCode.getRequestType());
+        assertEquals(RequestType.PASSWORD_CHANGE, savedCode.getRequestType());
         assertEquals(expirationTime, savedCode.getExpirationTime());
     }
 
@@ -829,16 +833,16 @@ public class VerificationCodeServiceTest {
         UserVerificationCode existingCodeForPasswordReset = new UserVerificationCode();
         existingCodeForPasswordReset.setUser(new User());
         existingCodeForPasswordReset.setCode("oldCode");
-        existingCodeForPasswordReset.setRequestType(RequestType.PASSWORD_RESET);
+        existingCodeForPasswordReset.setRequestType(RequestType.PASSWORD_CHANGE);
         existingCodeForPasswordReset.setExpirationTime(LocalDateTime.now().plusMinutes(5));
 
         when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION)).thenReturn(Optional.empty());
-        when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.PASSWORD_RESET)).thenReturn(Optional.of(existingCodeForPasswordReset));
+        when(userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.PASSWORD_CHANGE)).thenReturn(Optional.of(existingCodeForPasswordReset));
 
         verificationCodeService.saveOrUpdateVerificationCodeForAccountDeletion(userId, newVerificationCode, expirationTime);
 
         verify(userVerificationCodeRepository).findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
-        verify(userVerificationCodeRepository).findByUserIdAndRequestType(userId, RequestType.PASSWORD_RESET);
+        verify(userVerificationCodeRepository).findByUserIdAndRequestType(userId, RequestType.PASSWORD_CHANGE);
         verify(userVerificationCodeRepository).save(any(UserVerificationCode.class));
     }
 

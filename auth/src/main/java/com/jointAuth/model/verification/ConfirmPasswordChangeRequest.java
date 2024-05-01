@@ -1,15 +1,15 @@
-package com.jointAuth.model.user;
+package com.jointAuth.model.verification;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConfirmAccountDeletionRequest implements Serializable {
+public class ConfirmPasswordChangeRequest {
     private Long userId;
     private String verificationCode;
+    private String newPassword;
+    private String currentPassword;
 }

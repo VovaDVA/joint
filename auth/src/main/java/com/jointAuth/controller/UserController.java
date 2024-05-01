@@ -5,6 +5,10 @@ import com.jointAuth.bom.user.UserProfileBom;
 import com.jointAuth.model.user.*;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.converter.UserConverter;
+import com.jointAuth.model.verification.ConfirmAccountDeletionRequest;
+import com.jointAuth.model.verification.ConfirmPasswordChangeRequest;
+import com.jointAuth.model.verification.ConfirmPasswordResetRequest;
+import com.jointAuth.model.verification.VerifyCodeRequest;
 import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.service.UserService;
 import com.jointAuth.service.VerificationCodeService;
@@ -117,6 +121,35 @@ public class UserController {
         }
     }
 
+    @PostMapping(path = "/request-reset-password")
+    public ResponseEntity<?> requestPasswordReset(@RequestParam("email") String email) {
+        Optional<User> currentUser = userService.getUserByEmail(email);
+
+        if (currentUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        boolean emailSent = userService.sendPasswordResetRequest(currentUser.get().getEmail());
+        if (emailSent) {
+            String maskedEmail = userService.maskEmail(currentUser.get().getEmail());
+            return ResponseEntity.ok("Password reset request sent to email: " + maskedEmail);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send password reset request.");
+        }
+    }
+
+    @PostMapping(path = "/confirm-reset-password")
+    public ResponseEntity<?> confirmPasswordReset(@RequestBody ConfirmPasswordResetRequest confirmPasswordResetRequest) {
+        boolean passwordReset = userService.resetPassword(confirmPasswordResetRequest.getUserId(),
+                confirmPasswordResetRequest.getVerificationCode(),
+                confirmPasswordResetRequest.getNewPassword());
+
+        if (passwordReset) {
+            return ResponseEntity.ok("Password reset successfully");
+        } else  {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code or failed to reset password");
+        }
+    }
 
     @GetMapping(path = "/user")
     public ResponseEntity<UserProfileBom> getUserByIdWithToken(@RequestHeader("Authorization") String token) {
@@ -166,30 +199,30 @@ public class UserController {
     }
 
     @PostMapping(path = "/change-password")
-    public ResponseEntity<?> requestPasswordReset(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> requestPasswordChange(@RequestHeader("Authorization") String token) {
         Long userId = jwtTokenUtils.getCurrentUserId(token);
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
 
-        boolean emailSent = userService.sendPasswordResetRequest(userId);
+        boolean emailSent = userService.sendPasswordChangeRequest(userId);
         if (emailSent) {
-            return ResponseEntity.ok("Password reset request sent to email.");
+            return ResponseEntity.ok("Password change request sent to email.");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to send password reset request.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to send password change request.");
         }
     }
 
     @PostMapping(path = "/confirm-change-password")
-    public ResponseEntity<?> confirmPasswordReset(@RequestBody ConfirmPasswordResetRequest confirmPasswordResetRequest) {
-        boolean passwordReset = userService.resetPassword(confirmPasswordResetRequest.getUserId(),
-                confirmPasswordResetRequest.getVerificationCode(),
-                confirmPasswordResetRequest.getNewPassword(),
-                confirmPasswordResetRequest.getCurrentPassword());
+    public ResponseEntity<?> confirmPasswordChange(@RequestBody ConfirmPasswordChangeRequest confirmPasswordChangeRequest) {
+        boolean passwordReset = userService.changePassword(confirmPasswordChangeRequest.getUserId(),
+                confirmPasswordChangeRequest.getVerificationCode(),
+                confirmPasswordChangeRequest.getNewPassword(),
+                confirmPasswordChangeRequest.getCurrentPassword());
 
         if (passwordReset) {
-            return ResponseEntity.ok("Password reset successfully.");
+            return ResponseEntity.ok("Password change successfully.");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code.");
         }

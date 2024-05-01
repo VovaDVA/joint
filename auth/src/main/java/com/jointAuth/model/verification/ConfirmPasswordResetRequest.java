@@ -1,4 +1,4 @@
-package com.jointAuth.model.user;
+package com.jointAuth.model.verification;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VerifyCodeRequest {
+public class ConfirmPasswordResetRequest {
     private Long userId;
-    private String code;
+    private String verificationCode;
+    private String newPassword;
 }

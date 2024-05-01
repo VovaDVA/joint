@@ -1,7 +1,7 @@
 package com.jointAuth.integration.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jointAuth.model.user.ConfirmAccountDeletionRequest;
+import com.jointAuth.model.verification.ConfirmAccountDeletionRequest;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
 import org.junit.jupiter.api.BeforeEach;

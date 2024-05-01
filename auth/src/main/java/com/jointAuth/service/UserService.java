@@ -1,11 +1,13 @@
 package com.jointAuth.service;
 
 import com.jointAuth.model.profile.Profile;
-import com.jointAuth.model.user.RequestType;
+import com.jointAuth.model.verification.PasswordResetVerificationCode;
+import com.jointAuth.model.verification.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
-import com.jointAuth.model.user.UserVerificationCode;
+import com.jointAuth.model.verification.UserVerificationCode;
+import com.jointAuth.repository.PasswordResetVerificationCodeRepository;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -34,6 +36,8 @@ public class UserService {
 
     private final UserVerificationCodeRepository userVerificationCodeRepository;
 
+    private final PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
+
     private final String COMBINATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private static final String PASSWORD_PATTERN =
@@ -53,13 +57,15 @@ public class UserService {
                        @Autowired ProfileRepository profileRepository,
                        @Autowired VerificationCodeService verificationCodeService,
                        @Autowired EmailService emailService,
-                       @Autowired UserVerificationCodeRepository userVerificationCodeRepository) {
+                       @Autowired UserVerificationCodeRepository userVerificationCodeRepository,
+                       @Autowired PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.profileRepository = profileRepository;
         this.verificationCodeService = verificationCodeService;
         this.emailService = emailService;
         this.userVerificationCodeRepository = userVerificationCodeRepository;
+        this.passwordResetVerificationCodeRepository = passwordResetVerificationCodeRepository;
     }
 
 
@@ -186,6 +192,73 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public Optional<User> getUserByEmail(String email) {
+        return Optional.ofNullable(userRepository.findByEmail(email));
+    }
+
+    public String maskEmail(String email) {
+        int atIndex = email.indexOf('@');
+        if (atIndex <= 1) {
+            return email;
+        }
+
+        StringBuilder maskedEmail = new StringBuilder(email);
+        for (int i = 1;i < atIndex - 1; i++) {
+            maskedEmail.setCharAt(i, '*');
+        }
+
+        return maskedEmail.toString();
+    }
+
+    public boolean sendPasswordResetRequest(String email) {
+        Optional<User> optionalCurrentUser = Optional.ofNullable(userRepository.findByEmail(email));
+
+        return optionalCurrentUser.map(currentUser -> {
+            Long userId = currentUser.getId();
+            String verificationCode = generateVerificationCode();
+            LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
+
+            verificationCodeService.saveOrUpdateVerificationCodeForPasswordReset(
+                    userId, verificationCode, expirationTime
+            );
+
+            return emailService.sendPasswordResetConfirmationEmail(currentUser, verificationCode);
+        }).orElse(false);
+    }
+
+    public boolean resetPassword(Long userId, String verificationCode, String newPassword) {
+        Optional<User> optionalUser= userRepository.findById(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            Optional<PasswordResetVerificationCode> optionalPasswordResetVerificationCode = passwordResetVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode);
+
+            if (optionalPasswordResetVerificationCode.isPresent()) {
+                PasswordResetVerificationCode passwordResetVerificationCode = optionalPasswordResetVerificationCode.get();
+
+                if (passwordResetVerificationCode.getExpirationTime().isBefore(LocalDateTime.now())) {
+                    throw new IllegalArgumentException("Verification code has expired");
+                }
+
+                if (!validatePassword(newPassword)) {
+                    user.setPassword(passwordEncoder.encode(newPassword));
+                    userRepository.save(user);
+
+                    passwordResetVerificationCodeRepository.delete(passwordResetVerificationCode);
+
+                    return true;
+                } else {
+                    throw new IllegalArgumentException("New password does not meet complexity requirements");
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid verification code");
+            }
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
     public UserProfileBom getUserInfoById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with userId: " + userId));
@@ -244,7 +317,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public boolean resetPassword(Long userId, String verificationCode, String newPassword, String currentPassword) {
+    public boolean changePassword(Long userId, String verificationCode, String newPassword, String currentPassword) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -254,8 +327,8 @@ public class UserService {
             if (optionalVerificationCode.isPresent()) {
                 UserVerificationCode userVerificationCode = optionalVerificationCode.get();
 
-                if (userVerificationCode.getRequestType() != RequestType.PASSWORD_RESET) {
-                    throw new IllegalArgumentException("Invalid request type for password reset");
+                if (userVerificationCode.getRequestType() != RequestType.PASSWORD_CHANGE) {
+                    throw new IllegalArgumentException("Invalid request type for password change");
                 }
 
                 if (userVerificationCode.getExpirationTime().isBefore(LocalDateTime.now())) {
@@ -295,7 +368,7 @@ public class UserService {
         return user.getEmail();
     }
 
-    public boolean sendPasswordResetRequest(Long userId) {
+    public boolean sendPasswordChangeRequest(Long userId) {
         String email = getUserEmailById(userId);
 
         if (email == null) {
@@ -306,14 +379,14 @@ public class UserService {
 
         return optionalCurrentUser.map(currentUser -> {
             String verificationCode = generateVerificationCode();
-            RequestType requestType = RequestType.PASSWORD_RESET;
+            RequestType requestType = RequestType.PASSWORD_CHANGE;
             LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
 
-            verificationCodeService.saveOrUpdateVerificationCodeForResetPassword(
+            verificationCodeService.saveOrUpdateVerificationCodeForChangePassword(
                     userId, verificationCode, requestType, expirationTime
             );
 
-            return emailService.sendPasswordResetConfirmationEmail(currentUser, verificationCode);
+            return emailService.sendPasswordChangeConfirmationEmail(currentUser, verificationCode);
         }).orElse(false);
     }
 

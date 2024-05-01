@@ -1,12 +1,11 @@
 package com.jointAuth.integration.controller;
 
-import com.jointAuth.model.user.TwoFactorAuthVerificationCode;
+import com.jointAuth.model.verification.TwoFactorAuthVerificationCode;
 import com.jointAuth.model.user.User;
 import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.service.VerificationCodeService;
 import com.jointAuth.util.JwtTokenUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
