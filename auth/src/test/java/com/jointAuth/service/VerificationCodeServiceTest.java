@@ -1040,4 +1040,136 @@ public class VerificationCodeServiceTest {
         assertEquals(newVerificationCode, savedCode.getCode());
         assertEquals(expirationTime, savedCode.getExpirationTime());
     }
+
+    @Test
+    void testCleanExpiredVerificationCodesForPasswordResetNoExpiredCodes() {
+        when(passwordResetVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(Collections.emptyList());
+
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+
+        verify(passwordResetVerificationCodeRepository, never())
+                .deleteAll();
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesForPasswordResetExpiredCodesPresent() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expiredTime = currentTime.minusDays(1);
+
+        List<PasswordResetVerificationCode> expiredCodes = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            PasswordResetVerificationCode code = new PasswordResetVerificationCode();
+            code.setExpirationTime(expiredTime);
+            expiredCodes.add(code);
+        }
+
+        when(passwordResetVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(expiredCodes);
+
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+
+        verify(passwordResetVerificationCodeRepository)
+                .deleteAll(expiredCodes);
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesForPasswordResetMixedCodes() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expiredTime = currentTime.minusDays(1);
+        LocalDateTime validTime = currentTime.plusDays(1);
+
+        List<PasswordResetVerificationCode> expiredCodes = new ArrayList<>();
+        List<PasswordResetVerificationCode> validCodes = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            PasswordResetVerificationCode expiredCode = new PasswordResetVerificationCode();
+            expiredCode.setExpirationTime(expiredTime);
+            expiredCodes.add(expiredCode);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            PasswordResetVerificationCode validCode = new PasswordResetVerificationCode();
+            validCode.setExpirationTime(validTime);
+            validCodes.add(validCode);
+        }
+
+        when(passwordResetVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(expiredCodes);
+
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+
+        verify(passwordResetVerificationCodeRepository)
+                .deleteAll(expiredCodes);
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesForPasswordResetEmptyExpiredCodes() {
+
+        when(passwordResetVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(Collections.emptyList());
+
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+
+        verify(passwordResetVerificationCodeRepository)
+                .deleteAll(Collections.emptyList());
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesForPasswordResetLargeNumberOfExpiredCodes() {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<PasswordResetVerificationCode> expiredCodes = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            PasswordResetVerificationCode code = new PasswordResetVerificationCode();
+            code.setExpirationTime(currentTime.minusDays(1));
+            expiredCodes.add(code);
+        }
+
+        when(passwordResetVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(expiredCodes);
+
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+
+        verify(passwordResetVerificationCodeRepository)
+                .deleteAll(expiredCodes);
+    }
+
+    @Test
+    void testCleanExpiredVerificationCodesForPasswordResetPartiallyExpired() {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<PasswordResetVerificationCode> partiallyExpiredCodes = new ArrayList<>();
+        List<PasswordResetVerificationCode> validCodes = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            PasswordResetVerificationCode expiredCode = new PasswordResetVerificationCode();
+            expiredCode.setExpirationTime(currentTime.minusDays(1));
+            partiallyExpiredCodes.add(expiredCode);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            PasswordResetVerificationCode validCode = new PasswordResetVerificationCode();
+            validCode.setExpirationTime(currentTime.plusDays(1));
+            validCodes.add(validCode);
+        }
+
+        List<PasswordResetVerificationCode> allCodes = new ArrayList<>();
+        allCodes.addAll(partiallyExpiredCodes);
+        allCodes.addAll(validCodes);
+
+        when(passwordResetVerificationCodeRepository
+                .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
+                .thenReturn(partiallyExpiredCodes);
+
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+
+        verify(passwordResetVerificationCodeRepository)
+                .deleteAll(partiallyExpiredCodes);
+    }
 }
