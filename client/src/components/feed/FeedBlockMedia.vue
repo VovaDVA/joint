@@ -6,14 +6,18 @@
                 <div class="feed-title">Суперинтересное мегавидео</div>
             </div>
             <div class="feed-stats">
-                <div class="feed-stats-container">
-                    <content-stats-button icon-name="eye">1.4k</content-stats-button>
-                    <content-stats-button icon-name="heart">15k</content-stats-button>
-                    <content-stats-button icon-name="comment">234</content-stats-button>
-                    <content-stats-button icon-name="share">93</content-stats-button>
+                <div class="stats">
+                    <div class="stats-item">
+                        <single-icon iconName="eye"></single-icon>
+                        <div class="amount">154</div>
+                    </div>
+                    <div class="stats-item">
+                        <single-icon iconName="plus"></single-icon>
+                        <div class="amount">154</div>
+                    </div>
                 </div>
-                <div class="feed-stats-container cost">
-                    <content-stats-button icon-name="plus">Бесплатно</content-stats-button>
+                <div class="cost">
+                    <content-stats-button iconName="ruble-sign">15</content-stats-button>
                 </div>
             </div>
         </div>
@@ -63,29 +67,33 @@ export default {
 .feed-title {
     color: #ffbf6c;
     font-size: 22px;
+    padding: 0 10px;
 }
 
 .feed-stats {
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
 }
 
-.feed-stats-container {
+.stats {
     display: flex;
-    justify-content: space-between;
     gap: 10px;
+    font-size: 13px;
+    color: #ffffff7c;
+    padding-left: 10px;
 }
 
-.feed-stats-container * {
-    width: 20%;
-    min-width: fit-content;
-    margin-right: 0;
-    margin-bottom: 10px;
+.stats * {
+    font-size: 13px;
 }
 
-.feed-stats-container.cost * {
-    width: 100%;
-    margin-bottom: 0;
+.feed-block.light-theme .stats {
+    color: #0000007c;
+}
+
+.stats-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 </style>

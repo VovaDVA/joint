@@ -10,7 +10,7 @@
         </div>
         <div class="context-menu-item" @click="editMessage">
             <single-icon iconName="share"></single-icon>
-            <div class="item-name">переслать</div>
+            <div class="item-name">Переслать</div>
         </div>
         <div class="context-menu-item delete" @click="deleteMessage">
             <single-icon iconName="trash-can"></single-icon>
@@ -79,6 +79,7 @@ export default {
     padding: 10px;
     background-color: rgba(0, 0, 0, 0.9);
     border-radius: 20px;
+    user-select: none;
 }
 
 .context-menu.light-theme {
@@ -94,10 +95,16 @@ export default {
     align-items: center;
     gap: 10px;
     border-radius: 10px;
+    transition: background .2s linear;
 }
 
 .context-menu-item:hover {
     background: rgba(255, 255, 255, 0.2);
+    transition: background .2s linear;
+}
+
+.context-menu.light-theme .context-menu-item:hover {
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .delete {
