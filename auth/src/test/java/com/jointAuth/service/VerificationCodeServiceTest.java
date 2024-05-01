@@ -525,7 +525,7 @@ public class VerificationCodeServiceTest {
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
                 .thenReturn(Collections.emptyList());
 
-        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordChange();
 
         verify(userVerificationCodeRepository, never())
                 .deleteAll();
@@ -548,7 +548,7 @@ public class VerificationCodeServiceTest {
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
                 .thenReturn(expiredCodes);
 
-        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordChange();
 
         verify(userVerificationCodeRepository)
                 .deleteAll(expiredCodes);
@@ -579,7 +579,7 @@ public class VerificationCodeServiceTest {
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
                 .thenReturn(expiredCodes);
 
-        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordChange();
 
         verify(userVerificationCodeRepository)
                 .deleteAll(expiredCodes);
@@ -592,7 +592,7 @@ public class VerificationCodeServiceTest {
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
                 .thenReturn(Collections.emptyList());
 
-        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordChange();
 
         verify(userVerificationCodeRepository)
                 .deleteAll(Collections.emptyList());
@@ -613,7 +613,7 @@ public class VerificationCodeServiceTest {
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
                 .thenReturn(expiredCodes);
 
-        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordChange();
 
         verify(userVerificationCodeRepository)
                 .deleteAll(expiredCodes);
@@ -642,7 +642,7 @@ public class VerificationCodeServiceTest {
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
                 .thenReturn(partiallyExpiredCodes);
 
-        verificationCodeService.cleanExpiredVerificationCodesForPasswordReset();
+        verificationCodeService.cleanExpiredVerificationCodesForPasswordChange();
 
         verify(userVerificationCodeRepository)
                 .deleteAll(partiallyExpiredCodes);

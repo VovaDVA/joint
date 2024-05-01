@@ -714,6 +714,56 @@ public class UserServiceTest {
                 .findByEmail(email);
     }
 
+    //скрытие почты
+    @Test
+    void testMaskEmailCorrectMasking() {
+        String email = "user@gmail.com";
+        String expectedMaskedEmail = "u**r@gmail.com";
+
+        String maskedEmail = userService.maskEmail(email);
+
+        assertEquals(expectedMaskedEmail, maskedEmail);
+    }
+
+    @Test
+    void testMaskEmailSingleCharacterBeforeAt() {
+        String email = "u@gmail.com";
+        String expectedMaskedEmail = "u@gmail.com";
+
+        String maskedEmail = userService.maskEmail(email);
+
+        assertEquals(expectedMaskedEmail, maskedEmail);
+    }
+
+    @Test
+    void testMaskEmailNoAtSymbol() {
+        String email = "usergmail.com";
+        String expectedMaskedEmail = "usergmail.com";
+
+        String maskedEmail = userService.maskEmail(email);
+
+        assertEquals(expectedMaskedEmail, maskedEmail);
+    }
+
+    @Test
+    void testMaskEmailEmptyString() {
+        String email = "";
+        String expectedMaskedEmail = "";
+
+        String maskedEmail = userService.maskEmail(email);
+
+        assertEquals(expectedMaskedEmail, maskedEmail);
+    }
+
+    @Test
+    void testMaskEmailNullEmail() {
+        String email = null;
+
+        assertThrows(NullPointerException.class, () -> {
+            userService.maskEmail(email);
+        });
+    }
+
     //получение всех пользователей
     @Test
     public void getAllUsersEmptyListReturnsEmpty() {

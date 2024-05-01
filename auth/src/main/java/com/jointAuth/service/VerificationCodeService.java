@@ -154,7 +154,7 @@ public class VerificationCodeService {
     }
 
     @Scheduled(fixedRate = 1209600000)
-    public void cleanExpiredVerificationCodesForPasswordReset() {
+    public void cleanExpiredVerificationCodesForPasswordChange() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         List<UserVerificationCode> expiredCodes = userVerificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
@@ -183,6 +183,15 @@ public class VerificationCodeService {
         }
 
         passwordResetVerificationCodeRepository.save(passwordResetVerificationCode);
+    }
+
+    @Scheduled(fixedRate = 1209600000)
+    public void cleanExpiredVerificationCodesForPasswordReset() {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<PasswordResetVerificationCode> expiredCodes = passwordResetVerificationCodeRepository.findAllByExpirationTimeBefore(currentTime);
+
+        passwordResetVerificationCodeRepository.deleteAll(expiredCodes);
     }
 
 }
