@@ -1,7 +1,6 @@
 <template>
     <div class="message" :class="isMainUser() ? 'you' : ''">
-        <div class="message-inner">
-            <!-- <div class="author">Владимир</div> -->
+        <div class="message-inner" @click="messageClick">
             <div>{{ message.text }}</div>
             <div class="send-time">
                 <span>{{ createdTime() }}</span>
@@ -44,6 +43,9 @@ export default {
             const minutes = date.getMinutes().toString().padStart(2, '0');
             const formattedTime = `${hours}:${minutes}`;
             return formattedTime;
+        },
+        messageClick() {
+            this.$emit('message-click');
         }
     }
 }
@@ -51,6 +53,7 @@ export default {
 
 <style scoped>
 .message {
+    position: relative;
     display: flex;
     justify-content: flex-start;
     width: auto;

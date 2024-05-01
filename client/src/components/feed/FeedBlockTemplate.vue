@@ -3,8 +3,8 @@
         <div class="header">
             <div class="avatar"></div>
             <div class="author">
-                <div class="username">{{ name }} Владимир Двойнишников</div>
-                <div class="date">{{ author }} 5 марта 21:00</div>
+                <div class="username">{{ post ? post.author_name : '-' }}</div>
+                <div class="date">{{ post ? $formatDate(post.created_at) : '-' }}</div>
             </div>
         </div>
         <slot></slot>
@@ -14,6 +14,7 @@
 <script>
 export default {
     name: 'feed-block-template',
+    props: ['post']
 }
 </script>
 

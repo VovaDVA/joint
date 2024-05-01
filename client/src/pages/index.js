@@ -7,5 +7,6 @@ import GuidePage from "@/pages/GuidePage.vue";
 import NewsPage from "@/pages/NewsPage.vue";
 import FeedPage from "@/pages/FeedPage.vue";
 import CalendarPage from "@/pages/CalendarPage.vue";
+import PostCreationPage from "@/pages/PostCreationPage.vue";
 
-export default [HomePage, LoginPage, RegistrationPage, ProfileSettingsPage, AboutPage, GuidePage, NewsPage, FeedPage, CalendarPage]
+export default [HomePage, LoginPage, RegistrationPage, ProfileSettingsPage, AboutPage, GuidePage, NewsPage, FeedPage, CalendarPage, PostCreationPage]

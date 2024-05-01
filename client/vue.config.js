@@ -19,6 +19,13 @@ module.exports = defineConfig({
 					'^/chat': '/chat'
 				}
 			},
+			'/post': {
+				target: 'http://127.0.0.1:3001',
+				changeOrigin: true,
+				pathRewrite: {
+					'^/post': '/post'
+				}
+			},
 		}
 	}
 })

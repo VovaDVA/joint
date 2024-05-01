@@ -11,8 +11,9 @@ import './assets/index.css';
 
 const emitter = mitt();
 const app = createApp(App);
-// const eventBus = new Vue();
-// eventBus.$on("onAppStarted", () => console.log("App Started!"))
+
+import { formatDate } from '@/modules/utils';
+app.config.globalProperties.$formatDate = formatDate;
 
 const store = createStore({
     state() {

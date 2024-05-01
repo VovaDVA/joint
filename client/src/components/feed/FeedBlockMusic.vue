@@ -7,30 +7,24 @@
             <div class="music-info">
                 <div class="title">Песня</div>
                 <div class="author">Владимир Двойнишников</div>
-                <div class="time">5:02</div>
+                <div class="stats">
+                    <div class="stats-item">
+                        <single-icon iconName="headphones"></single-icon>
+                        <div class="amount">154</div>
+                    </div>
+                    <div class="stats-item">
+                        <single-icon iconName="plus"></single-icon>
+                        <div class="amount">154</div>
+                    </div>
+                </div>
             </div>
             <div class="money">
+                <div class="time">5:02</div>
                 <div class="cost">
                     <content-stats-button iconName="ruble-sign">15</content-stats-button>
                 </div>
             </div>
-
-            <!-- <div class="music-controls">
-                <div class="music-timer">1:25</div>
-                <div class="player-bar"></div>
-                <div class="music-timer">1:25</div>
-                <icon-button icon-name="play"></icon-button>
-            </div> -->
         </div>
-        <!-- <div class="music-buttons">
-                <div class="feed-stats left">
-                    <content-stats-button icon-name="heart">15k</content-stats-button>
-                    <content-stats-button icon-name="share">93</content-stats-button>
-                </div>
-                <div class="feed-stats">
-                    <content-stats-button icon-name="plus">Бесплатно</content-stats-button>
-                </div>
-            </div> -->
     </div>
 </template>
 
@@ -69,6 +63,7 @@ export default {
     background: rgba(0, 0, 0, 0.5);
     border: 1px #ffffff4f solid;
 }
+
 .music-block.light-theme .album {
     border: 1px #0000004f solid;
     background: #fff;
@@ -92,6 +87,7 @@ export default {
     font-size: 15px;
     color: #ffbf6c;
 }
+
 .music-block.light-theme .title {
     color: #af5d00;
 }
@@ -105,64 +101,43 @@ export default {
     font-size: 15px;
     color: #ffffff7c;
 }
+
 .music-block.light-theme .time {
     color: #0000007c;
 }
 
 .money {
     display: flex;
-    align-items: right;
     flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
 }
 
 .cost {
     display: flex;
     align-items: center;
     font-size: 17px;
-    /* color: #d9ff00; */
 }
 
-/* .music-buttons {
+.stats {
     display: flex;
-    justify-content: space-between;
-} */
-
-/* .feed-stats {
-    display: flex;
-    justify-content: flex-end;
+    gap: 10px;
+    font-size: 13px;
+    color: #ffffff7c;
 }
 
-.feed-stats * {
-    margin-left: 10px;
+.stats * {
+    font-size: 13px;
 }
 
-.feed-stats.left * {
-    margin-right: 10px;
-    margin-left: 0;
-} */
+.music-block.light-theme .stats {
+    color: #0000007c;
+}
 
-.music-controls {
+.stats-item {
     display: flex;
-    flex: 0 0 50%;
-    height: 35px;
-    /* padding: 0 20px 0 5px; */
-    font-family: 'Montserrat';
-    font-size: 15px;
-    line-height: 15px;
-    border-radius: 30px;
-
     align-items: center;
-
-    /* background-color: rgba(0, 0, 0, 0.5);
-    user-select: none;
-    transition: color, background .3s linear; */
+    gap: 5px;
 }
-
-/* .player-bar {
-    margin: 0 20px 0 10px;
-    flex: 1;
-    height: 3px;
-    border-radius: 2px;
-    background-color: rgba(255, 255, 255, 0.555);
-} */
 </style>

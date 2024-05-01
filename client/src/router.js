@@ -9,6 +9,8 @@ import FeedPage from './pages/FeedPage.vue';
 import CalendarPage from './pages/CalendarPage.vue';
 import StatsPage from './pages/StatsPage.vue';
 
+import PostCreationPage from './pages/PostCreationPage.vue';
+
 import ProfileContentAbout from './components/profile/content/ProfileContentAbout.vue';
 import ProfileContentImages from './components/profile/content/ProfileContentImages.vue';
 import ProfileContentVideos from './components/profile/content/ProfileContentVideos.vue';
@@ -27,6 +29,7 @@ const routes = [
   { path: '/feed', component: FeedPage },
   { path: '/calendar', component: CalendarPage },
   { path: '/stats', component: StatsPage },
+  { path: '/post-creation', component: PostCreationPage },
   {
     path: '/', component: ProfilePage, children: [
       { path: '/', component: ProfileContentAbout },

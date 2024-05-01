@@ -1,23 +1,18 @@
 <template>
 	<auth-block>
 		<content-block-title>Регистрация</content-block-title>
+		<div v-if="errorMessage" class="error">Форма заполнена некорректно</div>
 
 		<form @submit.prevent="register">
-			<form-input v-model="firstName">Имя</form-input>
-			<form-input v-model="lastName">Фамилия</form-input>
-			<email-input v-model="email">Почта</email-input>
-			<password-input v-model="password">Пароль</password-input>
+			<form-input v-model="firstName" required>Имя</form-input>
+			<form-input v-model="lastName" required>Фамилия</form-input>
+			<email-input v-model="email" required>Почта</email-input>
+			<password-input v-model="password" required>Пароль</password-input>
 
 			<div class="toggle-wrapper">
 				<input name="terms" id="terms" type="checkbox" value="0" required>
 				<label for="terms">Я согласен(-на) с условиями предоставления услуг</label>
 			</div>
-			<!-- <div class="form_block terms">
-				<div class="input_wrapper">
-					<input name="terms" id="terms" type="checkbox" value="0" required>
-					<label for="terms">Я согласен(-на) с условиями предоставления услуг</label>
-				</div>
-			</div> -->
 			<input :class="$store.state.theme" type="submit" name="submit" value="Зарегистрироваться" />
 			<div class="no_account">Уже есть аккаунт? - <router-link to="/login">Войти</router-link></div>
 		</form>
@@ -35,17 +30,42 @@ export default {
 			email: '',
 			password: '',
 			confirmPassword: '',
-			agreeTerms: true
+			agreeTerms: true,
+			errorMessage: false
 		};
 	},
 	created() {
 		checkToken();
 	},
 	methods: {
+		validateName(value) {
+			return /[а-яА-Я]/.test(value);
+		},
+		validateEmail() {
+			return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email);
+		},
+		validatePassword() {
+			const value = this.password;
+
+			return (value.length >= 8) &&
+				(/[A-Z]/.test(value)) &&
+				(/[!@#$%^&*()_,.?":{}|<>]/.test(value)) &&
+				(/\d/.test(value)) &&
+				(!/[а-яА-Я]/.test(value));
+		},
+		validateForm() {
+			return this.validateName(this.firstName) &&
+				this.validateName(this.lastName) &&
+				this.validateEmail() &&
+				this.validatePassword();
+		},
 		async register(event) {
 			event.preventDefault();
-
-			console.log(this.firstName, this.lastName, this.email, this.password);
+			
+			if (!this.validateForm()) {
+				this.errorMessage = true;
+				return;
+			}
 			try {
 				const response = await fetch('/auth/register', {
 					method: 'POST',
@@ -116,5 +136,10 @@ input.light-theme:hover {
 	color: #ffffff !important;
 
 	transition: color, background .3s linear;
+}
+
+.error {
+	text-align: center;
+	color: #ff8686;
 }
 </style>
