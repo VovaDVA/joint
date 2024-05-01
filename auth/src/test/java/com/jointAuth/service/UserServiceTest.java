@@ -612,6 +612,108 @@ public class UserServiceTest {
         assertFalse(result.isPresent());
     }
 
+    //получение пользователя по почте
+    @Test
+    void testGetUserByEmailUserFound() {
+        String email = "test@gmail.com";
+        User expectedUser = new User();
+        expectedUser.setEmail(email);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(expectedUser);
+
+        Optional<User> result = userService.getUserByEmail(email);
+
+        assertEquals(Optional.of(expectedUser), result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+    }
+
+    @Test
+    void testGetUserByEmailUserNotFound() {
+        String email = "notfound@gmail.com";
+        when(userRepository.findByEmail(email))
+                .thenReturn(null);
+
+        Optional<User> result = userService.getUserByEmail(email);
+
+        assertEquals(Optional.empty(), result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+    }
+
+    @Test
+    void testGetUserByEmailNullEmail() {
+        when(userRepository
+                .findByEmail(null))
+                .thenReturn(null);
+
+        Optional<User> result = userService.getUserByEmail(null);
+
+        assertEquals(Optional.empty(), result);
+        verify(userRepository, times(1))
+                .findByEmail(null);
+    }
+
+    @Test
+    void testGetUserByEmailEmptyEmail() {
+        String emptyEmail = "";
+        when(userRepository
+                .findByEmail(emptyEmail))
+                .thenReturn(null);
+
+        Optional<User> result = userService.getUserByEmail(emptyEmail);
+
+        assertEquals(Optional.empty(), result);
+        verify(userRepository, times(1))
+                .findByEmail(emptyEmail);
+    }
+
+    @Test
+    void testGetUserByEmailWithMultipleRequests() {
+
+        String email1 = "user1@gmail.com";
+        User user1 = new User();
+        user1.setEmail(email1);
+
+        String email2 = "user2@gmail.com";
+        User user2 = new User();
+        user2.setEmail(email2);
+
+        when(userRepository
+                .findByEmail(email1))
+                .thenReturn(user1);
+        when(userRepository
+                .findByEmail(email2))
+                .thenReturn(user2);
+
+        Optional<User> result1 = userService.getUserByEmail(email1);
+        Optional<User> result2 = userService.getUserByEmail(email2);
+
+        assertEquals(Optional.of(user1), result1);
+        assertEquals(Optional.of(user2), result2);
+
+        verify(userRepository, times(1))
+                .findByEmail(email1);
+        verify(userRepository, times(1))
+                .findByEmail(email2);
+    }
+
+    @Test
+    void testGetUserByEmailWhenRepositoryThrowsException() {
+        String email = "vanya0239@gmail.com";
+        when(userRepository
+                .findByEmail(email))
+                .thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            userService.getUserByEmail(email);
+        });
+
+        verify(userRepository, times(1))
+                .findByEmail(email);
+    }
+
     //получение всех пользователей
     @Test
     public void getAllUsersEmptyListReturnsEmpty() {
