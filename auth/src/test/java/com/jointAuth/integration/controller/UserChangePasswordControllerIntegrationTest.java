@@ -69,7 +69,7 @@ public class UserChangePasswordControllerIntegrationTest {
     }
 
     @Test
-    public void testRequestPasswordResetSuccess() throws Exception {
+    public void testRequestPasswordChangeSuccess() throws Exception {
         when(userService.sendPasswordChangeRequest(anyLong())).thenReturn(true);
 
         mockMvc.perform(post("/auth/change-password")
@@ -96,7 +96,7 @@ public class UserChangePasswordControllerIntegrationTest {
     }
 
     @Test
-    public void testRequestPasswordResetMissingToken() throws Exception {
+    public void testRequestPasswordChangeMissingToken() throws Exception {
         mockMvc.perform(post("/auth/change-password")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -123,7 +123,7 @@ public class UserChangePasswordControllerIntegrationTest {
     }
 
     @Test
-    public void testConfirmPasswordResetSuccess() throws Exception {
+    public void testConfirmPasswordChangeSuccess() throws Exception {
         when(userService.changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
@@ -167,7 +167,7 @@ public class UserChangePasswordControllerIntegrationTest {
     }
 
     @Test
-    public void testConfirmPasswordResetInvalidCurrentPassword() throws Exception {
+    public void testConfirmPasswordChangeInvalidCurrentPassword() throws Exception {
         when(userService.changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
@@ -189,7 +189,7 @@ public class UserChangePasswordControllerIntegrationTest {
     }
 
     @Test
-    public void testConfirmPasswordResetInvalidNewPassword() throws Exception {
+    public void testConfirmPasswordChangeInvalidNewPassword() throws Exception {
         when(userService.changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 "weakpassword",
@@ -211,7 +211,7 @@ public class UserChangePasswordControllerIntegrationTest {
     }
 
     @Test
-    public void testConfirmPasswordResetExpiredVerificationCode() throws Exception {
+    public void testConfirmPasswordChangeExpiredVerificationCode() throws Exception {
         when(userService.changePassword(validRequest.getUserId(),
                 "EXPIRED_VERIFICATION_CODE",
                 validRequest.getNewPassword(),

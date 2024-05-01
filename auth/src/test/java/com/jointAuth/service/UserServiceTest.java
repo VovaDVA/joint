@@ -764,6 +764,146 @@ public class UserServiceTest {
         });
     }
 
+    //reset pass request
+    @Test
+    void testSendPasswordResetRequestExistingUser() {
+        String email = "test@example.com";
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setEmail(email);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(existingUser);
+        when(emailService
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString()))
+                .thenReturn(true);
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertEquals(true, result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(verificationCodeService)
+                .saveOrUpdateVerificationCodeForPasswordReset(
+                eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
+        );
+        verify(emailService, times(1))
+                .sendPasswordResetConfirmationEmail(eq(existingUser), anyString());
+    }
+
+
+    @Test
+    void testSendPasswordResetRequestUserNotFound() {
+        String email = "notfound@gmail.com";
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(null);
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertEquals(false, result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(verificationCodeService, never())
+                .saveOrUpdateVerificationCodeForPasswordReset(anyLong(), anyString(), any(LocalDateTime.class));
+        verify(emailService, never())
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
+    }
+
+    @Test
+    void testSendPasswordResetRequestNullEmail() {
+        String email = null;
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertEquals(false, result);
+
+        verify(userRepository, times(1))
+                .findByEmail(null);
+        verify(verificationCodeService, never())
+                .saveOrUpdateVerificationCodeForPasswordReset(anyLong(), anyString(), any(LocalDateTime.class));
+        verify(emailService, never())
+                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
+    }
+
+    @Test
+    void testSendPasswordResetRequestEmailServiceException() {
+        String email = "vovan03@gmail.com";
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setEmail(email);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(existingUser);
+
+        when(emailService
+                .sendPasswordResetConfirmationEmail(eq(existingUser), anyString()))
+                .thenThrow(new RuntimeException("Email service error"));
+
+        boolean result = false;
+        try {
+            result = userService.sendPasswordResetRequest(email);
+        } catch (RuntimeException e) {
+            assertEquals("Email service error", e.getMessage());
+        }
+
+        assertFalse(result);
+
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(verificationCodeService, times(1))
+                .saveOrUpdateVerificationCodeForPasswordReset(
+                eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
+        );
+        verify(emailService, times(1))
+                .sendPasswordResetConfirmationEmail(eq(existingUser), anyString());
+    }
+
+    @Test
+    void testSendPasswordResetRequestEmailNotFound() {
+        String email = "nonexistent@gmail.com";
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(null);
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertFalse(result);
+
+        verify(userRepository, times(1))
+                .findByEmail(email);
+
+        verifyNoInteractions(verificationCodeService);
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void testSendPasswordResetRequestVerificationCodeNotSaved() {
+        String email = "tester228@gmail.com";
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setEmail(email);
+        when(userRepository
+                .findByEmail(email))
+                .thenReturn(existingUser);
+
+        doNothing()
+                .when(verificationCodeService)
+                .saveOrUpdateVerificationCodeForPasswordReset(
+                eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
+        );
+
+        boolean result = userService.sendPasswordResetRequest(email);
+
+        assertFalse(result);
+        verify(userRepository, times(1))
+                .findByEmail(email);
+        verify(verificationCodeService, times(1))
+                .saveOrUpdateVerificationCodeForPasswordReset(
+                eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
+        );
+    }
+
     //получение всех пользователей
     @Test
     public void getAllUsersEmptyListReturnsEmpty() {
@@ -953,7 +1093,7 @@ public class UserServiceTest {
 
     //change pass
     @Test
-    public void testResetPasswordUserNotFound() {
+    public void testChangePasswordUserNotFound() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123!";
@@ -971,7 +1111,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordInvalidVerificationCode() {
+    public void testChangePasswordInvalidVerificationCode() {
         Long userId = 1L;
         String verificationCode = "invalid";
         String newPassword = "NewPassword123!";
@@ -993,7 +1133,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordInvalidRequestType() {
+    public void testChangePasswordInvalidRequestType() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123!";
@@ -1023,7 +1163,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordVerificationCodeExpired() {
+    public void testChangePasswordVerificationCodeExpired() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123!";
@@ -1051,7 +1191,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordInvalidCurrentPassword() {
+    public void testChangePasswordInvalidCurrentPassword() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123!";
@@ -1082,7 +1222,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordInvalidPassword() {
+    public void testChangePasswordInvalidPassword() {
         Long userId = 1L;
         String invalidVerificationCode = "validCode";
         String invalidPassword = "123";
@@ -1114,7 +1254,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordSuccess() {
+    public void testChangePasswordSuccess() {
         Long userId = 1L;
         String verificationCode = "123456";
         String newPassword = "NewPassword123@";
@@ -1187,9 +1327,9 @@ public class UserServiceTest {
         assertNull(actualEmail);
     }
 
-    //resetRequestPass
+    //changeRequestPass
     @Test
-    public void testSendPasswordResetRequestUserNotFound() {
+    public void testSendPasswordChangeRequestUserNotFound() {
         Long userId = 1L;
 
         when(userService
@@ -1207,7 +1347,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSendPasswordResetRequestSuccess() {
+    public void testSendPasswordChangeRequestSuccess() {
         Long userId = 1L;
         String email = "Valera09@gmail.com";
 
@@ -1241,7 +1381,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSendPasswordResetRequestEmailSendingFailure() {
+    public void testSendPasswordChangeRequestEmailSendingFailure() {
         Long userId = 1L;
         String email = "DaryaVoronina@gmail.com";
 
@@ -1268,7 +1408,6 @@ public class UserServiceTest {
     }
 
     //delete
-
     @Test
     public void testDeleteUserUserNotFound() {
         Long userId = 1L;
