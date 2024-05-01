@@ -6,7 +6,8 @@
     <chat-title :status="status">{{ chatName }}</chat-title>
     <static-panel-content>
         <div class="message-container">
-            <single-message v-for="message in messages" :key="message._id" :message="message" @click="selectMessage" />
+            <single-message v-for="message in messages" :key="message._id" :message="message"
+                @messageClick="selectMessage(message)"/>
         </div>
     </static-panel-content>
     <div class="chat-input" :class="$store.state.theme">
@@ -17,6 +18,7 @@
         <icon-button class="right" icon-name="paper-plane" @click="sendMessage"></icon-button>
         <!-- <icon-button class="right" icon-name="microphone" @click="sendMessage"></icon-button> -->
     </div>
+    <message-context-menu v-if="showMenu" :topPosition="menuTop" :leftPosition="menuLeft" :message="selectedMessage" ref="menuRef"/>
 </template>
 
 <script>
@@ -41,6 +43,10 @@ export default {
             newMessage: '',
             status: 'Был(а) в сети недавно',
             typingTimeout: null,
+            showMenu: false,
+            menuTop: 0,
+            menuLeft: 0,
+            selectedMessage: null
         }
     },
     async mounted() {
@@ -107,8 +113,27 @@ export default {
             }, 1000);
         },
         selectMessage(message) {
-            console.log(message);
-        }
+            this.showMenu = true;
+            this.selectedMessage = message;
+
+            const containerRect = document.querySelector('.message-container').getBoundingClientRect();
+            // Получите позицию сообщения относительно верхнего края контейнера
+            const messageTop = event.clientY - containerRect.top;
+            // Получите позицию сообщения относительно левого края контейнера
+            const messageLeft = event.clientX - containerRect.left;
+            // Установите позицию меню на основе позиции сообщения в контейнере
+            this.menuTop = messageTop;
+            this.menuLeft = messageLeft;
+
+            // window.addEventListener('click', this.handleClickOutside);
+        },
+        handleClickOutside(event) {
+            // Проверяем, был ли клик сделан вне компонента сообщения или меню
+            if (!this.$refs.menuRef.contains(event.target)) {
+                this.showMenu = false;
+                window.removeEventListener('click', this.handleClickOutside);
+            }
+        },
     }
 }
 </script>
@@ -148,25 +173,36 @@ export default {
     color: #000 !important;
 }
 
-.chat-input.light-theme input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-    color:    #0000007e;
+.chat-input.light-theme input::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #0000007e;
 }
-.chat-input.light-theme input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-   color:    #0000007e;
-   opacity:  1;
+
+.chat-input.light-theme input:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #0000007e;
+    opacity: 1;
 }
-.chat-input.light-theme input::-moz-placeholder { /* Mozilla Firefox 19+ */
-   color:    #0000007e;
-   opacity:  1;
+
+.chat-input.light-theme input::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #0000007e;
+    opacity: 1;
 }
-.chat-input.light-theme input:-ms-input-placeholder { /* Internet Explorer 10-11 */
-   color:    #0000007e;
+
+.chat-input.light-theme input:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #0000007e;
 }
-.chat-input.light-theme input::-ms-input-placeholder { /* Microsoft Edge */
-   color:    #0000007e;
+
+.chat-input.light-theme input::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: #0000007e;
 }
-.chat-input.light-theme input::placeholder { /* Most modern browsers support this now. */
-   color:    #0000007e;
+
+.chat-input.light-theme input::placeholder {
+    /* Most modern browsers support this now. */
+    color: #0000007e;
 }
 
 .message-input {

@@ -6,16 +6,29 @@
         </content-block-text>
     </content-block>
     <post-grid>
-        <feed-block-post></feed-block-post>
-        <feed-block-post></feed-block-post>
-        <feed-block-post></feed-block-post>
-        <feed-block-post></feed-block-post>
+        <feed-block-post v-for="post in posts" :key="post._id" :post="post"></feed-block-post>
     </post-grid>
 </template>
 
 <script>
-import { getUserDescription } from '@/modules/auth';
+import { getUser, getUserDescription } from '@/modules/auth';
 export default {
+    data() {
+        return {
+            posts: [],
+        };
+    },
+    async mounted() {
+        try {
+            const response = await fetch('/post/getPostsByAuthor?author_id=' + getUser().userId);
+            const data = await response.json();
+            console.log(data);
+            this.posts = data;
+
+        } catch (error) {
+            console.error(error);
+        }
+    },
     methods: {
         getDescription() {
             return getUserDescription();

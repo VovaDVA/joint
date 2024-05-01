@@ -53,6 +53,7 @@ import ChatPreviewBlock from "@/components/main/static_panel/content/chat/ChatPr
 import MessengerActionIcon from "@/components/main/static_panel/content/messenger/MessengerActionIcon.vue";
 import Message from "@/components/main/static_panel/content/messenger/Message.vue";
 import ChatTitle from "@/components/main/static_panel/content/messenger/ChatTitle.vue";
+import MessageContextMenu from "@/components/main/static_panel/content/messenger/MessageContextMenu.vue";
 // People
 import AccountPreviewBlock from "@/components/main/static_panel/content/people/AccountPreviewBlock.vue";
 // Content
@@ -82,7 +83,7 @@ export default [
     // Chat
     ChatPreviewBlock,
     // Messenger
-    MessengerActionIcon, Message, ChatTitle,
+    MessengerActionIcon, Message, ChatTitle, MessageContextMenu,
     // People
     AccountPreviewBlock,
     // Music

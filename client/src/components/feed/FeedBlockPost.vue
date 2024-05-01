@@ -1,11 +1,10 @@
 <template>
-    <feed-block-template>
+    <feed-block-template :post="post">
         <div class="feed-preview"></div>
         <div class="feed-block-inner">
             <div class="feed-info">
-                <div class="title">Суперинтересное мегавидео</div>
-                <div class="description">Персонал компании состоит всего из двух человек: отца и сына, которые
-                    захотели посвятить свое свободное время созданию чего-то нового и интересного.</div>
+                <div class="title">{{ post.title }}</div>
+                <div class="description">{{ post.content }}</div>
             </div>
             <div class="feed-stats">
                 <content-stats-button icon-name="eye">1.4k</content-stats-button>
@@ -20,6 +19,7 @@
 <script>
 export default {
     name: 'feed-block-post',
+    props: ['post']
 }
 </script>
 

@@ -28,7 +28,7 @@
                     <div class="tab-circle"></div>
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 5 }" @click="selectTab(5)">
-                    Реклама
+                    Магазин
                     <div class="tab-circle"></div>
                 </router-link>
             </div>
