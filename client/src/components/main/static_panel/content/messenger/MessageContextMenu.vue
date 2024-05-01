@@ -1,5 +1,5 @@
 <template>
-    <div class="context-menu" :style="{ top: topPosition + 'px', left: leftPosition + 'px' }" :class="menuClass">
+    <div class="context-menu" :style="{ top: topPosition + 'px', left: leftPosition + 'px' }" :class="[menuClass, $store.state.theme]">
         <div class="context-menu-item" @click="copyMessage">
             <single-icon iconName="copy"></single-icon>
             <div class="item-name">Копировать</div>
@@ -42,20 +42,14 @@ export default {
     },
     methods: {
         editMessage() {
-            console.log('edit message');
+            this.emitter.emit('edit-message', this.message);
         },
         async deleteMessage() {
             try {
-                const response = await fetch('/chat/deleteMessage?chat_id=' + this.message.chat_id, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-
+                const response = await fetch('/message/deleteMessage?message_id=' + this.message._id);
                 const data = await response.json();
                 console.log(data);
-                this.messages = data.reverse();
+                this.emitter.emit('delete-message', this.message._id);
 
             } catch (error) {
                 console.error(error);
@@ -69,6 +63,8 @@ export default {
                 .catch(err => {
                     console.error('Не удалось скопировать текст: ', err);
                 });
+
+            this.emitter.emit('copy-message');
         }
     }
 }
@@ -77,13 +73,18 @@ export default {
 <style scoped>
 .context-menu {
     position: absolute;
-    background-color: white;
     border: 1px solid #ffffff7c;
     z-index: 1000;
     min-width: 150px;
     padding: 10px;
     background-color: rgba(0, 0, 0, 0.9);
     border-radius: 20px;
+}
+
+.context-menu.light-theme {
+    color: #000000;
+    border: 1px solid #0000007c;
+    background-color: rgba(255, 255, 255, 1);
 }
 
 .context-menu-item {

@@ -7,7 +7,7 @@
     <static-panel-content>
         <div class="message-container">
             <single-message v-for="message in messages" :key="message._id" :message="message"
-                @messageClick="selectMessage(message)"/>
+                @messageClick="selectMessage(message)" />
         </div>
     </static-panel-content>
     <div class="chat-input" :class="$store.state.theme">
@@ -15,10 +15,12 @@
         <input class="message-input" type="text" placeholder="Напишите сообщение..." v-model="newMessage"
             @keyup.enter="sendMessage" @input="type()">
         <icon-button icon-name="face-smile"></icon-button>
-        <icon-button class="right" icon-name="paper-plane" @click="sendMessage"></icon-button>
+        <icon-button v-if="!messageEdited" class="right" icon-name="paper-plane" @click="sendMessage"></icon-button>
+        <icon-button v-if="messageEdited" class="right" icon-name="check" @click="editMessage"></icon-button>
         <!-- <icon-button class="right" icon-name="microphone" @click="sendMessage"></icon-button> -->
     </div>
-    <message-context-menu v-if="showMenu" :topPosition="menuTop" :leftPosition="menuLeft" :message="selectedMessage" ref="menuRef"/>
+    <message-context-menu v-if="showMenu" :topPosition="menuTop" :leftPosition="menuLeft" :message="selectedMessage"
+        ref="menuRef" />
 </template>
 
 <script>
@@ -46,8 +48,25 @@ export default {
             showMenu: false,
             menuTop: 0,
             menuLeft: 0,
-            selectedMessage: null
+            selectedMessage: null,
+            messageEdited: false,
         }
+    },
+    created() {
+        this.emitter.on('delete-message', (messageId) => {
+            this.showMenu = false;
+            const message = this.messages.find(message => message._id == messageId);
+            const index = this.messages.indexOf(message);
+            this.messages.splice(index, 1);
+        });
+        this.emitter.on('edit-message', (message) => {
+            this.showMenu = false;
+            this.newMessage = message.text;
+            this.messageEdited = true;
+        });
+        this.emitter.on('copy-message', () => {
+            this.showMenu = false;
+        });
     },
     async mounted() {
         const otherUserId = this.chat.members.find(id => getUserId(id));
@@ -99,6 +118,31 @@ export default {
             if (this.newMessage !== '') {
                 this.socket.emit('sendMessage', messageData);
                 this.newMessage = '';
+            }
+        },
+        async editMessage() {
+            try {
+                const response = await fetch('/message/editMessage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message_id: this.selectedMessage._id,
+                        text: this.newMessage,
+                    })
+                });
+                const data = await response.json();
+                console.log(data);
+                const message = this.messages.find(message => message._id == data._id);
+                const index = this.messages.indexOf(message);
+                this.messages[index] = data;
+
+                this.newMessage = '';
+                this.messageEdited = false;
+
+            } catch (error) {
+                console.error(error);
             }
         },
         openChatList() {
