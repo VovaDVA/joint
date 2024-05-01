@@ -6,6 +6,7 @@ import com.jointAuth.model.profile.Profile;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
 import com.jointAuth.model.verification.UserVerificationCode;
+import com.jointAuth.repository.PasswordResetVerificationCodeRepository;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -50,6 +51,9 @@ public class UserServiceTest {
     @Mock
     UserVerificationCodeRepository userVerificationCodeRepository;
 
+    @Mock
+    PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
+
     @InjectMocks
     private UserService userService;
 
@@ -63,6 +67,7 @@ public class UserServiceTest {
         verificationCodeService = mock(VerificationCodeService.class);
         emailService = mock(EmailService.class);
         userVerificationCodeRepository = mock(UserVerificationCodeRepository.class);
+        passwordResetVerificationCodeRepository = mock(PasswordResetVerificationCodeRepository.class);
 
         userServiceSpy = spy(userService);
 
@@ -71,7 +76,8 @@ public class UserServiceTest {
                 profileRepository,
                 verificationCodeService,
                 emailService,
-                userVerificationCodeRepository);
+                userVerificationCodeRepository,
+                passwordResetVerificationCodeRepository);
 
         userRepository.deleteAll();
         profileRepository.deleteAll();
@@ -861,7 +867,7 @@ public class UserServiceTest {
             userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
-        assertEquals("Invalid request type for password reset", exception.getMessage());
+        assertEquals("Invalid request type for password change", exception.getMessage());
     }
 
     @Test

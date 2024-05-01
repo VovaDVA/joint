@@ -208,9 +208,9 @@ public class UserController {
 
         boolean emailSent = userService.sendPasswordChangeRequest(userId);
         if (emailSent) {
-            return ResponseEntity.ok("Password reset request sent to email.");
+            return ResponseEntity.ok("Password change request sent to email.");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to send password reset request.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to send password change request.");
         }
     }
 
@@ -222,7 +222,7 @@ public class UserController {
                 confirmPasswordChangeRequest.getCurrentPassword());
 
         if (passwordReset) {
-            return ResponseEntity.ok("Password reset successfully.");
+            return ResponseEntity.ok("Password change successfully.");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code.");
         }

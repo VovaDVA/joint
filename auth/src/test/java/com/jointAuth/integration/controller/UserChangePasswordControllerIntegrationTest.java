@@ -76,7 +76,7 @@ public class UserChangePasswordControllerIntegrationTest {
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Password reset request sent to email."));
+                .andExpect(content().string("Password change request sent to email."));
 
         verify(userService).sendPasswordChangeRequest(anyLong());
     }
@@ -112,7 +112,7 @@ public class UserChangePasswordControllerIntegrationTest {
                         .header("Authorization", "Bearer " + tokenForNonexistentUser)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Failed to send password reset request."));
+                .andExpect(content().string("Failed to send password change request."));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class UserChangePasswordControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Password reset successfully."));
+                .andExpect(content().string("Password change successfully."));
 
         verify(userService)
                 .changePassword(validRequest.getUserId(),

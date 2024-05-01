@@ -4,6 +4,7 @@ import com.jointAuth.model.verification.RequestType;
 import com.jointAuth.model.verification.TwoFactorAuthVerificationCode;
 import com.jointAuth.model.user.User;
 import com.jointAuth.model.verification.UserVerificationCode;
+import com.jointAuth.repository.PasswordResetVerificationCodeRepository;
 import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -31,6 +32,8 @@ public class VerificationCodeServiceTest {
 
     private UserVerificationCodeRepository userVerificationCodeRepository;
 
+    private PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
+
     @BeforeEach
     public void setUp() {
         verificationCodeRepository = mock(TwoFactorAuthVerificationCodeRepository.class);
@@ -39,7 +42,8 @@ public class VerificationCodeServiceTest {
 
         verificationCodeService = new VerificationCodeService(verificationCodeRepository,
                 userRepository,
-                userVerificationCodeRepository);
+                userVerificationCodeRepository,
+                passwordResetVerificationCodeRepository);
 
         verificationCodeRepository.deleteAll();
     }
