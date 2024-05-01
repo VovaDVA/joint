@@ -1,5 +1,6 @@
 package com.jointAuth.service;
 
+import com.jointAuth.model.verification.PasswordResetVerificationCode;
 import com.jointAuth.model.verification.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.model.profile.Profile;
@@ -902,6 +903,133 @@ public class UserServiceTest {
                 .saveOrUpdateVerificationCodeForPasswordReset(
                 eq(existingUser.getId()), anyString(), any(LocalDateTime.class)
         );
+    }
+
+    //resetPass
+    @Test
+    void testResetPasswordUserFoundAndVerificationCodeValid() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123@";
+
+        User user = new User();
+        user.setId(userId);
+        user.setPassword("oldPassword123@");
+
+        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
+        code.setUser(user);
+        code.setCode(verificationCode);
+        code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(passwordResetVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.of(code));
+        when(passwordEncoder
+                .encode(newPassword))
+                .thenReturn("encodedPassword");
+
+        boolean result = userService.resetPassword(userId, verificationCode, newPassword);
+
+        assertTrue(result);
+        verify(passwordResetVerificationCodeRepository, times(1))
+                .delete(code);
+        verify(userRepository, times(1))
+                .save(user);
+        assertEquals("encodedPassword", user.getPassword());
+    }
+
+    @Test
+    void testResetPasswordUserNotFound() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123@";
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword);
+        });
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
+    void testResetPasswordVerificationCodeNotFound() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123";
+
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(passwordResetVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword);
+        });
+        assertEquals("Invalid verification code", exception.getMessage());
+    }
+
+    @Test
+    void testResetPassword_VerificationCodeExpired() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123@";
+
+        User user = new User();
+        user.setId(userId);
+
+        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
+        code.setUser(user);
+        code.setCode(verificationCode);
+        code.setExpirationTime(LocalDateTime.now().minusMinutes(5));
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(passwordResetVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode)).thenReturn(Optional.of(code));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword);
+        });
+        assertEquals("Verification code has expired", exception.getMessage());
+    }
+
+    @Test
+    void testResetPasswordNewPasswordDoesNotMeetComplexityRequirements() {
+        Long userId = 1L;
+        String verificationCode = "validCode";
+        String newPassword = "newPassword123";
+
+        User user = new User();
+        user.setId(userId);
+
+        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
+        code.setUser(user);
+        code.setCode(verificationCode);
+        code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository
+                .findById(userId))
+                .thenReturn(Optional.of(user));
+        when(passwordResetVerificationCodeRepository
+                .findByUserIdAndCode(userId, verificationCode))
+                .thenReturn(Optional.of(code));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.resetPassword(userId, verificationCode, newPassword);
+        });
+        assertEquals("New password does not meet complexity requirements", exception.getMessage());
     }
 
     //получение всех пользователей
