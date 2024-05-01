@@ -175,7 +175,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testVerifyVerificationCodeFor2FASuccessful() {
+    public void testVerifyVerificationCodeFor2FASuccessful() {
         Long userId = 1L;
         String code = "123456";
         TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
@@ -195,7 +195,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testVerifyVerificationCodeFor2FAInvalidCode() {
+    public void testVerifyVerificationCodeFor2FAInvalidCode() {
         Long userId = 1L;
         String code = "654321";
         TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
@@ -215,7 +215,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testVerifyVerificationCodeFor2FAExpiredCode() {
+    public void testVerifyVerificationCodeFor2FAExpiredCode() {
         Long userId = 1L;
         String code = "123456";
         TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
@@ -234,7 +234,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testVerifyVerificationCodeFor2FACodeNotFound() {
+    public void testVerifyVerificationCodeFor2FACodeNotFound() {
         Long userId = 1L;
         String code = "123456";
 
@@ -401,7 +401,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesFor2FANoExpiredCodes() {
+    public void testCleanExpiredVerificationCodesFor2FANoExpiredCodes() {
 
         when(verificationCodeRepository
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
@@ -414,7 +414,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesFor2FAExpiredCodesPresent() {
+    public void testCleanExpiredVerificationCodesFor2FAExpiredCodesPresent() {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expiredTime = currentTime.minus(1, ChronoUnit.DAYS);
 
@@ -434,7 +434,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesFor2FAMixedCodes() {
+    public void testCleanExpiredVerificationCodesFor2FAMixedCodes() {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expiredTime = currentTime.minus(1, ChronoUnit.DAYS);
         LocalDateTime validTime = currentTime.plus(1, ChronoUnit.DAYS);
@@ -459,7 +459,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesFor2FAEmptyExpiredCodes() {
+    public void testCleanExpiredVerificationCodesFor2FAEmptyExpiredCodes() {
         when(verificationCodeRepository
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
                 .thenReturn(new ArrayList<>());
@@ -471,7 +471,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesFor2FALargeNumberOfExpiredCodes() {
+    public void testCleanExpiredVerificationCodesFor2FALargeNumberOfExpiredCodes() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         List<TwoFactorAuthVerificationCode> expiredCodes = new ArrayList<>();
@@ -492,7 +492,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesFor2FACodesPartiallyExpired() {
+    public void testCleanExpiredVerificationCodesFor2FACodesPartiallyExpired() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         List<TwoFactorAuthVerificationCode> partiallyExpiredCodes = new ArrayList<>();
@@ -521,7 +521,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordChangeNoExpiredCodes() {
+    public void testCleanExpiredVerificationCodesForPasswordChangeNoExpiredCodes() {
 
         when(userVerificationCodeRepository
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
@@ -535,7 +535,7 @@ public class VerificationCodeServiceTest {
 
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordChangeExpiredCodesPresent() {
+    public void testCleanExpiredVerificationCodesForPasswordChangeExpiredCodesPresent() {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expiredTime = currentTime.minusDays(1);
 
@@ -557,7 +557,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordChangeMixedCodes() {
+    public void testCleanExpiredVerificationCodesForPasswordChangeMixedCodes() {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expiredTime = currentTime.minusDays(1);
         LocalDateTime validTime = currentTime.plusDays(1);
@@ -588,7 +588,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordChangeEmptyExpiredCodes() {
+    public void testCleanExpiredVerificationCodesForPasswordChangeEmptyExpiredCodes() {
 
         when(userVerificationCodeRepository
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
@@ -601,7 +601,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordChangeLargeNumberOfExpiredCodes() {
+    public void testCleanExpiredVerificationCodesForPasswordChangeLargeNumberOfExpiredCodes() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         List<UserVerificationCode> expiredCodes = new ArrayList<>();
@@ -622,7 +622,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordChangeCodesPartiallyExpired() {
+    public void testCleanExpiredVerificationCodesForPasswordChangeCodesPartiallyExpired() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         List<UserVerificationCode> partiallyExpiredCodes = new ArrayList<>();
@@ -651,7 +651,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForChangePasswordNewCode() {
+    public void testSaveOrUpdateVerificationCodeForChangePasswordNewCode() {
         Long userId = 1L;
         String verificationCode = "123456";
         RequestType requestType = RequestType.PASSWORD_CHANGE;
@@ -670,7 +670,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForChangePasswordExistingCode() {
+    public void testSaveOrUpdateVerificationCodeForChangePasswordExistingCode() {
         Long userId = 1L;
         String verificationCode = "123456";
         RequestType requestType = RequestType.PASSWORD_CHANGE;
@@ -694,7 +694,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForChangePasswordExistingCodeForDeletion() {
+    public void testSaveOrUpdateVerificationCodeForChangePasswordExistingCodeForDeletion() {
         Long userId = 1L;
         String verificationCode = "123456";
         RequestType requestType = RequestType.PASSWORD_CHANGE;
@@ -717,7 +717,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForChangePasswordInvalidInputs() {
+    public void testSaveOrUpdateVerificationCodeForChangePasswordInvalidInputs() {
         Long invalidUserId = null;
         String verificationCode = "123456";
         RequestType requestType = RequestType.PASSWORD_CHANGE;
@@ -729,7 +729,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForChangePasswordNullInputs() {
+    public void testSaveOrUpdateVerificationCodeForChangePasswordNullInputs() {
         Long userId = null;
         String verificationCode = null;
         RequestType requestType = null;
@@ -741,7 +741,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForChangePasswordExistingCodeSameValues() {
+    public void testSaveOrUpdateVerificationCodeForChangePasswordExistingCodeSameValues() {
         Long userId = 1L;
         String newVerificationCode = "123456";
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
@@ -771,7 +771,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForAccountDeletionNewCode() {
+    public void testSaveOrUpdateVerificationCodeForAccountDeletionNewCode() {
         User curUser = new User();
         Long userId = 1L;
         String newVerificationCode = "123456";
@@ -797,7 +797,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForAccountDeletionExistingCode() {
+    public void testSaveOrUpdateVerificationCodeForAccountDeletionExistingCode() {
         User cureUser = new User();
         Long userId = 1L;
         String newVerificationCode = "123456";
@@ -827,7 +827,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForAccountDeletionExistingCodeForPasswordReset() {
+    public void testSaveOrUpdateVerificationCodeForAccountDeletionExistingCodeForPasswordReset() {
         Long userId = 1L;
         String newVerificationCode = "123456";
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
@@ -850,7 +850,7 @@ public class VerificationCodeServiceTest {
 
 
     @Test
-    void testSaveOrUpdateVerificationCodeForAccountDeletionInvalidInputs() {
+    public void testSaveOrUpdateVerificationCodeForAccountDeletionInvalidInputs() {
         Long invalidUserId = null;
         String newVerificationCode = "123456";
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
@@ -861,7 +861,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForAccountDeletionNullInputs() {
+    public void testSaveOrUpdateVerificationCodeForAccountDeletionNullInputs() {
         Long userId = null;
         String newVerificationCode = null;
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
@@ -872,7 +872,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForAccountDeletionExistingCodeSameValues() {
+    public void testSaveOrUpdateVerificationCodeForAccountDeletionExistingCodeSameValues() {
         User curUser = new User();
         Long userId = 1L;
         String newVerificationCode = "123456";
@@ -903,7 +903,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForPasswordResetNewCode() {
+    public void testSaveOrUpdateVerificationCodeForPasswordResetNewCode() {
         Long userId = 1L;
         String verificationCode = "123456";
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
@@ -936,7 +936,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForPasswordResetExistingCode() {
+    public void testSaveOrUpdateVerificationCodeForPasswordResetExistingCode() {
         Long userId = 1L;
         String newVerificationCode = "123456";
         LocalDateTime newExpirationTime = LocalDateTime.now().plusMinutes(10);
@@ -963,7 +963,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForPasswordResetExistingCodeForDeletion() {
+    public void testSaveOrUpdateVerificationCodeForPasswordResetExistingCodeForDeletion() {
         Long userId = 1L;
         String newVerificationCode = "123456";
         LocalDateTime newExpirationTime = LocalDateTime.now().plusMinutes(10);
@@ -990,7 +990,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForPasswordResetInvalidInputs() {
+    public void testSaveOrUpdateVerificationCodeForPasswordResetInvalidInputs() {
         Long invalidUserId = null;
         String verificationCode = "123456";
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
@@ -1001,7 +1001,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForPasswordResetNullInputs() {
+    public void testSaveOrUpdateVerificationCodeForPasswordResetNullInputs() {
         Long userId = null;
         String verificationCode = null;
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
@@ -1013,7 +1013,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testSaveOrUpdateVerificationCodeForPasswordResetExistingCodeSameValues() {
+    public void testSaveOrUpdateVerificationCodeForPasswordResetExistingCodeSameValues() {
         Long userId = 1L;
         String newVerificationCode = "123456";
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
@@ -1042,7 +1042,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordResetNoExpiredCodes() {
+    public void testCleanExpiredVerificationCodesForPasswordResetNoExpiredCodes() {
         when(passwordResetVerificationCodeRepository
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
                 .thenReturn(Collections.emptyList());
@@ -1054,7 +1054,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordResetExpiredCodesPresent() {
+    public void testCleanExpiredVerificationCodesForPasswordResetExpiredCodesPresent() {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expiredTime = currentTime.minusDays(1);
 
@@ -1076,7 +1076,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordResetMixedCodes() {
+    public void testCleanExpiredVerificationCodesForPasswordResetMixedCodes() {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expiredTime = currentTime.minusDays(1);
         LocalDateTime validTime = currentTime.plusDays(1);
@@ -1107,7 +1107,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordResetEmptyExpiredCodes() {
+    public void testCleanExpiredVerificationCodesForPasswordResetEmptyExpiredCodes() {
 
         when(passwordResetVerificationCodeRepository
                 .findAllByExpirationTimeBefore(any(LocalDateTime.class)))
@@ -1120,7 +1120,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordResetLargeNumberOfExpiredCodes() {
+    public void testCleanExpiredVerificationCodesForPasswordResetLargeNumberOfExpiredCodes() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         List<PasswordResetVerificationCode> expiredCodes = new ArrayList<>();
@@ -1141,7 +1141,7 @@ public class VerificationCodeServiceTest {
     }
 
     @Test
-    void testCleanExpiredVerificationCodesForPasswordResetPartiallyExpired() {
+    public void testCleanExpiredVerificationCodesForPasswordResetPartiallyExpired() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         List<PasswordResetVerificationCode> partiallyExpiredCodes = new ArrayList<>();
