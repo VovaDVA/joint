@@ -1,11 +1,11 @@
 package com.jointAuth.service;
 
-import com.jointAuth.model.user.RequestType;
+import com.jointAuth.model.verification.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.model.profile.Profile;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
-import com.jointAuth.model.user.UserVerificationCode;
+import com.jointAuth.model.verification.UserVerificationCode;
 import com.jointAuth.repository.ProfileRepository;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -806,7 +806,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+            userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
         assertEquals("User not found", exception.getMessage());
@@ -828,7 +828,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+            userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
         assertEquals("Invalid verification code", exception.getMessage());
@@ -858,7 +858,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.of(userVerificationCode));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+            userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
         assertEquals("Invalid request type for password reset", exception.getMessage());
@@ -875,7 +875,7 @@ public class UserServiceTest {
         UserVerificationCode userVerificationCode = new UserVerificationCode();
         userVerificationCode.setUser(user);
         userVerificationCode.setCode(verificationCode);
-        userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
+        userVerificationCode.setRequestType(RequestType.PASSWORD_CHANGE);
         userVerificationCode.setExpirationTime(LocalDateTime.now().minusMinutes(2));
 
         when(userRepository
@@ -886,7 +886,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.of(userVerificationCode));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+            userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
         assertEquals("Verification code has expired", exception.getMessage());
@@ -903,7 +903,7 @@ public class UserServiceTest {
         UserVerificationCode userVerificationCode = new UserVerificationCode();
         userVerificationCode.setUser(user);
         userVerificationCode.setCode(verificationCode);
-        userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
+        userVerificationCode.setRequestType(RequestType.PASSWORD_CHANGE);
         userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
 
         when(userRepository
@@ -917,7 +917,7 @@ public class UserServiceTest {
                 .thenReturn(false);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+            userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
         assertEquals("Invalid current password", exception.getMessage());
@@ -936,7 +936,7 @@ public class UserServiceTest {
 
         UserVerificationCode userVerificationCode = new UserVerificationCode();
         userVerificationCode.setCode(invalidVerificationCode);
-        userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
+        userVerificationCode.setRequestType(RequestType.PASSWORD_CHANGE);
         userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
 
         when(userRepository
@@ -950,7 +950,7 @@ public class UserServiceTest {
                 .thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            userService.resetPassword(userId, invalidVerificationCode, invalidPassword, currentPassword);
+            userService.changePassword(userId, invalidVerificationCode, invalidPassword, currentPassword);
         });
         assertEquals("Password does not meet the complexity requirements", exception.getMessage());
     }
@@ -969,7 +969,7 @@ public class UserServiceTest {
         UserVerificationCode userVerificationCode = new UserVerificationCode();
         userVerificationCode.setUser(user);
         userVerificationCode.setCode(verificationCode);
-        userVerificationCode.setRequestType(RequestType.PASSWORD_RESET);
+        userVerificationCode.setRequestType(RequestType.PASSWORD_CHANGE);
         userVerificationCode.setExpirationTime(LocalDateTime.now().plusMinutes(2));
 
         when(userRepository
@@ -986,7 +986,7 @@ public class UserServiceTest {
                 .encode(newPassword))
                 .thenReturn("encodedNewPassword");
 
-        boolean result = userService.resetPassword(userId, verificationCode, newPassword, currentPassword);
+        boolean result = userService.changePassword(userId, verificationCode, newPassword, currentPassword);
 
         assertTrue(result);
         verify(userRepository, times(1))
@@ -1038,14 +1038,14 @@ public class UserServiceTest {
                 .getUserEmailById(userId))
                 .thenReturn(null);
 
-        boolean result = userService.sendPasswordResetRequest(userId);
+        boolean result = userService.sendPasswordChangeRequest(userId);
 
         assertFalse(result);
 
         verify(emailService, never())
-                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
+                .sendPasswordChangeConfirmationEmail(any(User.class), anyString());
         verify(verificationCodeService, never())
-                .saveOrUpdateVerificationCodeForResetPassword(anyLong(), anyString(), any(RequestType.class), any(LocalDateTime.class));
+                .saveOrUpdateVerificationCodeForChangePassword(anyLong(), anyString(), any(RequestType.class), any(LocalDateTime.class));
     }
 
     @Test
@@ -1066,10 +1066,10 @@ public class UserServiceTest {
                 .thenReturn(user);
 
         when(emailService
-                .sendPasswordResetConfirmationEmail(any(User.class), anyString()))
+                .sendPasswordChangeConfirmationEmail(any(User.class), anyString()))
                 .thenReturn(true);
 
-        boolean result = userService.sendPasswordResetRequest(userId);
+        boolean result = userService.sendPasswordChangeRequest(userId);
 
         assertTrue(result);
 
@@ -1079,7 +1079,7 @@ public class UserServiceTest {
                 .findByEmail(email);
 
         verify(emailService, times(1))
-                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
+                .sendPasswordChangeConfirmationEmail(any(User.class), anyString());
     }
 
     @Test
@@ -1097,16 +1097,16 @@ public class UserServiceTest {
         when(userRepository
                 .findByEmail(email))
                 .thenReturn(user);
-        when(emailService.sendPasswordResetConfirmationEmail(any(User.class), anyString())).thenReturn(false);
+        when(emailService.sendPasswordChangeConfirmationEmail(any(User.class), anyString())).thenReturn(false);
 
-        boolean result = userService.sendPasswordResetRequest(userId);
+        boolean result = userService.sendPasswordChangeRequest(userId);
 
         assertFalse(result);
 
         verify(verificationCodeService, times(1))
-                .saveOrUpdateVerificationCodeForResetPassword(eq(userId), anyString(), eq(RequestType.PASSWORD_RESET), any(LocalDateTime.class));
+                .saveOrUpdateVerificationCodeForChangePassword(eq(userId), anyString(), eq(RequestType.PASSWORD_CHANGE), any(LocalDateTime.class));
         verify(emailService, times(1))
-                .sendPasswordResetConfirmationEmail(any(User.class), anyString());
+                .sendPasswordChangeConfirmationEmail(any(User.class), anyString());
     }
 
     //delete

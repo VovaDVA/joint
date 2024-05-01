@@ -159,7 +159,7 @@ class EmailServiceTest {
         }).when(mockTransport)
                 .sendMessage(any(), any());
 
-        boolean result = emailService.sendPasswordResetConfirmationEmail(user, "123456");
+        boolean result = emailService.sendPasswordChangeConfirmationEmail(user, "123456");
 
         assertTrue(result);
 
@@ -182,7 +182,7 @@ class EmailServiceTest {
                 .getTransport("smtp"))
                 .thenReturn(mockTransport);
 
-        emailService.sendPasswordResetConfirmationEmail(user, "123456");
+        emailService.sendPasswordChangeConfirmationEmail(user, "123456");
 
         verify(mockSession, never())
                 .getTransport("smtp");
@@ -205,7 +205,7 @@ class EmailServiceTest {
                 .when(mockTransport)
                 .sendMessage(any(), any());
 
-        boolean result = emailService.sendPasswordResetConfirmationEmail(user, "123456");
+        boolean result = emailService.sendPasswordChangeConfirmationEmail(user, "123456");
 
         assertFalse(result);
     }
@@ -225,7 +225,7 @@ class EmailServiceTest {
                 .when(mockTransport)
                 .connect(any(), any());
 
-        boolean result = emailService.sendPasswordResetConfirmationEmail(user, "123456");
+        boolean result = emailService.sendPasswordChangeConfirmationEmail(user, "123456");
 
         assertFalse(result);
     }

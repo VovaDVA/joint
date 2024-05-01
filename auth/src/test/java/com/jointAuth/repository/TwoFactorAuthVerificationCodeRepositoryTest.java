@@ -1,6 +1,6 @@
 package com.jointAuth.repository;
 
-import com.jointAuth.model.user.TwoFactorAuthVerificationCode;
+import com.jointAuth.model.verification.TwoFactorAuthVerificationCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

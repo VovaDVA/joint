@@ -1,6 +1,6 @@
 package com.jointAuth.integration.controller;
 
-import com.jointAuth.model.user.ConfirmPasswordResetRequest;
+import com.jointAuth.model.verification.ConfirmPasswordChangeRequest;
 import com.jointAuth.model.user.User;
 import com.jointAuth.repository.UserRepository;
 import com.jointAuth.repository.UserVerificationCodeRepository;
@@ -46,7 +46,7 @@ public class UserChangePasswordControllerIntegrationTest {
 
     private User testUser;
     private String validToken;
-    private ConfirmPasswordResetRequest validRequest;
+    private ConfirmPasswordChangeRequest validRequest;
 
 
     @BeforeEach
@@ -61,7 +61,7 @@ public class UserChangePasswordControllerIntegrationTest {
         testUser = userRepository.save(testUser);
         validToken = jwtTokenUtils.generateToken(testUser);
 
-        validRequest = new ConfirmPasswordResetRequest();
+        validRequest = new ConfirmPasswordChangeRequest();
         validRequest.setUserId(testUser.getId());
         validRequest.setVerificationCode("VALID_VERIFICATION_CODE");
         validRequest.setNewPassword("NewPassword123@");
@@ -70,7 +70,7 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @Test
     public void testRequestPasswordResetSuccess() throws Exception {
-        when(userService.sendPasswordResetRequest(anyLong())).thenReturn(true);
+        when(userService.sendPasswordChangeRequest(anyLong())).thenReturn(true);
 
         mockMvc.perform(post("/auth/change-password")
                         .header("Authorization", "Bearer " + validToken)
@@ -78,7 +78,7 @@ public class UserChangePasswordControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Password reset request sent to email."));
 
-        verify(userService).sendPasswordResetRequest(anyLong());
+        verify(userService).sendPasswordChangeRequest(anyLong());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @Test
     public void testConfirmPasswordResetSuccess() throws Exception {
-        when(userService.resetPassword(validRequest.getUserId(),
+        when(userService.changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword()))
@@ -138,7 +138,7 @@ public class UserChangePasswordControllerIntegrationTest {
                 .andExpect(content().string("Password reset successfully."));
 
         verify(userService)
-                .resetPassword(validRequest.getUserId(),
+                .changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword());
@@ -146,7 +146,7 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @Test
     public void testConfirmPasswordResetInvalidCode() throws Exception {
-        when(userService.resetPassword(validRequest.getUserId(),
+        when(userService.changePassword(validRequest.getUserId(),
                 "INVALID_VERIFICATION_CODE",
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword()))
@@ -160,7 +160,7 @@ public class UserChangePasswordControllerIntegrationTest {
                 .andExpect(content().string("Invalid verification code."));
 
         verify(userService)
-                .resetPassword(validRequest.getUserId(),
+                .changePassword(validRequest.getUserId(),
                 "INVALID_VERIFICATION_CODE",
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword());
@@ -168,7 +168,7 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @Test
     public void testConfirmPasswordResetInvalidCurrentPassword() throws Exception {
-        when(userService.resetPassword(validRequest.getUserId(),
+        when(userService.changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
                 "InvalidPassword"))
@@ -182,7 +182,7 @@ public class UserChangePasswordControllerIntegrationTest {
                 .andExpect(content().string("Invalid verification code."));
 
         verify(userService)
-                .resetPassword(validRequest.getUserId(),
+                .changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
                 "InvalidPassword");
@@ -190,7 +190,7 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @Test
     public void testConfirmPasswordResetInvalidNewPassword() throws Exception {
-        when(userService.resetPassword(validRequest.getUserId(),
+        when(userService.changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 "weakpassword",
                 validRequest.getCurrentPassword()))
@@ -204,7 +204,7 @@ public class UserChangePasswordControllerIntegrationTest {
                 .andExpect(content().string("Invalid verification code."));
 
         verify(userService)
-                .resetPassword(validRequest.getUserId(),
+                .changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 "weakpassword",
                 validRequest.getCurrentPassword());
@@ -212,7 +212,7 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @Test
     public void testConfirmPasswordResetExpiredVerificationCode() throws Exception {
-        when(userService.resetPassword(validRequest.getUserId(),
+        when(userService.changePassword(validRequest.getUserId(),
                 "EXPIRED_VERIFICATION_CODE",
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword()))
@@ -225,7 +225,7 @@ public class UserChangePasswordControllerIntegrationTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("Invalid verification code."));
 
-        verify(userService).resetPassword(validRequest.getUserId(),
+        verify(userService).changePassword(validRequest.getUserId(),
                 "EXPIRED_VERIFICATION_CODE",
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword());

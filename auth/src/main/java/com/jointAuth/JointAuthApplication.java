@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EntityScan({"com.jointAuth.model.user", "com.jointAuth.model.profile"})
+@EntityScan({"com.jointAuth.model.user", "com.jointAuth.model.profile", "com.jointAuth.model.verification"})
 @EnableJpaRepositories({"com.jointAuth"})
 @EnableScheduling
 @SpringBootApplication
