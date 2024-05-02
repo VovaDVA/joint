@@ -126,30 +126,30 @@ public class UserController {
         Optional<User> currentUser = userService.getUserByEmail(email);
 
         if (currentUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Пользователь с таким email не найден.");
         }
 
         boolean emailSent = userService.sendPasswordResetRequest(currentUser.get().getEmail());
         if (emailSent) {
             String maskedEmail = userService.maskEmail(currentUser.get().getEmail());
-            return ResponseEntity.ok("Password reset request sent to email: " + maskedEmail);
+            return ResponseEntity.ok("Код отправлен на email: " + maskedEmail);
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send password reset request.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Не удалось отправить запрос на сброс пароля.");
         }
     }
 
     @PostMapping(path = "/confirm-reset-password")
     public ResponseEntity<?> confirmPasswordReset(@RequestBody ConfirmPasswordResetRequest confirmPasswordResetRequest) {
-        boolean passwordReset = userService.resetPassword(confirmPasswordResetRequest.getUserId(),
-                confirmPasswordResetRequest.getVerificationCode(),
+        boolean passwordReset = userService.resetPassword(confirmPasswordResetRequest.getVerificationCode(),
                 confirmPasswordResetRequest.getNewPassword());
 
         if (passwordReset) {
-            return ResponseEntity.ok("Password reset successfully");
-        } else  {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code or failed to reset password");
+            return ResponseEntity.ok("Успешный сброс пароля.");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный проверочный код или не удалось сбросить пароль.");
         }
     }
+
 
     @GetMapping(path = "/user")
     public ResponseEntity<UserProfileBom> getUserByIdWithToken(@RequestHeader("Authorization") String token) {

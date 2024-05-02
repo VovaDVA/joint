@@ -17,4 +17,5 @@ public interface PasswordResetVerificationCodeRepository extends JpaRepository<P
 
     List<PasswordResetVerificationCode> findAllByExpirationTimeBefore(LocalDateTime currentTime);
 
+    Optional<PasswordResetVerificationCode> findByCode(String code);
 }
