@@ -781,7 +781,7 @@ public class UserServiceTest {
 
         boolean result = userService.sendPasswordResetRequest(email);
 
-        assertEquals(true, result);
+        assertTrue(result);
         verify(userRepository, times(1))
                 .findByEmail(email);
         verify(verificationCodeService)
@@ -802,7 +802,7 @@ public class UserServiceTest {
 
         boolean result = userService.sendPasswordResetRequest(email);
 
-        assertEquals(false, result);
+        assertFalse(result);
         verify(userRepository, times(1))
                 .findByEmail(email);
         verify(verificationCodeService, never())
@@ -908,8 +908,7 @@ public class UserServiceTest {
     //resetPass
     @Test
     void testResetPasswordVerificationCodeValid() {
-        // Подготовка данных
-        Long userId = 1L; // Установите userId в соответствии с вашим тестом
+        Long userId = 1L;
         String verificationCode = "validCode";
         String newPassword = "newPassword123@";
 
@@ -917,26 +916,21 @@ public class UserServiceTest {
         user.setId(userId);
         user.setPassword("oldPassword123@");
 
-        // Создание PasswordResetVerificationCode и связывание его с user
         PasswordResetVerificationCode code = new PasswordResetVerificationCode();
         code.setUser(user);
         code.setCode(verificationCode);
         code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
 
-        // Настройка моков
         when(passwordResetVerificationCodeRepository.findByCode(verificationCode))
                 .thenReturn(Optional.of(code));
         when(passwordEncoder.encode(newPassword))
                 .thenReturn("encodedPassword");
 
-        // Убедитесь, что userRepository.findById возвращает пользователя с заданным userId
         when(userRepository.findById(userId))
                 .thenReturn(Optional.of(user));
 
-        // Тестируемый метод
         boolean result = userService.resetPassword(verificationCode, newPassword);
 
-        // Проверка результата
         assertTrue(result);
         verify(passwordResetVerificationCodeRepository, times(1)).delete(code);
         verify(userRepository, times(1)).save(user);
@@ -945,38 +939,30 @@ public class UserServiceTest {
 
     @Test
     void testResetPasswordUserNotFound() {
-        // Подготовка данных
         String verificationCode = "validCode";
         String newPassword = "newValidPassword123!";
 
-        // Создание объекта PasswordResetVerificationCode с действительным временем истечения и связанным пользователем
         PasswordResetVerificationCode code = new PasswordResetVerificationCode();
         code.setCode(verificationCode);
         code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
 
-        // Создание объекта User, но без добавления его в UserRepository
         User user = new User();
-        user.setId(1L); // Установите ID пользователя, которого нет в репозитории
-        code.setUser(user); // Свяжите код с пользователем
+        user.setId(1L);
+        code.setUser(user);
 
-        // Настройка мока passwordResetVerificationCodeRepository
-        when(passwordResetVerificationCodeRepository.findByCode(verificationCode))
+        when(passwordResetVerificationCodeRepository
+                .findByCode(verificationCode))
                 .thenReturn(Optional.of(code));
 
-        // Настройка мока userRepository для возврата пустого Optional, чтобы имитировать отсутствие пользователя с данным userId
         when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.empty());
 
-        // Ожидание IllegalArgumentException из-за отсутствия пользователя в репозитории
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.resetPassword(verificationCode, newPassword);
         });
 
-        // Проверка сообщения исключения
         assertEquals("User not found", exception.getMessage());
     }
-
-
 
     @Test
     void testResetPasswordVerificationCodeNotFound() {
@@ -992,137 +978,60 @@ public class UserServiceTest {
         assertEquals("Invalid verification code", exception.getMessage());
     }
 
-//    @Test
-//    void testResetPasswordUserNotFound() {
-//        // Подготовка данных
-//        String verificationCode = "validCode";
-//        String newPassword = "newPassword123@";
-//
-//        // Создание PasswordResetVerificationCode без связанного пользователя
-//        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
-//        code.setCode(verificationCode);
-//        code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
-//        code.setUser(null); // Убедитесь, что код не связан с каким-либо пользователем
-//
-//        // Настройка мока passwordResetVerificationCodeRepository
-//        when(passwordResetVerificationCodeRepository.findByCode(verificationCode))
-//                .thenReturn(Optional.of(code));
-//
-//        // Ожидание IllegalArgumentException из-за отсутствия пользователя
-//        NullPointerException exception = assertThrows(NullPointerException.class, () -> {
-//            userService.resetPassword(verificationCode, newPassword);
-//        });
-//
-//        // Проверка сообщения исключения
-//        assertEquals("User not found", exception.getMessage());
-//    }
-
-
-//    @Test
-//    void testResetPasswordVerificationCodeExpired() {
-//        String verificationCode = "validCode";
-//        String newPassword = "newPassword123@";
-//
-//        User user = new User();
-//        user.setId(1L);
-//
-//        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
-//        code.setUser(user);
-//        code.setCode(verificationCode);
-//        code.setExpirationTime(LocalDateTime.now().minusMinutes(5));
-//
-//        when(passwordResetVerificationCodeRepository.findByCode(verificationCode))
-//                .thenReturn(Optional.of(code));
-//
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-//            userService.resetPassword(verificationCode, newPassword);
-//        });
-//        assertEquals("User not found", exception.getMessage());
-//    }
-
-//    @Test
-//    void testResetPasswordNewPasswordDoesNotMeetComplexityRequirements() {
-//        String verificationCode = "validCode";
-//        String newPassword = "weak";
-//
-//        User user = new User();
-//        user.setId(1L);
-//
-//        PasswordResetVerificationCode code = new PasswordResetVerificationCode();
-//        code.setUser(user);
-//        code.setCode(verificationCode);
-//        code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
-//
-//        when(passwordResetVerificationCodeRepository.findByCode(verificationCode))
-//                .thenReturn(Optional.of(code));
-//
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-//            userService.resetPassword(verificationCode, newPassword);
-//        });
-//        assertEquals("User not found", exception.getMessage());
-//    }
 
     @Test
     void testResetPasswordNewPasswordDoesNotMeetComplexityRequirements() {
-        // Подготовка данных
         String verificationCode = "validCode";
         String invalidNewPassword = "short";
 
-        // Создание объекта PasswordResetVerificationCode с ненулевым временем истечения и связанным пользователем
         PasswordResetVerificationCode code = new PasswordResetVerificationCode();
         code.setCode(verificationCode);
         code.setExpirationTime(LocalDateTime.now().plusMinutes(5));
 
         User user = new User();
-        user.setId(1L); // Установите ID пользователя
-        code.setUser(user); // Связать код с пользователем
+        user.setId(1L);
+        code.setUser(user);
 
-        // Настройка моков
-        when(passwordResetVerificationCodeRepository.findByCode(verificationCode))
+        when(passwordResetVerificationCodeRepository
+                .findByCode(verificationCode))
                 .thenReturn(Optional.of(code));
-        when(userRepository.findById(user.getId()))
+        when(userRepository
+                .findById(user.getId()))
                 .thenReturn(Optional.of(user));
 
-        // Ожидание IllegalArgumentException из-за несоответствия пароля требованиям сложности
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.resetPassword(verificationCode, invalidNewPassword);
         });
 
-        // Проверка сообщения исключения
         assertEquals("New password does not meet complexity requirements", exception.getMessage());
     }
 
     @Test
     void testResetPasswordVerificationCodeExpired() {
-        // Подготовка данных
         String verificationCode = "validCode";
         String newPassword = "newValidPassword123!";
 
-        // Создание объекта PasswordResetVerificationCode с прошедшим временем истечения и связанным пользователем
         PasswordResetVerificationCode code = new PasswordResetVerificationCode();
         code.setCode(verificationCode);
-        code.setExpirationTime(LocalDateTime.now().minusMinutes(5)); // Код истек
+        code.setExpirationTime(LocalDateTime.now().minusMinutes(5));
 
         User user = new User();
-        user.setId(1L); // Установите ID пользователя
-        code.setUser(user); // Связать код с пользователем
+        user.setId(1L);
+        code.setUser(user);
 
-        // Настройка моков
-        when(passwordResetVerificationCodeRepository.findByCode(verificationCode))
+        when(passwordResetVerificationCodeRepository
+                .findByCode(verificationCode))
                 .thenReturn(Optional.of(code));
-        when(userRepository.findById(user.getId()))
+        when(userRepository
+                .findById(user.getId()))
                 .thenReturn(Optional.of(user));
 
-        // Ожидание IllegalArgumentException из-за истекшего кода
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.resetPassword(verificationCode, newPassword);
         });
 
-        // Проверка сообщения исключения
         assertEquals("Verification code has expired", exception.getMessage());
     }
-
-
 
     //получение всех пользователей
     @Test
