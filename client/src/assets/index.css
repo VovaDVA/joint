@@ -96,17 +96,6 @@ button[type="submit"] {
     cursor: not-allowed;
 }
 
-
-.lost_password {
-    text-align: center;
-    margin: 10px auto;
-    max-width: 300px;
-}
-
-.lost_password a {
-    color: #ff6d6d;
-}
-
 .no_account {
     max-width: 300px;
     margin: auto;

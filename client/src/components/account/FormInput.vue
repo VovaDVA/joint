@@ -43,14 +43,14 @@ export default {
                         this.isValid = true;
                     }
                     break;
-                default:
-                    if (!/[а-яА-Я]/.test(value)) {
-                        this.errorMessage = 'Имя и фамилия могут содержать только русские буквы';
-                    } else {
-                        this.errorMessage = '';
-                        this.isValid = true;
-                    }
-                    break;
+                // default:
+                //     if (!/[а-яА-Я]/.test(value)) {
+                //         this.errorMessage = 'Имя и фамилия могут содержать только русские буквы';
+                //     } else {
+                //         this.errorMessage = '';
+                //         this.isValid = true;
+                //     }
+                //     break;
                 case 'email':
                     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
                         this.errorMessage = 'Некорректный формат адреса электронной почты';
