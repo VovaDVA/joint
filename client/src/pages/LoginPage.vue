@@ -18,7 +18,7 @@
 			<input :class="$store.state.theme" type="submit" name="submit" value="Отправить код">
 		</form>
 		<form v-if="form == 'enter-code'" @submit.prevent="enterResetCode">
-			<form-input v-model="email">{{ resetPasswordMessage }}</form-input>
+			<form-input v-model="resetPasswordCode">{{ resetPasswordMessage }}</form-input>
 			<input :class="$store.state.theme" type="submit" name="submit" value="Восстановить пароль">
 		</form>
 		<form v-if="form == 'enter-new-password'" @submit.prevent="confirmResetPassword">
@@ -117,7 +117,7 @@ export default {
 				});
 
 				const data = await response.text();
-				this.resetPasswordMessage = data;
+				console.log(data);
 
 			} catch (error) {
 				console.error(error);

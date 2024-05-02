@@ -18,7 +18,7 @@
     <div class="intro" :class="$store.state.theme">
         <div class="intro_fade"></div>
     </div>
-    <modal-change-avatar></modal-change-avatar>
+    <modal-delete-account></modal-delete-account>
 </template>
 
 <script>
@@ -73,14 +73,8 @@ export default {
 .section {
     display: flex;
     margin-top: 10px;
-    /* flex: 0.7; */
     width: calc(100vw - 30vw - 135px);
     z-index: 10;
-    /* overflow-y: auto; */
-    /* margin-top: 200px;
-    padding: 50px 0 100px;
-    line-height: 30px;
-    text-align: justify; */
 }
 
 .section_header {

@@ -14,11 +14,12 @@ export default {
 .auth-block {
 	max-width: 500px;
 	height: fit-content;
-	/* padding: 0 15px; */
-	position: absolute;
+	position: fixed;
+	top: calc(100vh * 0.3);
 	right: 0;
 	left: 0;
-	margin: 50px auto;
+	margin: 0 auto;
+	z-index: 10000;
 
 	padding: 20px;
 	border: 1px #ffffff7c solid;
@@ -33,7 +34,9 @@ export default {
 }
 
 @media (max-width: 600px) {
-	.auth-block, .auth-block.light-theme {
+
+	.auth-block,
+	.auth-block.light-theme {
 		border: none;
 		background: none;
 		margin: auto;
