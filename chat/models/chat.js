@@ -11,11 +11,12 @@ const chatSchema = new mongoose.Schema({
     },
     last_message_at: {
         type: Date,
+        default: new Date()
         //required: true
     },
     last_message: {
         type: String,
-        default: 'Хватит коммитить!',
+        default: '-',
         //required: true
     }
 });

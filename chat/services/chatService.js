@@ -2,9 +2,9 @@ const Chat = require('../models/chat');
 const Message = require('../models/message');
 
 class chatService {
-    constructor(Chat){
-        this.Chat = Chat;
-    }
+    // constructor(Chat){
+    //     this.Chat = Chat;
+    // }
 // Функция для создания и записи нового чата в базу данных 
     async createChat(members){
         let today = new Date();
@@ -18,10 +18,9 @@ class chatService {
     }
 
     async getMessages(chatId){
-        const chat = await this.getChatById(chatId);
-        //console.log(chat._id);
+        const chat = await Chat.findById(chatId);
         return await Message.find({ 
-            chat_id: chat._id 
+            "chat_id": chat._id 
         });
     }
 
@@ -30,7 +29,7 @@ class chatService {
     }
 
     async getChatByPrts(members){
-        console.log(await Chat.findOne({"members": {$all: members}}));
+        //console.log(await Chat.findOne({"members": {$all: members}}));
         return await Chat.findOne({"members": {$all: members}});
     }
 
@@ -43,11 +42,11 @@ class chatService {
     async updateLastMessageTime(chatId){
         // Устанавливаем дату последнего сообщения, как текущую
         let today = new Date();                         
-        const chat = await getChatById(chatId);
+        const chat = await this.getChatById(chatId);
         chat.last_message_at = today;
         await chat.save();
         return chat;
     }
 }
 // Экспорт
-module.exports = new chatService(Chat);
+module.exports = new chatService();
