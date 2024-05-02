@@ -9,9 +9,12 @@ import com.jointProfile.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 @RestController
-@RequestMapping(path = "profile")
+@RequestMapping( "profile")
 public class ProfileController {
 
     @Autowired
@@ -20,7 +23,7 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PutMapping(path ="/update")
+    @PutMapping("/update")
     public ResponseEntity<ProfileBom> updateProfile(@RequestHeader(name = "Authorization", required = false) String token,
                                                     @RequestBody ProfileDTO updatedProfile) {
 
@@ -36,4 +39,26 @@ public class ProfileController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/update-avatar")
+    public ResponseEntity<ProfileBom> updateAvatar(@RequestHeader(name = "Authorization", required = false) String token,
+                                                   @RequestParam("avatar") MultipartFile avater) {
+
+        ProfileBom currentBomProfile = authConnector.getCurrentProfile(token);
+
+        Profiles currentProfile = ProfileConverter.converterToEntity(currentBomProfile);
+
+        ProfileBom updatedProfile = profileService.updateAvatar(avater, currentProfile);
+
+        if (updatedProfile != null) {
+            return ResponseEntity.ok(updatedProfile);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
+    }
+
+
+
+
 }
