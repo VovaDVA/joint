@@ -58,6 +58,24 @@ public class ProfileController {
 
     }
 
+    @PutMapping("/update-banner")
+    public ResponseEntity<ProfileBom> updateBanner(@RequestHeader(name = "Authorization", required = false) String token,
+                                                   @RequestParam("banner") MultipartFile banner) {
+
+        ProfileBom currentBomProfile = authConnector.getCurrentProfile(token);
+
+        Profiles currentProfile = ProfileConverter.converterToEntity(currentBomProfile);
+
+        ProfileBom updatedProfile = profileService.updateBanner(banner, currentProfile);
+
+        if (updatedProfile != null) {
+            return ResponseEntity.ok(updatedProfile);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
+    }
+
 
 
 
