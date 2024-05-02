@@ -226,16 +226,17 @@ public class UserService {
         }).orElse(false);
     }
 
-    public boolean resetPassword(Long userId, String verificationCode, String newPassword) {
-        Optional<User> optionalUser= userRepository.findById(userId);
+    public boolean resetPassword(String verificationCode, String newPassword) {
+        Optional<PasswordResetVerificationCode> optionalPasswordResetVerificationCode = passwordResetVerificationCodeRepository.findByCode(verificationCode);
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
+        if (optionalPasswordResetVerificationCode.isPresent()) {
+            PasswordResetVerificationCode passwordResetVerificationCode = optionalPasswordResetVerificationCode.get();
+            Long userId = passwordResetVerificationCode.getUser().getId();
 
-            Optional<PasswordResetVerificationCode> optionalPasswordResetVerificationCode = passwordResetVerificationCodeRepository.findByUserIdAndCode(userId, verificationCode);
+            Optional<User> optionalUser = userRepository.findById(userId);
 
-            if (optionalPasswordResetVerificationCode.isPresent()) {
-                PasswordResetVerificationCode passwordResetVerificationCode = optionalPasswordResetVerificationCode.get();
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
 
                 if (passwordResetVerificationCode.getExpirationTime().isBefore(LocalDateTime.now())) {
                     throw new IllegalArgumentException("Verification code has expired");
@@ -252,12 +253,13 @@ public class UserService {
                     throw new IllegalArgumentException("New password does not meet complexity requirements");
                 }
             } else {
-                throw new IllegalArgumentException("Invalid verification code");
+                throw new IllegalArgumentException("User not found");
             }
         } else {
-            throw new IllegalArgumentException("User not found");
+            throw new IllegalArgumentException("Invalid verification code");
         }
     }
+
 
     public UserProfileBom getUserInfoById(Long userId) {
         User user = userRepository.findById(userId)
