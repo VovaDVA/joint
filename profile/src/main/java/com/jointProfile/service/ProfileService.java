@@ -82,6 +82,34 @@ public class ProfileService {
 
     }
 
+    public ProfileBom updateBanner(MultipartFile banner, Profiles profile) {
+        // создание нового экзепляра объекта внутри метода
+        Profiles currentProfile = profileRepository.findById(profile.getId()).orElseThrow(() ->
+                new EntityNotFoundException("Profile not found"));
+
+        // Проверка наличия загруженного файла
+        if (banner == null || banner.isEmpty()) {
+            throw new IllegalArgumentException("Banner file is missing or empty.");
+        }
+
+        String fileNameOnServer = UUID.randomUUID() + ".jpg";
+
+        try {
+            // Загрузка аватара на сервер
+            String url = fileUploader.uploadFileOnServer(banner, fileNameOnServer, "banners");
+            currentProfile.setBanner(url);
+
+            // Сохранение обновленного профиля в репозитории
+            profileRepository.save(currentProfile);
+
+            return ProfileConverter.converterToBom(currentProfile);
+        } catch (Exception e) {
+            // Обработка других непредвиденных исключений
+            throw new RuntimeException("An error occurred while updating banner.", e);
+        }
+
+    }
+
 
 
 }
