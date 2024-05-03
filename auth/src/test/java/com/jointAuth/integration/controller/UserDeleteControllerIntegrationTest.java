@@ -1,6 +1,7 @@
 package com.jointAuth.integration.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jointAuth.bom.user.ApiResponse;
 import com.jointAuth.model.verification.ConfirmAccountDeletionRequest;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
@@ -45,32 +46,38 @@ public class UserDeleteControllerIntegrationTest {
 
     @Test
     public void testSuccessfulAccountDeletionRequest() throws Exception {
-        when(userService.sendAccountDeletionRequest(anyLong())).thenReturn(true);
+        when(userService.
+                sendAccountDeletionRequest(anyLong()))
+                .thenReturn(true);
 
         mockMvc.perform(delete("/auth/delete")
                         .header("Authorization", "Bearer validToken"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Account deletion request sent to email."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Запрос на удаление аккаунта отправлен на электронную почту"))));
     }
 
     @Test
     public void testUserNotFound() throws Exception {
-        when(jwtTokenUtils.getCurrentUserId(anyString())).thenReturn(null);
+        when(jwtTokenUtils
+                .getCurrentUserId(anyString()))
+                .thenReturn(null);
 
         mockMvc.perform(delete("/auth/delete")
                         .header("Authorization", "Bearer validToken"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("User not found."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Пользователь не найден"))));
     }
 
     @Test
     public void testFailedToSendAccountDeletionRequest() throws Exception {
-        when(userService.sendAccountDeletionRequest(anyLong())).thenReturn(false);
+        when(userService
+                .sendAccountDeletionRequest(anyLong()))
+                .thenReturn(false);
 
         mockMvc.perform(delete("/auth/delete")
                         .header("Authorization", "Bearer validToken"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Failed to send account deletion request."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Не удалось отправить запрос на удаление аккаунта"))));
     }
 
     @Test
@@ -81,7 +88,7 @@ public class UserDeleteControllerIntegrationTest {
                     .andExpect(status().isNotFound());
 
             int status = result.andReturn().getResponse().getStatus();
-            assertEquals(404, status, "Status should be 500");
+            assertEquals(404, status, "Статус должен быть 500");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,8 +99,9 @@ public class UserDeleteControllerIntegrationTest {
         mockMvc.perform(delete("/auth/delete")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Failed to send account deletion request."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Не удалось отправить запрос на удаление аккаунта"))));
     }
+
 
     @Test
     public void testSuccessfulAccountDeletion() throws Exception {
@@ -107,7 +115,7 @@ public class UserDeleteControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Account deleted successfully."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Аккаунт успешно удален"))));
     }
 
     @Test
@@ -122,7 +130,7 @@ public class UserDeleteControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code or failed to delete account."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Неверный код подтверждения или не удалось удалить аккаунт"))));
     }
 
     @Test
@@ -137,7 +145,7 @@ public class UserDeleteControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code or failed to delete account."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Неверный код подтверждения или не удалось удалить аккаунт"))));
     }
 
     @Test
@@ -148,7 +156,7 @@ public class UserDeleteControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code or failed to delete account."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Неверный код подтверждения или не удалось удалить аккаунт"))));
     }
 
     @Test
@@ -159,13 +167,12 @@ public class UserDeleteControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code or failed to delete account."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Неверный код подтверждения или не удалось удалить аккаунт"))));
     }
 
     @Test
     public void testExpiredOrInvalidVerificationCode() throws Exception {
-        when(userService
-                .deleteUser(anyLong(), anyString()))
+        when(userService.deleteUser(anyLong(), anyString()))
                 .thenReturn(false);
 
         ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(1L, "expiredOrInvalidCode");
@@ -174,13 +181,12 @@ public class UserDeleteControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code or failed to delete account."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Неверный код подтверждения или не удалось удалить аккаунт"))));
     }
 
     @Test
     public void testReusedVerificationCode() throws Exception {
-        when(userService
-                .deleteUser(anyLong(), anyString()))
+        when(userService.deleteUser(anyLong(), anyString()))
                 .thenReturn(false);
 
         ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(1L, "reusedCode");
@@ -189,7 +195,7 @@ public class UserDeleteControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code or failed to delete account."));
+                .andExpect(content().json(asJsonString(new ApiResponse("Неверный код подтверждения или не удалось удалить аккаунт"))));
     }
 
     private String asJsonString(Object obj) {
