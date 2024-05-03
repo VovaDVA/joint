@@ -89,7 +89,7 @@ public class JwtTokenUtils {
 
             return claims.get("userId", Long.class);
         } catch (MalformedJwtException e) {
-            logger.error("Error parsing JWT token: {}", e.getMessage());
+            logger.error("Ошибка при разборе токена JWT: {}", e.getMessage());
             return null;
         }
     }
@@ -110,7 +110,7 @@ public class JwtTokenUtils {
 
             return claims.get("profileId", Long.class);
         } catch (MalformedJwtException e) {
-            logger.error("Error parsing JWT token: {}", e.getMessage());
+            logger.error("Ошибка при разборе токена JWT: {}", e.getMessage());
             return null;
         }
     }

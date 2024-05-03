@@ -76,16 +76,16 @@ public class UserService {
 
         String email = user.getEmail();
         if (email == null || !isValidEmail(email)) {
-            throw new IllegalArgumentException("Invalid email format");
+            throw new IllegalArgumentException("Неверный формат электронной почты");
         }
 
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null) {
-            throw new IllegalArgumentException("User with this email already exists");
+            throw new IllegalArgumentException("Пользователь с такой электронной почтой уже существует");
         }
 
         if (validatePassword(user.getPassword())) {
-            throw new IllegalArgumentException("Password does not meet the complexity requirements");
+            throw new IllegalArgumentException("Пароль не соответствует требованиям безопасности");
         }
 
         user.setRegistrationDate(new Date());
@@ -109,11 +109,11 @@ public class UserService {
 
     private void validateName(String name, String fieldName) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException(fieldName + " cannot be empty or contain only whitespace");
+            throw new IllegalArgumentException(fieldName + " не может быть пустым или состоять только из пробелов");
         } else if (!name.matches(NAME_REGEX)) {
-            throw new IllegalArgumentException(fieldName + " must contain only letters");
+            throw new IllegalArgumentException(fieldName + " должно содержать только буквы");
         } else if (name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException(fieldName + " length must not exceed " + NAME_MAX_LENGTH + " characters");
+            throw new IllegalArgumentException(fieldName + " не должно превышать " + NAME_MAX_LENGTH + " символов");
         }
     }
 
@@ -127,11 +127,11 @@ public class UserService {
 
     public User login(String email, String password) {
         if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Missing email.");
+            throw new IllegalArgumentException("Отсутствует email");
         }
 
         if (password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("Missing password.");
+            throw new IllegalArgumentException("Отсутствует пароль");
         }
 
         User user = userRepository.findByEmail(email);
@@ -148,7 +148,7 @@ public class UserService {
             return user;
         }
 
-        throw new IllegalArgumentException("Invalid email or password.");
+        throw new IllegalArgumentException("Неверный email или пароль");
     }
 
     public void enableTwoFactorAuth(Long userId) {
@@ -157,16 +157,15 @@ public class UserService {
             User user = optionalUser.get();
 
             if (user.getTwoFactorVerified()) {
-                throw new IllegalArgumentException("Two-factor authentication already enabled");
+                throw new IllegalArgumentException("Двухфакторная аутентификация уже включена");
             }
 
             user.setTwoFactorVerified(true);
             userRepository.save(user);
         } else {
-            throw new IllegalArgumentException("User not found");
+            throw new IllegalArgumentException("Пользователь не найден");
         }
     }
-
 
     public void disableTwoFactorAuth(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -174,15 +173,16 @@ public class UserService {
             User user = optionalUser.get();
 
             if (!user.getTwoFactorVerified()) {
-                throw new IllegalArgumentException("Two-factor authentication already disabled");
+                throw new IllegalArgumentException("Двухфакторная аутентификация уже отключена");
             }
 
             user.setTwoFactorVerified(false);
             userRepository.save(user);
         } else {
-            throw new IllegalArgumentException("User not found");
+            throw new IllegalArgumentException("Пользователь не найден");
         }
     }
+
 
     public boolean passwordsMatch(String hashedPassword, String plainPassword) {
         return passwordEncoder.matches(plainPassword, hashedPassword);
@@ -239,7 +239,7 @@ public class UserService {
                 User user = optionalUser.get();
 
                 if (passwordResetVerificationCode.getExpirationTime().isBefore(LocalDateTime.now())) {
-                    throw new IllegalArgumentException("Verification code has expired");
+                    throw new IllegalArgumentException("Новый пароль не соответствует требованиям к сложности");
                 }
 
                 if (!validatePassword(newPassword)) {
@@ -250,20 +250,19 @@ public class UserService {
 
                     return true;
                 } else {
-                    throw new IllegalArgumentException("New password does not meet complexity requirements");
+                    throw new IllegalArgumentException("Новый пароль не соответствует требованиям к сложности");
                 }
             } else {
-                throw new IllegalArgumentException("User not found");
+                throw new IllegalArgumentException("Пользователь не найден");
             }
         } else {
-            throw new IllegalArgumentException("Invalid verification code");
+            throw new IllegalArgumentException("Неверный код подтверждения");
         }
     }
 
-
     public UserProfileBom getUserInfoById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with userId: " + userId));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден с userId: " + userId));
 
         UserProfileBom userResponseDTO = new UserProfileBom();
         userResponseDTO.setUserId(user.getId());
@@ -275,7 +274,7 @@ public class UserService {
         userResponseDTO.setTwoFactorEnabled(user.getTwoFactorVerified());
 
         Profile userProfile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Profile not found for userId: " + userId));
+                .orElseThrow(() -> new RuntimeException("Профиль не найден для userId: " + userId));
 
         userResponseDTO.setProfileId(userProfile.getId());
         userResponseDTO.setDescription(userProfile.getDescription());
@@ -306,12 +305,12 @@ public class UserService {
                 userDetailsDTO.setCountry(userProfile.getCountry());
                 userDetailsDTO.setCity(userProfile.getCity());
             } else {
-                throw new RuntimeException("Profile not found for userId: " + userId);
+                throw new RuntimeException("Профиль не найден для userId: " + userId);
             }
 
             return userDetailsDTO;
         } else {
-            throw new RuntimeException("User not found with userId: " + userId);
+            throw new RuntimeException("Пользователь не найден с userId: " + userId);
         }
     }
 
@@ -330,19 +329,19 @@ public class UserService {
                 UserVerificationCode userVerificationCode = optionalVerificationCode.get();
 
                 if (userVerificationCode.getRequestType() != RequestType.PASSWORD_CHANGE) {
-                    throw new IllegalArgumentException("Invalid request type for password change");
+                    throw new IllegalArgumentException("Неверный тип запроса для изменения пароля");
                 }
 
                 if (userVerificationCode.getExpirationTime().isBefore(LocalDateTime.now())) {
-                    throw new IllegalArgumentException("Verification code has expired");
+                    throw new IllegalArgumentException("Код подтверждения истек");
                 }
 
                 if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-                    throw new IllegalArgumentException("Invalid current password");
+                    throw new IllegalArgumentException("Неверный текущий пароль");
                 }
 
                 if (validatePassword(newPassword)) {
-                    throw new IllegalArgumentException("Password does not meet the complexity requirements");
+                    throw new IllegalArgumentException("Пароль не соответствует требованиям к сложности");
                 }
 
                 user.setPassword(passwordEncoder.encode(newPassword));
@@ -352,10 +351,10 @@ public class UserService {
 
                 return true;
             } else {
-                throw new IllegalArgumentException("Invalid verification code");
+                throw new IllegalArgumentException("Неверный код подтверждения");
             }
         } else {
-            throw new IllegalArgumentException("User not found");
+            throw new IllegalArgumentException("Пользователь не найден");
         }
     }
 

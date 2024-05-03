@@ -55,7 +55,7 @@ public class EmailService {
             Transport.send(message);
             return true;
         } catch (MessagingException e) {
-            Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, "Error sending verification code email to " + user.getEmail(), e);
+            Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, "Ошибка при отправке проверочного кода по электронной почте на " + user.getEmail(), e);
             return false;
         }
     }
@@ -101,7 +101,7 @@ public class EmailService {
             Transport.send(message);
             return true;
         } catch (Exception e) {
-            Logger.getLogger(EmailService.class.getName()).log(Level.SEVERE, "Error sending password reset confirmation email to " + user.getEmail(), e);
+            Logger.getLogger(EmailService.class.getName()).log(Level.SEVERE, "Ошибка при отправке проверочного кода по электронной почте на " + user.getEmail(), e);
             return false;
         }
     }
@@ -152,7 +152,7 @@ public class EmailService {
             Transport.send(message);
             return true;
         } catch (MessagingException e) {
-            Logger.getLogger(EmailService.class.getName()).log(Level.SEVERE, "Error sending account deletion confirmation email to " + user.getEmail(), e);
+            Logger.getLogger(EmailService.class.getName()).log(Level.SEVERE, "Ошибка при отправке проверочного кода по электронной почте на " + user.getEmail(), e);
             return false;
         }
     }
@@ -202,7 +202,7 @@ public class EmailService {
             Transport.send(message);
             return true;
         } catch (Exception e) {
-            Logger.getLogger(EmailService.class.getName()).log(Level.SEVERE, "Error sending password reset email to " + user.getEmail(), e);
+            Logger.getLogger(EmailService.class.getName()).log(Level.SEVERE, "Ошибка при отправке проверочного кода по электронной почте на " + user.getEmail(), e);
             return false;
         }
     }
