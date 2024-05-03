@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import { deleteSession, getToken, getUser } from '@/modules/auth';
+import apiClient from '@/modules/ApiClient';
+import { deleteSession, getUser } from '@/modules/auth';
 export default {
     name: 'modal-delete-account',
     data() {
@@ -39,43 +40,15 @@ export default {
     },
     methods: {
         async sendDeleteAccountCode() {
-            try {
-                const response = await fetch('/auth/delete', {
-                    method: 'delete',
-                    headers: {
-                        'Authorization': 'Bearer ' + getToken(),
-                        'Content-Type': 'application/json'
-                    },
-                });
-
-                const data = await response.text();
-                console.log(data);
+            await apiClient.auth.delete(() => {
                 this.modal = 'confirm-delete';
-
-            } catch (error) {
-                console.error(error);
-            }
+            });
         },
         async confirmAccountDelete() {
-            try {
-                const response = await fetch('/auth/confirm-delete', {
-                    method: 'delete',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: getUser().userId,
-                        verificationCode: this.verificationCode
-                    })
-                });
-
-                const data = await response.text();
-                console.log(data);
-                deleteSession();
-
-            } catch (error) {
-                console.error(error);
-            }
+            await apiClient.auth.confirmDelete({
+                userId: getUser().userId,
+                verificationCode: this.verificationCode
+            }, () => deleteSession());
         },
         hideModal() {
             this.modal = '';

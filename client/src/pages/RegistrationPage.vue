@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import apiClient from '@/modules/ApiClient';
 import { checkToken } from '../modules/auth';
 
 export default {
@@ -61,35 +62,20 @@ export default {
 		},
 		async register(event) {
 			event.preventDefault();
-			
+
 			if (!this.validateForm()) {
 				this.errorMessage = true;
 				return;
 			}
-			try {
-				const response = await fetch('/auth/register', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						firstName: this.firstName,
-						lastName: this.lastName,
-						email: this.email,
-						password: this.password
-					})
-				});
 
-				const data = await response.json();
-				console.log(data);
-
-				if (data['id']) {
-					this.$router.push('/login');
-				}
-
-			} catch (error) {
-				console.error(error);
-			}
+			await apiClient.auth.register({
+				firstName: this.firstName,
+				lastName: this.lastName,
+				email: this.email,
+				password: this.password
+			}, () => {
+				this.$router.push('/login');
+			});
 		}
 	}
 };

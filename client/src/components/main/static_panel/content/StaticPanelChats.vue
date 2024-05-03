@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { getUser } from '@/modules/auth';
+import apiClient from '@/modules/ApiClient';
 
 export default {
     data() {
@@ -28,42 +28,11 @@ export default {
     },
     created() {
         this.emitter.on('create-chat', async (members) => {
-            try {
-                const response = await fetch('/chat/createChat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(members)
-                });
-
-                const data = await response.json();
-                console.log(data);
-                this.openChat(data);
-
-            } catch (error) {
-                console.error(error);
-            }
+            await apiClient.chat.createChat(members, (data) => this.openChat(data));
         });
     },
     async mounted() {
-        const user = getUser();
-        if (!user) return;
-        try {
-            const response = await fetch('/chat/getUserChats?user_id=' + user.userId.toString(), {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            });
-
-            const data = await response.json();
-            console.log(data);
-            this.chats = data;
-
-        } catch (error) {
-            console.error(error);
-        }
+        await apiClient.chat.getUserChats((data) => this.chats = data);
     },
     computed: {
         filteredChats() {

@@ -13,31 +13,33 @@
                 <date-input v-model="firstName" :value="user.birthday">Дата рождения</date-input>
                 <form-input v-model="firstName" :value="user.country" data="Укажите страну">Страна</form-input>
                 <form-input v-model="firstName" :value="user.city" data="Укажите город">Город</form-input>
-                <email-input v-model="firstName" :data="user.email"
-                    style="pointer-events: none;">Почта</email-input>
+                <email-input v-model="firstName" :data="user.email" style="pointer-events: none;">Почта</email-input>
                 <password-input class="password" v-model="firstName" data="**********"
                     style="pointer-events: none;">Пароль</password-input>
             </post-grid>
-
-            <div class="toggle-wrapper">
-                <input name="terms" id="terms" type="checkbox" value="0" required>
-                <label for="terms">Включить двухфакторнуй аутентификацию</label>
-            </div>
-            <submit-button class="submit" data="Сохранить"></submit-button>
-            <div class="text-button-container" :class="$store.state.theme">
-                <div class="text-button" @click="changePasswordRequest">Изменить пароль</div>
-                <div class="text-button delete" @click="deleteAccountRequest">Удалить аккаунт</div>
-            </div>
         </form>
+
+        <div class="toggle-wrapper">
+            <input name="terms" id="terms" type="checkbox" :value="user.twoFactorEnabled" v-model="twoFactorEnabled">
+            <label for="terms">Включить двухфакторнуй аутентификацию</label>
+        <submit-button data="Включить" @click="toggleTwoFactorAuth"></submit-button>
+        </div>
+        <submit-button class="submit" data="Сохранить"></submit-button>
+        <div class="text-button-container" :class="$store.state.theme">
+            <div class="text-button" @click="changePasswordRequest">Изменить пароль</div>
+            <div class="text-button delete" @click="deleteAccountRequest">Удалить аккаунт</div>
+        </div>
     </content-block>
 </template>
 
 <script>
+import apiClient from '@/modules/ApiClient';
 import { getUser } from '@/modules/auth';
 export default {
     data() {
         return {
             user: {},
+            twoFactorEnabled: false
         }
     },
     mounted() {
@@ -50,6 +52,14 @@ export default {
         changePasswordRequest() {
             this.emitter.emit('change-password-request');
         },
+        async toggleTwoFactorAuth() {
+            const enabled = this.twoFactorEnabled;
+            if (enabled) {
+                apiClient.auth.enableTwoFactorAuth();
+            } else {
+                apiClient.auth.disableTwoFactorAuth();
+            }
+        }
     }
 }
 </script>
