@@ -6,9 +6,9 @@ spring:
     allow-bean-definition-overriding: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/postgres
     username: postgres
-    password: 1234567
+    password: 12345
 
   jpa:
     open-in-view: false
