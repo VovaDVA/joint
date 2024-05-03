@@ -1,13 +1,14 @@
 jwt:
   secret: 984hg493gh0439thr0429guru2309yh937gc763fe87t3f89723gf
   lifetime: 20160m
+
 spring:
   security:
     user:
       password: dddf28b9-bc07-4478-bc0c-b399ce0eb716
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/postgres
     username: postgres
     password: 12345
 
