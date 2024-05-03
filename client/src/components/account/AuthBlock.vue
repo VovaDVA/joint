@@ -15,32 +15,30 @@ export default {
 	max-width: 500px;
 	height: fit-content;
 	position: fixed;
-	top: calc(100vh * 0.3);
+	top: 0;
+	bottom: 0;
 	right: 0;
 	left: 0;
-	margin: 0 auto;
+	margin: auto;
 	z-index: 10000;
 
 	padding: 20px;
-	border: 1px #ffffff7c solid;
+	border: 1px #ffffff4f solid;
 	border-radius: 20px;
-	background: rgba(0, 0, 0, 0.5);
+	background: rgb(21, 27, 37);
 }
 
 .auth-block.light-theme {
 	border: 1px #0000007c solid;
-	background: #ebebeb;
+	background: rgb(243, 243, 243);
 	color: #000;
 }
 
 @media (max-width: 600px) {
-
 	.auth-block,
 	.auth-block.light-theme {
 		border: none;
-		background: none;
 		margin: auto;
-		margin-top: -50px;
 	}
 }
 </style>

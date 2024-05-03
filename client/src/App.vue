@@ -19,6 +19,7 @@
         <div class="intro_fade"></div>
     </div>
     <modal-delete-account></modal-delete-account>
+    <modal-change-password></modal-change-password>
 </template>
 
 <script>

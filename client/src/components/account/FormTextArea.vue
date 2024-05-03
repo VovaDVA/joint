@@ -4,7 +4,7 @@
             <slot></slot>
         </label>
         <div class="input-wrapper">
-            <textarea class="input-field" :placeholder="data" v-bind="$attrs" v-model="value" rows="5"></textarea>
+            <textarea class="input-field" :placeholder="data" v-bind="$attrs" v-model="value" rows="4"></textarea>
         </div>
     </div>
 </template>

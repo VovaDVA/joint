@@ -9,6 +9,7 @@ import PostGrid from "@/components/main/page/PostGrid.vue";
 // import ModalChangeBanner from "@/components/main/modals/ModalChangeBanner.vue";
 // import ModalChangeAvatar from "@/components/main/modals/ModalChangeAvatar.vue";
 import ModalDeleteAccount from "@/components/main/modals/ModalDeleteAccount.vue";
+import ModalChangePassword from "@/components/main/modals/ModalChangePassword.vue";
 
 // Input
 import FormInput from '@/components/account/FormInput.vue';
@@ -65,7 +66,7 @@ import MusicPreviewBlock from "./main/static_panel/content/music/MusicPreviewBlo
 import NotificationPreviewBlock from "./main/static_panel/content/notifications/NotificationPreviewBlock.vue";
 
 export default [
-    PageHeader, ContentGrid, PostGrid, ModalDeleteAccount,//ModalChangeAvatar, ModalChangeBanner,
+    PageHeader, ContentGrid, PostGrid, ModalDeleteAccount, ModalChangePassword,//ModalChangeAvatar, ModalChangeBanner,
     FormBlock,
     ContentBlockTitle, ContentBlockText,
     BarChart, CalendarBlock,
