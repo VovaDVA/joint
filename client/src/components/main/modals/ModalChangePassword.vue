@@ -1,47 +1,55 @@
 <template>
     <div v-if="modal !== ''" class="dark-bg"></div>
-    <auth-block v-if="modal == 'delete'">
-        <content-block-text>Вы действительно хотите удалить аккаунт?</content-block-text>
+    <auth-block v-if="modal == 'request'">
+        <content-block-title>Изменить пароль?</content-block-title>
         <div class="modal-buttons">
-            <div class="submit-btn" :class="$store.state.theme" @click="hideModal">Нет</div>
-            <div class="submit-btn red" @click="sendDeleteAccountCode">Да</div>
+            <div class="submit-btn" @click="hideModal">Нет</div>
+            <div class="submit-btn" @click="sendCode">Да</div>
         </div>
     </auth-block>
-    <auth-block v-if="modal == 'confirm-delete'">
-        <content-block-title>Удаление аккаунта</content-block-title>
-        <form @submit.prevent="confirmAccountDelete">
+    <auth-block v-if="modal == 'enter-code'">
+        <content-block-title>Смена пароля</content-block-title>
+        <form @submit.prevent="submitCode">
             <form-input v-model="verificationCode">На ваш email отправлен код</form-input>
-            <div class="modal-buttons">
-                <div class="submit-btn" :class="$store.state.theme" @click="hideModal">Отмена</div>
-                <input class="submit-btn red" :class="$store.state.theme" type="submit" name="submit"
-                    value="Удалить аккаунт">
-            </div>
+            <input class="submit-btn" :class="$store.state.theme" type="submit" name="submit"
+                value="Отправить">
+        </form>
+    </auth-block>
+    <auth-block v-if="modal == 'confirm'">
+        <content-block-title>Смена пароля</content-block-title>
+        <form @submit.prevent="confirmChangePassword">
+            <password-input v-model="password">Текущий пароль</password-input>
+            <password-input v-model="newPassword">Новый пароль</password-input>
+            <input class="submit-btn" :class="$store.state.theme" type="submit" name="submit"
+                value="Подтвердить">
         </form>
     </auth-block>
 </template>
 
 <script>
-import { deleteSession, getToken, getUser } from '@/modules/auth';
+import { getToken, getUser } from '@/modules/auth';
 export default {
-    name: 'modal-delete-account',
+    name: 'modal-change-password',
     data() {
         return {
             user: {},
             modal: '',
             verificationCode: '',
+            password: '',
+            newPassword: ''
         }
     },
     mounted() {
         this.user = getUser();
-        this.emitter.on('delete-account-request', () => {
-            this.modal = 'delete';
+        this.emitter.on('change-password-request', () => {
+            this.modal = 'request';
         });
     },
     methods: {
-        async sendDeleteAccountCode() {
+        async sendCode() {
             try {
-                const response = await fetch('/auth/delete', {
-                    method: 'delete',
+                const response = await fetch('/auth/change-password', {
+                    method: 'post',
                     headers: {
                         'Authorization': 'Bearer ' + getToken(),
                         'Content-Type': 'application/json'
@@ -50,28 +58,33 @@ export default {
 
                 const data = await response.text();
                 console.log(data);
-                this.modal = 'confirm-delete';
+                this.modal = 'enter-code';
 
             } catch (error) {
                 console.error(error);
             }
         },
-        async confirmAccountDelete() {
+        async submitCode() {
+            this.modal = 'confirm';
+        },
+        async confirmChangePassword() {
             try {
-                const response = await fetch('/auth/confirm-delete', {
-                    method: 'delete',
+                const response = await fetch('/auth/confirm-change-password', {
+                    method: 'post',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         userId: getUser().userId,
-                        verificationCode: this.verificationCode
+                        verificationCode: this.verificationCode,
+                        currentPassword: this.password,
+                        newPassword: this.newPassword
                     })
                 });
 
                 const data = await response.text();
                 console.log(data);
-                deleteSession();
+                this.hideModal();
 
             } catch (error) {
                 console.error(error);
@@ -127,7 +140,7 @@ export default {
 .modal-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 20px;
 }
 
 .red {

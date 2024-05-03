@@ -4,24 +4,30 @@
         <content-block-title>Настройки</content-block-title>
 
         <form class="settings-form" enctype="multipart/form-data">
-            <form-text-area v-model="firstName" :value="user.description" :data="'Расскажите о себе...'">Обо
-                мне</form-text-area>
-            <form-input v-model="firstName" :value="user.firstName">Имя</form-input>
-            <form-input v-model="firstName" :value="user.lastName">Фамилия</form-input>
-            <date-input v-model="firstName" :value="user.birthday">Дата рождения</date-input>
-            <form-input v-model="firstName" :value="user.country" data="Укажите страну">Страна</form-input>
-            <form-input v-model="firstName" :value="user.city" data="Укажите город">Город</form-input>
-            <email-input v-model="firstName" :value="user.email">Почта</email-input>
-            <password-input class="password" v-model="firstName" data="**********"
-                style="pointer-events: none;">Пароль</password-input>
+            <form-text-area class="full-width" v-model="firstName" :value="user.description"
+                :data="'Расскажите о себе...'">Краткая информация</form-text-area>
+            <post-grid>
+                <form-input v-model="firstName" :value="user.firstName">Имя</form-input>
+                <form-input v-model="firstName" :value="user.lastName">Фамилия</form-input>
+                <form-input v-model="firstName" :value="user.birthday">Пол</form-input>
+                <date-input v-model="firstName" :value="user.birthday">Дата рождения</date-input>
+                <form-input v-model="firstName" :value="user.country" data="Укажите страну">Страна</form-input>
+                <form-input v-model="firstName" :value="user.city" data="Укажите город">Город</form-input>
+                <email-input v-model="firstName" :data="user.email"
+                    style="pointer-events: none;">Почта</email-input>
+                <password-input class="password" v-model="firstName" data="**********"
+                    style="pointer-events: none;">Пароль</password-input>
+            </post-grid>
 
             <div class="toggle-wrapper">
                 <input name="terms" id="terms" type="checkbox" value="0" required>
                 <label for="terms">Включить двухфакторнуй аутентификацию</label>
             </div>
-
-            <submit-button class="submit" data="Сохранить изменения"></submit-button>
-            <div class="delete" @click="deleteAccountRequest">Удалить аккаунт</div>
+            <submit-button class="submit" data="Сохранить"></submit-button>
+            <div class="text-button-container" :class="$store.state.theme">
+                <div class="text-button" @click="changePasswordRequest">Изменить пароль</div>
+                <div class="text-button delete" @click="deleteAccountRequest">Удалить аккаунт</div>
+            </div>
         </form>
     </content-block>
 </template>
@@ -41,17 +47,28 @@ export default {
         deleteAccountRequest() {
             this.emitter.emit('delete-account-request');
         },
+        changePasswordRequest() {
+            this.emitter.emit('change-password-request');
+        },
     }
 }
 </script>
 
 <style scoped>
 .settings-form {
-    flex: 2;
     margin-right: 10px;
-    max-width: 600px;
     margin: auto;
 }
+
+.text-button-container.light-theme {
+    color: #000000af;
+}
+
+/* .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    grid-gap: 10px;
+} */
 
 /* input,
 .settings_cancel {
@@ -87,11 +104,15 @@ input {
     text-align: left;
 }
 
-.delete {
+.text-button {
+    font-size: 15px;
     margin-top: 20px;
-    color: #ff6161;
     cursor: pointer;
     user-select: none;
+}
+
+.text-button.delete {
+    color: #ff6161;
 }
 
 .submit-btn {
@@ -157,5 +178,13 @@ input {
     right: 0;
     background-color: #00000071;
     z-index: 10000;
+}
+
+.text-button-container {
+    color: #ffffffaf;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 </style>
