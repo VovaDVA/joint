@@ -6,4 +6,4 @@ WORKDIR /joint/profile
 
 COPY ./target/*.jar .
 
-CMD ["java", "-jar", "jointProfile-0.0.1-SNAPSHOT.jar"]
+CMD java -jar *.jar
