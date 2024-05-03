@@ -44,6 +44,26 @@ services:
 
     restart: unless-stopped
 
+  profile:
+    container_name: joint_profile
+    image: joint_profile:test
+    build: ./profile
+    environment:
+      POSTGRES_HOST: postgres
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+
+    networks:
+      - joint_net
+
+    ports:
+      - "8081:8081"
+
+    restart: unless-stopped
+
 volumes:
   joint_data:
 
