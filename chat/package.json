@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles",
     "start": "nodemon index.js",
-    "coverage": "jest --coverage --detectOpenHandles"
+    "cover": "jest --coverage --detectOpenHandles"
   },
   "author": "sergey",
   "license": "ISC",
