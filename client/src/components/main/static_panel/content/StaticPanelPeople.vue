@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { getToken } from '@/modules/auth';
+import apiClient from '@/modules/ApiClient';
 
 export default {
     data() {
@@ -26,23 +26,7 @@ export default {
         };
     },
     async mounted() {
-        const token = getToken();
-        try {
-            const response = await fetch('/auth/get-all', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                },
-            });
-
-            const data = await response.json();
-            this.items = data;
-            console.log(data);
-
-        } catch (error) {
-            console.error(error);
-        }
+        await apiClient.auth.getAll((data) => this.items = data);
     },
     computed: {
         filteredContent() {

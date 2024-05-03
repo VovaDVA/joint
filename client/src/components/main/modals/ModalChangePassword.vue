@@ -11,8 +11,7 @@
         <content-block-title>Смена пароля</content-block-title>
         <form @submit.prevent="submitCode">
             <form-input v-model="verificationCode">На ваш email отправлен код</form-input>
-            <input class="submit-btn" :class="$store.state.theme" type="submit" name="submit"
-                value="Отправить">
+            <input class="submit-btn" :class="$store.state.theme" type="submit" name="submit" value="Отправить">
         </form>
     </auth-block>
     <auth-block v-if="modal == 'confirm'">
@@ -20,14 +19,14 @@
         <form @submit.prevent="confirmChangePassword">
             <password-input v-model="password">Текущий пароль</password-input>
             <password-input v-model="newPassword">Новый пароль</password-input>
-            <input class="submit-btn" :class="$store.state.theme" type="submit" name="submit"
-                value="Подтвердить">
+            <input class="submit-btn" :class="$store.state.theme" type="submit" name="submit" value="Подтвердить">
         </form>
     </auth-block>
 </template>
 
 <script>
-import { getToken, getUser } from '@/modules/auth';
+import apiClient from '@/modules/ApiClient';
+import { getUser } from '@/modules/auth';
 export default {
     name: 'modal-change-password',
     data() {
@@ -47,48 +46,20 @@ export default {
     },
     methods: {
         async sendCode() {
-            try {
-                const response = await fetch('/auth/change-password', {
-                    method: 'post',
-                    headers: {
-                        'Authorization': 'Bearer ' + getToken(),
-                        'Content-Type': 'application/json'
-                    },
-                });
-
-                const data = await response.text();
-                console.log(data);
+            await apiClient.auth.changePassword({}, () => {
                 this.modal = 'enter-code';
-
-            } catch (error) {
-                console.error(error);
-            }
+            });
         },
         async submitCode() {
             this.modal = 'confirm';
         },
         async confirmChangePassword() {
-            try {
-                const response = await fetch('/auth/confirm-change-password', {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: getUser().userId,
-                        verificationCode: this.verificationCode,
-                        currentPassword: this.password,
-                        newPassword: this.newPassword
-                    })
-                });
-
-                const data = await response.text();
-                console.log(data);
-                this.hideModal();
-
-            } catch (error) {
-                console.error(error);
-            }
+            await apiClient.auth.confirmChangePassword({
+                userId: getUser().userId,
+                verificationCode: this.verificationCode,
+                currentPassword: this.password,
+                newPassword: this.newPassword
+            }, () => this.hideModal());
         },
         hideModal() {
             this.modal = '';

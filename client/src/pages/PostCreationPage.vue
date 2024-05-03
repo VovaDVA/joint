@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import apiClient from '@/modules/ApiClient';
 import { checkToken, getUser, getUserName } from '@/modules/auth';
 
 export default {
@@ -30,27 +31,13 @@ export default {
             event.preventDefault();
 
             if (this.content == '' && this.title == '') return;
-            try {
-                const response = await fetch('/post/createPost', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        author_id: getUser().userId,
-                        author_name: getUserName(),
-                        title: this.title,
-                        content: this.content
-                    })
-                });
 
-                const data = await response.json();
-                console.log(data);
-                this.$router.push('/');
-
-            } catch (error) {
-                console.error(error);
-            }
+            await apiClient.content.createPost({
+                author_id: getUser().userId,
+                author_name: getUserName(),
+                title: this.title,
+                content: this.content
+            }, () => this.$router.push('/'));
         }
     }
 }

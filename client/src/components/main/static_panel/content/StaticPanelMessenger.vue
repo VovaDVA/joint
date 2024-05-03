@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import apiClient from '@/modules/ApiClient';
 import { getUser, getUserId, getUserById } from '@/modules/auth';
 import { io } from 'socket.io-client';
 
@@ -121,29 +122,17 @@ export default {
             }
         },
         async editMessage() {
-            try {
-                const response = await fetch('/message/editMessage', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message_id: this.selectedMessage._id,
-                        text: this.newMessage,
-                    })
-                });
-                const data = await response.json();
-                console.log(data);
+            await apiClient.message.editMessage({
+                message_id: this.selectedMessage._id,
+                text: this.newMessage,
+            }, (data) => {
                 const message = this.messages.find(message => message._id == data._id);
                 const index = this.messages.indexOf(message);
                 this.messages[index] = data;
 
                 this.newMessage = '';
                 this.messageEdited = false;
-
-            } catch (error) {
-                console.error(error);
-            }
+            });
         },
         openChatList() {
             this.$emit('open-chat-list');

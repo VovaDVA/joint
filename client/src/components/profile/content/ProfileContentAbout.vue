@@ -1,7 +1,7 @@
 <template>
     <content-block>
         <content-block-title>Об авторе</content-block-title>
-        <content-block-text>{{ getUserDescription }}
+        <content-block-text>{{ getDescription() }}
             <p>Меня зовут Владимир и я занимаюсь разработкой соцсети Joint.</p>
         </content-block-text>
     </content-block>
@@ -11,7 +11,8 @@
 </template>
 
 <script>
-import { getUser, getUserDescription } from '@/modules/auth';
+import apiClient from '@/modules/ApiClient';
+import { getUserDescription } from '@/modules/auth';
 export default {
     data() {
         return {
@@ -19,15 +20,7 @@ export default {
         };
     },
     async mounted() {
-        try {
-            const response = await fetch('/post/getPostsByAuthor?author_id=' + getUser().userId);
-            const data = await response.json();
-            console.log(data);
-            this.posts = data;
-
-        } catch (error) {
-            console.error(error);
-        }
+        await apiClient.content.getPostsByAuthor((data) => this.posts = data);
     },
     methods: {
         getDescription() {

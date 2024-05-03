@@ -6,6 +6,8 @@
 </template>
 
 <script>
+import apiClient from '@/modules/ApiClient';
+
 export default {
     data() {
         return {
@@ -13,16 +15,7 @@ export default {
         };
     },
     async mounted() {
-        try {
-            const response = await fetch('/post/getAllPosts');
-
-            const data = await response.json();
-            console.log(data);
-            this.posts = data;
-
-        } catch (error) {
-            console.error(error);
-        }
+        await apiClient.content.getAllPosts((data) => this.posts = data);
     },
 }
 </script>

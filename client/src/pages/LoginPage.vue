@@ -10,7 +10,7 @@
 		<div class="no_account">Нет аккаунта? - <router-link to="/register">Зарегистрироваться</router-link></div>
 		<div class="lost-password" @click="resetPassword">Забыли пароль?</div>
 	</auth-block>
-	
+
 	<auth-block v-if="resetForm">
 		<content-block-title>Восстановление пароля</content-block-title>
 		<form v-if="form == 'send-code'" @submit.prevent="sendResetCode">
@@ -26,10 +26,19 @@
 			<input :class="$store.state.theme" type="submit" name="submit" value="Подтвердить">
 		</form>
 	</auth-block>
+
+	<auth-block v-if="form == 'two-factor'">
+		<content-block-title>Авторизация</content-block-title>
+		<form @submit.prevent="confirmTwoFactor">
+			<email-input v-model="email">На Ваш email отправлен код</email-input>
+			<input :class="$store.state.theme" type="submit" name="submit" value="Подтвердить">
+		</form>
+	</auth-block>
 </template>
 
 <script>
-import { saveToken, checkToken } from '../modules/auth';
+import apiClient from '@/modules/ApiClient';
+import { checkToken, saveToken } from '../modules/auth';
 
 export default {
 	data() {
@@ -49,79 +58,53 @@ export default {
 	methods: {
 		async login(event) {
 			event.preventDefault();
-			try {
-				const response = await fetch('/auth/login', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						email: this.email,
-						password: this.password
-					})
-				});
-
-				const data = await response.json();
-				console.log(data);
-
-				if (data['token']) {
-					saveToken(data['token']);
-					this.$router.push('/');
-				}
-
-			} catch (error) {
-				console.error(error);
-			}
+			await apiClient.auth.login({ email: this.email, password: this.password }, (data) => {
+				// this.form = 'two-factor';
+				saveToken(data['token']);
+				this.$router.push('/');
+			});
 		},
 		resetPassword() {
 			this.resetForm = true;
 			this.email = '';
 		},
 		async sendResetCode() {
-			try {
-				const response = await fetch('/auth/request-reset-password?email=' + this.email, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						email: this.email,
-					})
-				});
-
-				const data = await response.text();
+			await apiClient.auth.sendPasswordResetCode({ email: this.email }, (data) => {
 				this.resetPasswordMessage = data;
-				if (data !== 'Пользователь с таким email не найден') {
-					this.form = 'enter-code';
-				}
-				
-			} catch (error) {
-				console.error(error);
-			}
+				this.form = 'enter-code';
+			});
+			// try {
+			// 	const response = await fetch('/auth/request-reset-password?email=' + this.email, {
+			// 		method: 'POST',
+			// 		headers: {
+			// 			'Content-Type': 'application/json'
+			// 		},
+			// 		body: JSON.stringify({
+			// 			email: this.email,
+			// 		})
+			// 	});
+
+			// 	const data = await response.text();
+			// 	this.resetPasswordMessage = data;
+			// 	if (data !== 'Пользователь с таким email не найден') {
+			// 		this.form = 'enter-code';
+			// 	}
+
+			// } catch (error) {
+			// 	console.error(error);
+			// }
 		},
 		enterResetCode() {
 			this.form = 'enter-new-password';
 		},
 		async confirmResetPassword() {
-			console.log(this.newPassword)
-			try {
-				const response = await fetch('/auth/confirm-reset-password', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						verificationCode: this.resetPasswordCode,
-						newPassword: this.newPassword
-					})
-				});
+			await apiClient.auth.confirmPasswordReset({
+				verificationCode: this.resetPasswordCode,
+				newPassword: this.newPassword
+			}, () => {});
+		},
+		confirmTwoFactor() {
 
-				const data = await response.text();
-				console.log(data);
-
-			} catch (error) {
-				console.error(error);
-			}
 		}
 	}
 };

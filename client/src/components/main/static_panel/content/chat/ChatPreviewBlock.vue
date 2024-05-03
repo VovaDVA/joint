@@ -15,6 +15,7 @@
 </template>
 
 <script>
+// import apiClient from '@/modules/ApiClient';
 import { getUserById, getUserId } from '@/modules/auth';
 
 export default {
@@ -27,7 +28,7 @@ export default {
     },
     async mounted() {
         const otherUserId = this.chat.members.find(id => getUserId(id));
-        // console.log(this.chat.members, otherUserId);
+        // this.otherUser = await apiClient.auth.getUserById(() => {}, otherUserId);
         this.otherUser = await getUserById(otherUserId);
         // console.log(this.otherUser)
     },
