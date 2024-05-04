@@ -3,9 +3,9 @@ services:
     container_name: joint_db
     image: postgres
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: joint_account
+      POSTGRES_USER: joint_account_admin
+      POSTGRES_PASSWORD: p;rXG1Y75E
 
     volumes:
       - joint_data:/var/lib/postgresql/data/
