@@ -56,6 +56,10 @@ services:
         condition: service_healthy
         restart: true
 
+      auth:
+        condition: service_started
+        restart: false
+
     networks:
       - joint_net
 
