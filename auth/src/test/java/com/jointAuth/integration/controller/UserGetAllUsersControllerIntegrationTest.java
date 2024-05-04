@@ -110,7 +110,7 @@ public class UserGetAllUsersControllerIntegrationTest {
 
     @Test
     public void testGetAllUsers_InternalServerError() throws Exception {
-        doThrow(new RuntimeException("Internal server error"))
+        doThrow(new RuntimeException("Внутренняя ошибка сервера"))
                 .when(userService)
                 .getAllUsers();
 

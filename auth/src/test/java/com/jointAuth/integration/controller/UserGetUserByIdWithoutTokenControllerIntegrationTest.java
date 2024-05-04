@@ -133,7 +133,7 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(result -> {
                         String errorMessage = result.getResponse().getErrorMessage();
-                        assertFalse(errorMessage.contains("Required request parameter 'userId' for method parameter type Long is not present."));
+                        assertFalse(errorMessage.contains("Требуемый параметр запроса 'userId' для параметра метода типа Long отсутствует"));
                     });
         } catch (Exception e) {
             if (e instanceof MissingServletRequestParameterException) {
@@ -141,7 +141,7 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
                 assertTrue(ex.getParameterType().equals("Long"));
                 assertTrue(ex.getParameterName().equals("userId"));
             } else {
-                fail("Unexpected exception: " + e.getMessage());
+                fail("Неожиданное исключение: " + e.getMessage());
             }
         }
     }
