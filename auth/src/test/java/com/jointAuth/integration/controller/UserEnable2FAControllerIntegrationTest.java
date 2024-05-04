@@ -64,7 +64,7 @@ public class UserEnable2FAControllerIntegrationTest {
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Two-factor authentication enabled successfully"));
+                .andExpect(content().json("{\"message\":\"Двухфакторная аутентификация успешно включена\"}"));
 
         User updatedUser = userRepository.findById(testUser.getId()).get();
         assertTrue(updatedUser.getTwoFactorVerified());
@@ -105,7 +105,7 @@ public class UserEnable2FAControllerIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains("User not found"));
+            assertTrue(e.getMessage().contains("Пользователь не найден"));
         }
     }
 
@@ -117,7 +117,7 @@ public class UserEnable2FAControllerIntegrationTest {
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Two-factor authentication already enabled"));
+                .andExpect(content().json("{\"message\":\"Двухфакторная аутентификация уже включена\"}"));
     }
 
     @Test
