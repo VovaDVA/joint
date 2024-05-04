@@ -5,7 +5,7 @@ const messageService = require('../services/messageService.js');
 
 beforeAll(async () => await dbConnect()); 
 
-describe("Сreating a chat", () => {
+describe("Actions on chats", () => {
     test("Chat need to be created correctly", async () => {
         let members = ["Maxim", "Vladimir"];
         const chat = await chatService.createChat(members);  
@@ -46,11 +46,30 @@ describe("Сreating a chat", () => {
         await messageService.createMessage("65f219117586c3b69cab6a0b", "65f219117586c3b69cab6a0a", "wasted");
 
         let messages = await chatService.getMessages(id);
-        console.log(messages.length);
+        //console.log(messages.length);
 
         expect(messages.length).toBe(1); 
         expect(messages[0].chat_id).toStrictEqual(id);
         expect(messages[0].text).toStrictEqual("success");
+        await dbClear();
+    });
+
+    test("Getting all the user's chats should work correctly", async () => {
+        chat1_members = ["65f219117586c3b69cab6a01", "65f219117586c3b69cab6a02"];
+        chat2_members = ["65f219117586c3b69cab6a01", "65f219117586c3b69cab6a03"];
+
+        await chatService.createChat(chat1_members);
+        await chatService.createChat(chat2_members);
+
+        let chats = await chatService.getUserChats("65f219117586c3b69cab6a01");
+        // console.log(chats);
+        expect(chats.length).toBe(2);
+        
+        for (let chat of chats){
+            expect(chat.members.includes("65f219117586c3b69cab6a01")).toBeTruthy();
+        
+        }
+
     });
 
     test("Updating the date of the last message should work correctly", async () => {
@@ -60,7 +79,7 @@ describe("Сreating a chat", () => {
         let updatedChat = await chatService.updateLastMessageTime(chat._id);
         expect(chat).toBeTruthy();
         expect(updatedChat).toBeTruthy();
-
+        await dbClear();
     });
     
 
