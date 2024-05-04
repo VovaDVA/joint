@@ -100,7 +100,7 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        doThrow(new MessagingException("Error sending message"))
+        doThrow(new MessagingException("Сообщение об ошибке при отправке сообщения"))
                 .when(mockTransport)
                 .sendMessage(any(), any());
 
@@ -120,7 +120,7 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        doThrow(new MessagingException("Error connecting to mail server"))
+        doThrow(new MessagingException("Ошибка подключения к почтовому серверу"))
                 .when(mockTransport)
                 .connect(any(), any());
 
@@ -199,7 +199,7 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        doThrow(new MessagingException("Error sending message"))
+        doThrow(new MessagingException("Сообщение об ошибке при отправке сообщения"))
                 .when(mockTransport)
                 .sendMessage(any(), any());
 
@@ -219,7 +219,7 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        doThrow(new MessagingException("Error connecting to mail server"))
+        doThrow(new MessagingException("Ошибка подключения к почтовому серверу"))
                 .when(mockTransport)
                 .connect(any(), any());
 
@@ -291,7 +291,7 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        doThrow(new MessagingException("Error sending message")).when(mockTransport).sendMessage(any(), any());
+        doThrow(new MessagingException("Сообщение об ошибке при отправке сообщения")).when(mockTransport).sendMessage(any(), any());
 
         boolean result = emailService.sendAccountDeletionConfirmationEmail(user, "123456");
 
@@ -309,7 +309,7 @@ class EmailServiceTest {
         User user = new User();
         user.setEmail("recipient@gmail.com");
 
-        doThrow(new MessagingException("Error connecting to mail server")).when(mockTransport).connect(any(), any());
+        doThrow(new MessagingException("Ошибка подключения к почтовому серверу")).when(mockTransport).connect(any(), any());
 
         boolean result = emailService.sendAccountDeletionConfirmationEmail(user, "123456");
 
@@ -392,7 +392,7 @@ class EmailServiceTest {
         user.setEmail("recipient@gmail.com");
 
         Transport mockTransport = mock(Transport.class);
-        doThrow(new MessagingException("Error sending message"))
+        doThrow(new MessagingException("Сообщение об ошибке при отправке сообщения"))
                 .when(mockTransport)
                 .sendMessage(any(Message.class), any(Address[].class));
 
@@ -413,7 +413,7 @@ class EmailServiceTest {
         user.setEmail("recipient@gmail.com");
 
         Transport mockTransport = mock(Transport.class);
-        doThrow(new MessagingException("Error connecting to mail server"))
+        doThrow(new MessagingException("Ошибка подключения к почтовому серверу"))
                 .when(mockTransport)
                 .connect(String.valueOf(any(Address.class)), any(String.class));
 

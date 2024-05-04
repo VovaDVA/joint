@@ -106,7 +106,7 @@ public class UserServiceTest {
         newUser.setPassword("NewPassword123@");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
-        assertEquals("User with this email already exists", exception.getMessage());
+        assertEquals("Пользователь с такой электронной почтой уже существует", exception.getMessage());
 
         verify(userRepository, times(1)).findByEmail("Ivanova10@gmail.com");
         verify(userRepository, never())
@@ -114,7 +114,6 @@ public class UserServiceTest {
         verify(profileRepository, never())
                 .save(any());
     }
-
 
     @Test
     public void testRegisterUserInvalidPasswordThrowsException() {
@@ -196,7 +195,7 @@ public class UserServiceTest {
         newUser.setPassword("NewPassword123@");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
-        assertEquals("Last name cannot be empty or contain only whitespace", exception.getMessage());
+        assertEquals("Last name не может быть пустым или состоять только из пробелов", exception.getMessage());
 
         verify(userRepository, never())
                 .findByEmail(any());
@@ -233,7 +232,7 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             userService.register(user);
-        }, "First name cannot be empty or contain only whitespace");
+        }, "First name не может быть пустым или содержать только пробелы");
     }
 
     @Test
@@ -246,7 +245,7 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             userService.register(user);
-        }, "First name cannot be empty or contain only whitespace");
+        }, "First name не может быть пустым или содержать только пробелы");
     }
 
     @Test
@@ -327,7 +326,7 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             userService.register(user);
-        }, "Invalid email format");
+        }, "Неверный формат электронной почты");
     }
 
     @Test
@@ -340,7 +339,7 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             userService.register(user);
-        }, "Invalid email format");
+        }, "Неверный формат электронной почты");
     }
 
     @Test
@@ -705,7 +704,7 @@ public class UserServiceTest {
         String email = "vanya0239@gmail.com";
         when(userRepository
                 .findByEmail(email))
-                .thenThrow(new RuntimeException("Database error"));
+                .thenThrow(new RuntimeException("Ошибка в базе данных"));
 
         assertThrows(RuntimeException.class, () -> {
             userService.getUserByEmail(email);
@@ -839,13 +838,13 @@ public class UserServiceTest {
 
         when(emailService
                 .sendPasswordResetConfirmationEmail(eq(existingUser), anyString()))
-                .thenThrow(new RuntimeException("Email service error"));
+                .thenThrow(new RuntimeException("Ошибка службы электронной почты"));
 
         boolean result = false;
         try {
             result = userService.sendPasswordResetRequest(email);
         } catch (RuntimeException e) {
-            assertEquals("Email service error", e.getMessage());
+            assertEquals("Ошибка службы электронной почты", e.getMessage());
         }
 
         assertFalse(result);
@@ -907,7 +906,7 @@ public class UserServiceTest {
 
     //resetPass
     @Test
-    void testResetPasswordVerificationCodeValid() {
+    public void testResetPasswordVerificationCodeValid() {
         Long userId = 1L;
         String verificationCode = "validCode";
         String newPassword = "newPassword123@";
@@ -938,7 +937,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testResetPasswordUserNotFound() {
+    public void testResetPasswordUserNotFound() {
         String verificationCode = "validCode";
         String newPassword = "newValidPassword123!";
 
@@ -961,11 +960,11 @@ public class UserServiceTest {
             userService.resetPassword(verificationCode, newPassword);
         });
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("Пользователь не найден", exception.getMessage());
     }
 
     @Test
-    void testResetPasswordVerificationCodeNotFound() {
+    public void testResetPasswordVerificationCodeNotFound() {
         String verificationCode = "invalidCode";
         String newPassword = "newPassword123@";
 
@@ -975,12 +974,12 @@ public class UserServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.resetPassword(verificationCode, newPassword);
         });
-        assertEquals("Invalid verification code", exception.getMessage());
+        assertEquals("Неверный код подтверждения", exception.getMessage());
     }
 
 
     @Test
-    void testResetPasswordNewPasswordDoesNotMeetComplexityRequirements() {
+    public void testResetPasswordNewPasswordDoesNotMeetComplexityRequirements() {
         String verificationCode = "validCode";
         String invalidNewPassword = "short";
 
@@ -1003,11 +1002,11 @@ public class UserServiceTest {
             userService.resetPassword(verificationCode, invalidNewPassword);
         });
 
-        assertEquals("New password does not meet complexity requirements", exception.getMessage());
+        assertEquals("Новый пароль не соответствует требованиям к сложности", exception.getMessage());
     }
 
     @Test
-    void testResetPasswordVerificationCodeExpired() {
+    public void testResetPasswordVerificationCodeExpired() {
         String verificationCode = "validCode";
         String newPassword = "newValidPassword123!";
 
@@ -1030,7 +1029,7 @@ public class UserServiceTest {
             userService.resetPassword(verificationCode, newPassword);
         });
 
-        assertEquals("Verification code has expired", exception.getMessage());
+        assertEquals("Новый пароль не соответствует требованиям к сложности", exception.getMessage());
     }
 
     //получение всех пользователей
@@ -1236,7 +1235,7 @@ public class UserServiceTest {
             userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("Пользователь не найден", exception.getMessage());
     }
 
     @Test
@@ -1258,7 +1257,7 @@ public class UserServiceTest {
             userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
-        assertEquals("Invalid verification code", exception.getMessage());
+        assertEquals("Неверный код подтверждения", exception.getMessage());
     }
 
     @Test
@@ -1288,7 +1287,7 @@ public class UserServiceTest {
             userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
-        assertEquals("Invalid request type for password change", exception.getMessage());
+        assertEquals("Неверный тип запроса для изменения пароля", exception.getMessage());
     }
 
     @Test
@@ -1316,7 +1315,7 @@ public class UserServiceTest {
             userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
-        assertEquals("Verification code has expired", exception.getMessage());
+        assertEquals("Код подтверждения истек", exception.getMessage());
     }
 
     @Test
@@ -1347,7 +1346,7 @@ public class UserServiceTest {
             userService.changePassword(userId, verificationCode, newPassword, currentPassword);
         });
 
-        assertEquals("Invalid current password", exception.getMessage());
+        assertEquals("Неверный текущий пароль", exception.getMessage());
     }
 
     @Test
@@ -1379,7 +1378,7 @@ public class UserServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.changePassword(userId, invalidVerificationCode, invalidPassword, currentPassword);
         });
-        assertEquals("Password does not meet the complexity requirements", exception.getMessage());
+        assertEquals("Пароль не соответствует требованиям к сложности", exception.getMessage());
     }
 
     @Test
@@ -1587,7 +1586,7 @@ public class UserServiceTest {
 
         boolean result = userService.deleteUser(userId, verificationCode);
 
-        assertTrue(result, "User deletion should be successful");
+        assertTrue(result, "Удаление пользователя должно быть успешным");
 
         verify(userVerificationCodeRepository, times(1))
                 .deleteByUserId(userId);
@@ -1613,7 +1612,7 @@ public class UserServiceTest {
 
         boolean result = userService.deleteUser(userId, verificationCode);
 
-        assertFalse(result, "User should not be deleted because verification code is invalid");
+        assertFalse(result, "Пользователь не должен быть удален из-за недействительного проверочного кода");
     }
 
     //DelRequest
@@ -1637,7 +1636,7 @@ public class UserServiceTest {
 
         boolean result = userService.sendAccountDeletionRequest(userId);
 
-        assertTrue(result, "Account deletion request should be successfully sent");
+        assertTrue(result, "Запрос на удаление учетной записи должен быть успешно отправлен");
 
         verify(verificationCodeService)
                 .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
@@ -1655,7 +1654,7 @@ public class UserServiceTest {
 
         boolean result = userService.sendAccountDeletionRequest(userId);
 
-        assertFalse(result, "Account deletion request should not be sent because user was not found");
+        assertFalse(result, "Запрос на удаление учетной записи не должен быть отправлен, поскольку пользователь не был найден");
     }
 
     @Test
@@ -1677,7 +1676,7 @@ public class UserServiceTest {
 
         boolean result = userService.sendAccountDeletionRequest(userId);
 
-        assertFalse(result, "Account deletion request should fail due to email sending failure");
+        assertFalse(result, "Запрос на удаление учетной записи должен быть отклонен из-за сбоя отправки электронного письма");
 
         verify(verificationCodeService)
                 .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
@@ -1695,13 +1694,13 @@ public class UserServiceTest {
                 .findById(userId))
                 .thenReturn(Optional.of(user));
 
-        doThrow(new RuntimeException("Verification code update failed"))
+        doThrow(new RuntimeException("Не удалось обновить проверочный код"))
                 .when(verificationCodeService)
                 .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
 
         boolean result = userService.sendAccountDeletionRequest(userId);
 
-        assertFalse(result, "Account deletion request should fail due to verification code update failure");
+        assertFalse(result, "Запрос на удаление учетной записи должен быть отклонен из-за сбоя обновления проверочного кода");
 
         verify(verificationCodeService)
                 .saveOrUpdateVerificationCodeForAccountDeletion(eq(userId), anyString(), any(LocalDateTime.class));
@@ -1721,7 +1720,7 @@ public class UserServiceTest {
             userService.enableTwoFactorAuth(userId);
         });
 
-        assertEquals("Two-factor authentication already enabled", exception.getMessage());
+        assertEquals("Двухфакторная аутентификация уже включена", exception.getMessage());
     }
 
     @Test
@@ -1736,7 +1735,7 @@ public class UserServiceTest {
 
         userService.enableTwoFactorAuth(userId);
 
-        assertTrue(user.getTwoFactorVerified(), "Two-factor authentication should be enabled");
+        assertTrue(user.getTwoFactorVerified(), "Должна быть включена двухфакторная аутентификация");
 
         verify(userRepository)
                 .save(user);
@@ -1754,7 +1753,7 @@ public class UserServiceTest {
             userService.enableTwoFactorAuth(userId);
         });
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("Пользователь не найден", exception.getMessage());
     }
 
     @Test
@@ -1767,7 +1766,7 @@ public class UserServiceTest {
                 .findById(userId))
                 .thenReturn(Optional.of(user));
 
-        doThrow(new RuntimeException("Failed to save user"))
+        doThrow(new RuntimeException("Не удалось сохранить пользователя"))
                 .when(userRepository)
                 .save(user);
 
@@ -1775,7 +1774,7 @@ public class UserServiceTest {
             userService.enableTwoFactorAuth(userId);
         });
 
-        assertEquals("Failed to save user", exception.getMessage());
+        assertEquals("Не удалось сохранить пользователя", exception.getMessage());
     }
 
 
@@ -1792,7 +1791,7 @@ public class UserServiceTest {
             userService.disableTwoFactorAuth(userId);
         });
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("Пользователь не найден", exception.getMessage());
     }
 
     @Test
@@ -1810,7 +1809,7 @@ public class UserServiceTest {
             userService.disableTwoFactorAuth(userId);
         });
 
-        assertEquals("Two-factor authentication already disabled", exception.getMessage());
+        assertEquals("Двухфакторная аутентификация уже отключена", exception.getMessage());
     }
 
     @Test
@@ -1842,7 +1841,7 @@ public class UserServiceTest {
         when(userRepository
                 .findById(userId))
                 .thenReturn(Optional.of(user));
-        doThrow(new RuntimeException("Save failed"))
+        doThrow(new RuntimeException("Сохранить не удалось"))
                 .when(userRepository)
                 .save(user);
 
@@ -1850,7 +1849,7 @@ public class UserServiceTest {
             userService.disableTwoFactorAuth(userId);
         });
 
-        assertEquals("Save failed", exception.getMessage());
+        assertEquals("Сохранить не удалось", exception.getMessage());
     }
 
     @Test
@@ -1871,7 +1870,7 @@ public class UserServiceTest {
         user.setEmail("Vasek123@gmail.com");
         String verificationCode = "12345";
 
-        doThrow(new RuntimeException("Email sending error"))
+        doThrow(new RuntimeException("Ошибка при отправке электронной почты"))
                 .when(emailService)
                 .sendVerificationCodeByEmail(user, verificationCode);
 
