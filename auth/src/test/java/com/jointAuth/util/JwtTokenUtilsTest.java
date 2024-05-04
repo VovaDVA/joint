@@ -119,7 +119,7 @@ public class JwtTokenUtilsTest {
         String fullName = null;
         try {
             fullName = jwtTokenUtils.getFullName(invalidToken);
-            fail("Expected MalformedJwtException to be thrown");
+            fail("Ожидается, что будет выдано исключение Malformedovfexception");
         } catch (MalformedJwtException e) {
             assertNull(fullName);
         }

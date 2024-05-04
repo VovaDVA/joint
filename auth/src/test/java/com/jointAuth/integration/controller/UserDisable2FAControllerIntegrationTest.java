@@ -64,7 +64,7 @@ public class UserDisable2FAControllerIntegrationTest {
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Two-factor authentication disabled successfully"));
+                .andExpect(content().json("{\"message\":\"Двухфакторная аутентификация успешно отключена\"}"));
 
         User updatedUser = userRepository.findById(testUser.getId()).get();
         assertFalse(updatedUser.getTwoFactorVerified());
@@ -78,7 +78,7 @@ public class UserDisable2FAControllerIntegrationTest {
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Two-factor authentication already disabled"));
+                .andExpect(content().json("{\"message\":\"Двухфакторная аутентификация уже отключена\"}"));
     }
 
     @Test
@@ -98,16 +98,16 @@ public class UserDisable2FAControllerIntegrationTest {
     @Test
     public void testDisableTwoFactorAuthUserNotFound() throws Exception {
         Long nonExistentUserId = 999999L;
-        User user = new User();
-        user.setId(nonExistentUserId);
+        User nonExistentUser = new User();
+        nonExistentUser.setId(nonExistentUserId);
 
-        String tokenForNonExistentUser = jwtTokenUtils.generateToken(user);
+        String tokenForNonExistentUser = jwtTokenUtils.generateToken(nonExistentUser);
 
         mockMvc.perform(post("/auth/two-factor/disable")
                         .header("Authorization", "Bearer " + tokenForNonExistentUser)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("User not found"));
+                .andExpect(content().json("{\"message\":\"Пользователь не найден\"}"));
     }
 
     @Test
@@ -127,7 +127,7 @@ public class UserDisable2FAControllerIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnauthorized());
         } catch (Exception e) {
-            System.out.println("Error occurred during test execution: " + e.getMessage());
+            System.out.println("Во время выполнения теста произошла ошибка: " + e.getMessage());
         }
     }
 

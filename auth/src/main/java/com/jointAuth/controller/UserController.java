@@ -1,9 +1,8 @@
 package com.jointAuth.controller;
 
-import com.jointAuth.bom.user.JwtResponse;
-import com.jointAuth.bom.user.UserProfileBom;
+import com.jointAuth.bom.user.*;
+import com.jointAuth.interfaces.BaseResponse;
 import com.jointAuth.model.user.*;
-import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.converter.UserConverter;
 import com.jointAuth.model.verification.ConfirmAccountDeletionRequest;
 import com.jointAuth.model.verification.ConfirmPasswordChangeRequest;
@@ -54,7 +53,7 @@ public class UserController {
             return ResponseEntity.ok(userDTO);
         }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user.");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Не удалось зарегистрировать пользователя");
     }
 
     @PostMapping(path = "/login")
@@ -63,70 +62,84 @@ public class UserController {
 
         if (user != null && userService.passwordsMatch(user.getPassword(), loginRequest.getPassword())) {
             if (user.getTwoFactorVerified()) {
-                return ResponseEntity.ok("Two-factor authentication enabled. Verification code sent.");
+                LoginResponse response = new LoginResponse(true, null);
+                return ResponseEntity.ok(response);
             } else {
                 String token = jwtTokenUtils.generateToken(user);
-                return ResponseEntity.ok(new JwtResponse(token));
+                LoginResponse response = new LoginResponse(false, token);
+                return ResponseEntity.ok(response);
             }
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
+        ApiResponse errorMessage = new ApiResponse("Неверный email или пароль");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
     }
 
     @PostMapping(path = "/verify-code")
-    public ResponseEntity<?> verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) {
-        boolean isValid = verificationCodeService.verifyVerificationCodeFor2FA(verifyCodeRequest.getUserId(),verifyCodeRequest.getCode());
+    public ResponseEntity<BaseResponse> verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) {
+        boolean isValid = verificationCodeService.verifyVerificationCodeFor2FA(verifyCodeRequest.getUserId(), verifyCodeRequest.getCode());
 
         if (isValid) {
             User user = userService.getUserById(verifyCodeRequest.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found with userId: " + verifyCodeRequest.getUserId()));
+                    .orElseThrow(() -> new RuntimeException("Пользователь не найден по userId: " + verifyCodeRequest.getUserId()));
 
             String token = jwtTokenUtils.generateToken(user);
-            return  ResponseEntity.ok(new JwtResponse(token));
+            JwtResponse jwtResponse = new JwtResponse(token);
+            return ResponseEntity.ok(jwtResponse);
         } else if (verifyCodeRequest.getUserId() == null || verifyCodeRequest.getCode() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing verification code or userId");
+            ApiResponse apiResponse = new ApiResponse("Отсутствует код подтверждения или userId");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code.");
+            ApiResponse apiResponse = new ApiResponse("Неверный код подтверждения");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
     }
 
     @PostMapping(path = "/two-factor/enable")
-    public ResponseEntity<?> enableTwoFactorAuth(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse> enableTwoFactorAuth(@RequestHeader("Authorization") String token) {
         try {
             Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
             userService.enableTwoFactorAuth(currentUserId);
-            return ResponseEntity.ok("Two-factor authentication enabled successfully");
+            ApiResponse apiResponse = new ApiResponse("Двухфакторная аутентификация успешно включена");
+            return ResponseEntity.ok(apiResponse);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().equals("Two-factor authentication already enabled")) {
-                return ResponseEntity.ok(e.getMessage());
+            ApiResponse apiResponse;
+            if (e.getMessage().equals("Двухфакторная аутентификация уже включена")) {
+                apiResponse = new ApiResponse("Двухфакторная аутентификация уже включена");
+                return ResponseEntity.ok(apiResponse);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+                apiResponse = new ApiResponse("Пользователь не найден");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
             }
         }
     }
 
-
     @PostMapping(path = "/two-factor/disable")
-    public ResponseEntity<?> disableTwoFactorAuth(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse> disableTwoFactorAuth(@RequestHeader("Authorization") String token) {
         try {
             Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
             userService.disableTwoFactorAuth(currentUserId);
-            return ResponseEntity.ok("Two-factor authentication disabled successfully");
+            ApiResponse apiResponse = new ApiResponse("Двухфакторная аутентификация успешно отключена");
+            return ResponseEntity.ok(apiResponse);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().equals("Two-factor authentication already disabled")) {
-                return ResponseEntity.ok(e.getMessage());
+            ApiResponse apiResponse;
+            if (e.getMessage().equals("Двухфакторная аутентификация уже отключена")) {
+                apiResponse = new ApiResponse(e.getMessage());
+                return ResponseEntity.ok(apiResponse);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+                apiResponse = new ApiResponse("Пользователь не найден");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
             }
         }
     }
+
 
     @PostMapping(path = "/request-reset-password")
     public ResponseEntity<?> requestPasswordReset(@RequestParam("email") String email) {
         Optional<User> currentUser = userService.getUserByEmail(email);
 
         if (currentUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Пользователь с таким email не найден.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Пользователь с таким email не найден");
         }
 
         boolean emailSent = userService.sendPasswordResetRequest(currentUser.get().getEmail());
@@ -134,7 +147,7 @@ public class UserController {
             String maskedEmail = userService.maskEmail(currentUser.get().getEmail());
             return ResponseEntity.ok("Код отправлен на email: " + maskedEmail);
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Не удалось отправить запрос на сброс пароля.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Не удалось отправить запрос на сброс пароля");
         }
     }
 
@@ -144,9 +157,9 @@ public class UserController {
                 confirmPasswordResetRequest.getNewPassword());
 
         if (passwordReset) {
-            return ResponseEntity.ok("Успешный сброс пароля.");
+            return ResponseEntity.ok("Успешный сброс пароля");
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный проверочный код или не удалось сбросить пароль.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный проверочный код или не удалось сбросить пароль");
         }
     }
 
@@ -199,60 +212,77 @@ public class UserController {
     }
 
     @PostMapping(path = "/change-password")
-    public ResponseEntity<?> requestPasswordChange(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse> requestPasswordChange(@RequestHeader("Authorization") String token) {
         Long userId = jwtTokenUtils.getCurrentUserId(token);
 
         if (userId == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            ApiResponse apiResponse = new ApiResponse("Пользователь не найден");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
 
         boolean emailSent = userService.sendPasswordChangeRequest(userId);
         if (emailSent) {
-            return ResponseEntity.ok("Password change request sent to email.");
+            ApiResponse apiResponse = new ApiResponse("Запрос на изменение пароля отправлен на электронную почту");
+            return ResponseEntity.ok(apiResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to send password change request.");
+            ApiResponse apiResponse = new ApiResponse("Не удалось отправить запрос на изменение пароля");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
     }
 
+
     @PostMapping(path = "/confirm-change-password")
-    public ResponseEntity<?> confirmPasswordChange(@RequestBody ConfirmPasswordChangeRequest confirmPasswordChangeRequest) {
-        boolean passwordReset = userService.changePassword(confirmPasswordChangeRequest.getUserId(),
+    public ResponseEntity<ApiResponse> confirmPasswordChange(@RequestBody ConfirmPasswordChangeRequest confirmPasswordChangeRequest) {
+        boolean passwordReset = userService.changePassword(
+                confirmPasswordChangeRequest.getUserId(),
                 confirmPasswordChangeRequest.getVerificationCode(),
                 confirmPasswordChangeRequest.getNewPassword(),
-                confirmPasswordChangeRequest.getCurrentPassword());
+                confirmPasswordChangeRequest.getCurrentPassword()
+        );
 
         if (passwordReset) {
-            return ResponseEntity.ok("Password change successfully.");
+            ApiResponse apiResponse = new ApiResponse("Пароль успешно изменен");
+            return ResponseEntity.ok(apiResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code.");
+            ApiResponse apiResponse = new ApiResponse("Неверный код подтверждения");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
     }
 
     @DeleteMapping(path = "/delete")
-    public ResponseEntity<?> requestAccountDeletion(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse> requestAccountDeletion(@RequestHeader("Authorization") String token) {
         Long userId = jwtTokenUtils.getCurrentUserId(token);
 
         if (userId == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            ApiResponse apiResponse = new ApiResponse("Пользователь не найден");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
 
         boolean emailSent = userService.sendAccountDeletionRequest(userId);
         if (emailSent) {
-            return ResponseEntity.ok("Account deletion request sent to email.");
+            ApiResponse apiResponse = new ApiResponse("Запрос на удаление аккаунта отправлен на электронную почту");
+            return ResponseEntity.ok(apiResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to send account deletion request.");
+            ApiResponse apiResponse = new ApiResponse("Не удалось отправить запрос на удаление аккаунта");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
     }
+
 
     @DeleteMapping(path = "/confirm-delete")
-    public ResponseEntity<?> confirmAccountDeletion(@RequestBody ConfirmAccountDeletionRequest confirmAccountDeletionRequest) {
-        boolean accountDeleted = userService.deleteUser(confirmAccountDeletionRequest.getUserId(),
-                confirmAccountDeletionRequest.getVerificationCode());
+    public ResponseEntity<ApiResponse> confirmAccountDeletion(@RequestBody ConfirmAccountDeletionRequest confirmAccountDeletionRequest) {
+        boolean accountDeleted = userService.deleteUser(
+                confirmAccountDeletionRequest.getUserId(),
+                confirmAccountDeletionRequest.getVerificationCode()
+        );
 
         if (accountDeleted) {
-            return ResponseEntity.ok("Account deleted successfully.");
+            ApiResponse apiResponse = new ApiResponse("Аккаунт успешно удален");
+            return ResponseEntity.ok(apiResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code or failed to delete account.");
+            ApiResponse apiResponse = new ApiResponse("Неверный код подтверждения или не удалось удалить аккаунт");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
     }
+
 }

@@ -21,8 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,9 +39,6 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
-
-    @Autowired
-    private UserVerificationCodeRepository userVerificationCodeRepository;
 
     private User testUser;
     private String validToken;
@@ -76,7 +72,8 @@ public class UserChangePasswordControllerIntegrationTest {
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Password change request sent to email."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Запрос на изменение пароля отправлен на электронную почту"));
 
         verify(userService).sendPasswordChangeRequest(anyLong());
     }
@@ -112,7 +109,8 @@ public class UserChangePasswordControllerIntegrationTest {
                         .header("Authorization", "Bearer " + tokenForNonexistentUser)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Failed to send password change request."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Не удалось отправить запрос на изменение пароля"));
     }
 
     @Test
@@ -124,43 +122,58 @@ public class UserChangePasswordControllerIntegrationTest {
 
     @Test
     public void testConfirmPasswordChangeSuccess() throws Exception {
-        when(userService.changePassword(validRequest.getUserId(),
+        when(userService.changePassword(
+                validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword()))
                 .thenReturn(true);
 
+        String requestBody = "{\"userId\":" + validRequest.getUserId() + ","
+                + "\"verificationCode\":\"" + validRequest.getVerificationCode() + "\","
+                + "\"newPassword\":\"" + validRequest.getNewPassword() + "\","
+                + "\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}";
+
         mockMvc.perform(post("/auth/confirm-change-password")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                        .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Password change successfully."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Пароль успешно изменен"));
 
-        verify(userService)
-                .changePassword(validRequest.getUserId(),
+        verify(userService).changePassword(
+                validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword());
     }
 
+
     @Test
     public void testConfirmPasswordResetInvalidCode() throws Exception {
-        when(userService.changePassword(validRequest.getUserId(),
+        when(userService.changePassword(
+                validRequest.getUserId(),
                 "INVALID_VERIFICATION_CODE",
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword()))
                 .thenReturn(false);
 
+        String requestBody = "{\"userId\":" + validRequest.getUserId() + ","
+                + "\"verificationCode\":\"INVALID_VERIFICATION_CODE\","
+                + "\"newPassword\":\"" + validRequest.getNewPassword() + "\","
+                + "\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}";
+
         mockMvc.perform(post("/auth/confirm-change-password")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"INVALID_VERIFICATION_CODE\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                        .content(requestBody))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
 
-        verify(userService)
-                .changePassword(validRequest.getUserId(),
+        verify(userService).changePassword(
+                validRequest.getUserId(),
                 "INVALID_VERIFICATION_CODE",
                 validRequest.getNewPassword(),
                 validRequest.getCurrentPassword());
@@ -174,15 +187,21 @@ public class UserChangePasswordControllerIntegrationTest {
                 "InvalidPassword"))
                 .thenReturn(false);
 
+        String requestBody = "{\"userId\":" + validRequest.getUserId() + ","
+                + "\"verificationCode\":\"" + validRequest.getVerificationCode() + "\","
+                + "\"newPassword\":\"" + validRequest.getNewPassword() + "\","
+                + "\"currentPassword\":\"InvalidPassword\"}";
+
         mockMvc.perform(post("/auth/confirm-change-password")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"InvalidPassword\"}"))
+                        .content(requestBody))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
 
-        verify(userService)
-                .changePassword(validRequest.getUserId(),
+        verify(userService).changePassword(
+                validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 validRequest.getNewPassword(),
                 "InvalidPassword");
@@ -196,15 +215,20 @@ public class UserChangePasswordControllerIntegrationTest {
                 validRequest.getCurrentPassword()))
                 .thenReturn(false);
 
+        String requestBody = "{\"userId\":" + validRequest.getUserId() + ","
+                + "\"verificationCode\":\"" + validRequest.getVerificationCode() + "\","
+                + "\"newPassword\":\"weakpassword\","
+                + "\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}";
+
         mockMvc.perform(post("/auth/confirm-change-password")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"" + validRequest.getVerificationCode() + "\",\"newPassword\":\"weakpassword\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                        .content(requestBody))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
 
-        verify(userService)
-                .changePassword(validRequest.getUserId(),
+        verify(userService).changePassword(validRequest.getUserId(),
                 validRequest.getVerificationCode(),
                 "weakpassword",
                 validRequest.getCurrentPassword());
@@ -218,12 +242,18 @@ public class UserChangePasswordControllerIntegrationTest {
                 validRequest.getCurrentPassword()))
                 .thenReturn(false);
 
+        String requestBody = "{\"userId\":" + validRequest.getUserId() + ","
+                + "\"verificationCode\":\"EXPIRED_VERIFICATION_CODE\","
+                + "\"newPassword\":\"" + validRequest.getNewPassword() + "\","
+                + "\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}";
+
         mockMvc.perform(post("/auth/confirm-change-password")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\":" + validRequest.getUserId() + ",\"verificationCode\":\"EXPIRED_VERIFICATION_CODE\",\"newPassword\":\"" + validRequest.getNewPassword() + "\",\"currentPassword\":\"" + validRequest.getCurrentPassword() + "\"}"))
+                        .content(requestBody))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
 
         verify(userService).changePassword(validRequest.getUserId(),
                 "EXPIRED_VERIFICATION_CODE",

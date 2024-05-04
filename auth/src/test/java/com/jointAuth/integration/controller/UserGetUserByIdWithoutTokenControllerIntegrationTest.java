@@ -118,7 +118,7 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
         } catch (jakarta.servlet.ServletException e) {
             Throwable rootCause = e.getRootCause();
 
-            if (rootCause instanceof RuntimeException && rootCause.getMessage().contains("User not found with userId: 999")) {
+            if (rootCause instanceof RuntimeException && rootCause.getMessage().contains("Пользователь не найден с userId: 999")) {
 
             } else {
                 throw e;
@@ -133,7 +133,7 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(result -> {
                         String errorMessage = result.getResponse().getErrorMessage();
-                        assertFalse(errorMessage.contains("Required request parameter 'userId' for method parameter type Long is not present."));
+                        assertFalse(errorMessage.contains("Требуемый параметр запроса 'userId' для параметра метода типа Long отсутствует"));
                     });
         } catch (Exception e) {
             if (e instanceof MissingServletRequestParameterException) {
@@ -141,7 +141,7 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
                 assertTrue(ex.getParameterType().equals("Long"));
                 assertTrue(ex.getParameterName().equals("userId"));
             } else {
-                fail("Unexpected exception: " + e.getMessage());
+                fail("Неожиданное исключение: " + e.getMessage());
             }
         }
     }

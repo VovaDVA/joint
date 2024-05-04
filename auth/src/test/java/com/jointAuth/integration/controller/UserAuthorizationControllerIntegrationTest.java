@@ -19,10 +19,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -68,7 +66,7 @@ public class UserAuthorizationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestJson))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.token").exists())
                 .andExpect(result -> {
                     String response = result.getResponse().getContentAsString();
                     String token = response.substring(response.indexOf(":\"") + 2, response.lastIndexOf("\""));
@@ -76,10 +74,10 @@ public class UserAuthorizationControllerIntegrationTest {
                     Long userId = jwtTokenUtils.getCurrentUserId(token);
                     User decodedUser = userRepository.findById(userId).orElse(null);
 
-                    assertTrue(decodedUser != null);
-                    assertTrue(decodedUser.getFirstName().equals(user.getFirstName()));
-                    assertTrue(decodedUser.getLastName().equals(user.getLastName()));
-                    assertTrue(decodedUser.getEmail().equals(user.getEmail()));
+                    assertNotNull(decodedUser);
+                    assertEquals(decodedUser.getFirstName(), user.getFirstName());
+                    assertEquals(decodedUser.getLastName(), user.getLastName());
+                    assertEquals(decodedUser.getEmail(), user.getEmail());
                 });
     }
 
@@ -100,7 +98,9 @@ public class UserAuthorizationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Two-factor authentication enabled. Verification code sent."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.twoFactorVerified").value(true))
+                .andExpect(jsonPath("$.token").value((String) null));
     }
 
     @Test
@@ -124,7 +124,7 @@ public class UserAuthorizationControllerIntegrationTest {
                     .andExpect(status().isUnauthorized());
         });
 
-        assertTrue(exception.getMessage().contains("Invalid email or password."));
+        assertTrue(exception.getMessage().contains("Неверный email или пароль"));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class UserAuthorizationControllerIntegrationTest {
                     .andExpect(status().isUnauthorized());
         });
 
-        assertTrue(exception.getMessage().contains("Invalid email or password."));
+        assertTrue(exception.getMessage().contains("Неверный email или пароль"));
     }
 
     @Test
@@ -172,7 +172,7 @@ public class UserAuthorizationControllerIntegrationTest {
                     .andExpect(status().isUnauthorized());
         });
 
-        assertTrue(exception.getMessage().contains("Invalid email or password."));
+        assertTrue(exception.getMessage().contains("Неверный email или пароль"));
     }
 
     @Test
@@ -196,7 +196,7 @@ public class UserAuthorizationControllerIntegrationTest {
                     .andExpect(status().isBadRequest());
         });
 
-        assertTrue(exception.getMessage().contains("Missing email."));
+        assertTrue(exception.getMessage().contains("Отсутствует email"));
     }
 
     @Test
@@ -220,7 +220,7 @@ public class UserAuthorizationControllerIntegrationTest {
                     .andExpect(status().isBadRequest());
         });
 
-        assertTrue(exception.getMessage().contains("Missing password."));
+        assertTrue(exception.getMessage().contains("Отсутствует пароль"));
     }
 
     @Test
@@ -231,19 +231,18 @@ public class UserAuthorizationControllerIntegrationTest {
         user.setEmail("alexkuznetsov@gmail.com");
         user.setPassword(passwordEncoder.encode("Password123@"));
         user.setTwoFactorVerified(true);
-
         userRepository.save(user);
 
         String validCode = "123456";
         verificationCodeService.saveOrUpdateVerificationCodeFor2FA(user.getId(), validCode);
 
         String loginRequestJson = "{\"email\": \"alexkuznetsov@gmail.com\", \"password\": \"Password123@\"}";
-
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Two-factor authentication enabled. Verification code sent."));
+                .andExpect(jsonPath("$.twoFactorVerified").value(true))
+                .andExpect(jsonPath("$.token").isEmpty());
 
         String invalidCode = "wrongCode";
         String verifyCodeRequestJson = "{\"userId\": " + user.getId() + ", \"code\": \"" + invalidCode + "\"}";
@@ -252,7 +251,7 @@ public class UserAuthorizationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(verifyCodeRequestJson))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code."));
+                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
     }
 
     @Test
@@ -275,7 +274,7 @@ public class UserAuthorizationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(verifyCodeRequestJson))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists());
+                .andExpect(jsonPath("$.token").exists());
     }
 
     @Test
@@ -299,7 +298,8 @@ public class UserAuthorizationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(verifyCodeRequestJson))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification code."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
     }
 
     @Test
@@ -359,7 +359,6 @@ public class UserAuthorizationControllerIntegrationTest {
 
         String expiredCode = "123456";
         TwoFactorAuthVerificationCode twoFactorAuthVerificationCode = new TwoFactorAuthVerificationCode();
-
         twoFactorAuthVerificationCode.setUser(testUser);
         twoFactorAuthVerificationCode.setCode(expiredCode);
         twoFactorAuthVerificationCode.setExpirationTime(LocalDateTime.now().minusMinutes(5));
@@ -372,6 +371,7 @@ public class UserAuthorizationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(verifyCodeRequestJson))
                 .andExpect(status().isUnauthorized())
-                .andExpect(MockMvcResultMatchers.content().string("Invalid verification code."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
     }
 }

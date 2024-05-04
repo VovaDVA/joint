@@ -82,7 +82,7 @@ public class UserRegistrationControllerIntegrationTest {
                     .andExpect(status().isBadRequest());
             fail("Ожидалась ошибка, связанная с недопустимым форматом email.");
         } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("Invalid email format"));
+            assertTrue(e.getMessage().contains("Неверный формат электронной почты"));
         }
     }
 
@@ -100,7 +100,7 @@ public class UserRegistrationControllerIntegrationTest {
                     .andExpect(status().isBadRequest());
             fail("Expected exception for empty first name.");
         } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("First name cannot be empty or contain only whitespace"));
+            assertTrue(e.getMessage().contains("First name не может быть пустым или состоять только из пробелов"));
         }
     }
 
@@ -118,7 +118,7 @@ public class UserRegistrationControllerIntegrationTest {
                     .andExpect(status().isBadRequest());
             fail("Expected exception for empty last name.");
         } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("Last name cannot be empty or contain only whitespace"));
+            assertTrue(e.getMessage().contains("Last name не может быть пустым или состоять только из пробелов"));
         }
     }
 
@@ -137,7 +137,7 @@ public class UserRegistrationControllerIntegrationTest {
 
             fail("Ожидалась ошибка, связанная с пустым полем email.");
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains("Invalid email format"));
+            assertTrue(e.getMessage().contains("Неверный формат электронной почты"));
         }
     }
 
@@ -153,9 +153,9 @@ public class UserRegistrationControllerIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newUserJson))
                     .andExpect(status().isBadRequest());
-            fail("Expected exception for invalid password.");
+            fail("Ожидаемое исключение для неверного пароля");
         } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("Password does not meet the complexity requirements"));
+            assertTrue(e.getMessage().contains("Пароль не соответствует требованиям безопасности"));
         }
     }
 
@@ -182,9 +182,9 @@ public class UserRegistrationControllerIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newUserJson))
                     .andExpect(status().isBadRequest());
-            fail("Expected exception for existing email.");
+            fail("Ожидаемое исключение для существующей электронной почты");
         } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("User with this email already exists"));
+            assertTrue(e.getMessage().contains("Пользователь с такой электронной почтой уже существует"));
         }
     }
 
@@ -206,7 +206,7 @@ public class UserRegistrationControllerIntegrationTest {
 
             fail("Ожидалась ошибка, связанная с недопустимой длиной firstName.");
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains("length must not exceed"));
+            assertTrue(e.getMessage().contains("не должно превышать"));
         }
     }
 
@@ -228,7 +228,7 @@ public class UserRegistrationControllerIntegrationTest {
 
             fail("Ожидалась ошибка, связанная с недопустимой длиной lastName.");
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains("length must not exceed"));
+            assertTrue(e.getMessage().contains("не должно превышать"));
         }
     }
 
@@ -250,7 +250,7 @@ public class UserRegistrationControllerIntegrationTest {
 
             fail("Ожидалась ошибка, связанная с firstName, содержащим запрещенные символы.");
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains("must contain only letters"));
+            assertTrue(e.getMessage().contains("должно содержать только буквы"));
         }
     }
 
@@ -272,7 +272,7 @@ public class UserRegistrationControllerIntegrationTest {
 
             fail("Ожидалась ошибка, связанная с lastName, содержащим запрещенные символы.");
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains("must contain only letters"));
+            assertTrue(e.getMessage().contains("должно содержать только буквы"));
         }
     }
 
@@ -294,7 +294,7 @@ public class UserRegistrationControllerIntegrationTest {
 
             assertNotNull(profileRepository.findByUserId(userId), "Профиль пользователя должен быть создан");
         } catch (Exception e) {
-            fail("The test failed due to an exception: " + e.getMessage());
+            fail("Тест завершился неудачей из-за исключения: " + e.getMessage());
         }
     }
 }

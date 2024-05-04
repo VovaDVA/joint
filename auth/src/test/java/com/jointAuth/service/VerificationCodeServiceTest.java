@@ -106,7 +106,7 @@ public class VerificationCodeServiceTest {
 
         when(userRepository
                 .getOne(invalidUserId))
-                .thenThrow(new IllegalArgumentException("User not found"));
+                .thenThrow(new IllegalArgumentException("Пользователь не найден"));
 
         assertThrows(IllegalArgumentException.class, () -> {
             verificationCodeService.saveOrUpdateVerificationCodeFor2FA(invalidUserId, newCode);
@@ -258,7 +258,7 @@ public class VerificationCodeServiceTest {
             verificationCodeService.verifyVerificationCodeFor2FA(userId, code);
         });
 
-        assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
+        assertEquals("Не найден проверочный код для идентификатора пользователя: " + userId, exception.getMessage());
     }
 
     @Test
@@ -270,7 +270,7 @@ public class VerificationCodeServiceTest {
             verificationCodeService.verifyVerificationCodeFor2FA(userId, emptyCode);
         });
 
-        assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
+        assertEquals("Не найден проверочный код для идентификатора пользователя: " + userId, exception.getMessage());
     }
 
     @Test
@@ -281,7 +281,7 @@ public class VerificationCodeServiceTest {
             verificationCodeService.verifyVerificationCodeFor2FA(userId, null);
         });
 
-        assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
+        assertEquals("Не найден проверочный код для идентификатора пользователя: " + userId, exception.getMessage());
     }
 
     @Test
@@ -299,7 +299,7 @@ public class VerificationCodeServiceTest {
 
         boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, code);
 
-        assertTrue(result, "Code should be valid and return true");
+        assertTrue(result, "Код должен быть действительным и возвращать значение true");
         verify(userVerificationCodeRepository)
                 .delete(verificationCode);
     }
@@ -319,7 +319,7 @@ public class VerificationCodeServiceTest {
 
         boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, code);
 
-        assertFalse(result, "Code should be expired and return false");
+        assertFalse(result, "Срок действия кода должен истечь, и он должен возвращать значение false");
         verify(userVerificationCodeRepository, never())
                 .delete(verificationCode);
     }
@@ -339,7 +339,7 @@ public class VerificationCodeServiceTest {
 
         boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, invalidCode);
 
-        assertFalse(result, "Invalid code should return false");
+        assertFalse(result, "Неверный код должен возвращать значение false");
         verify(userVerificationCodeRepository, never())
                 .delete(verificationCode);
     }
@@ -357,7 +357,7 @@ public class VerificationCodeServiceTest {
             verificationCodeService.verifyUserVerificationCodeForUser(userId, code);
         });
 
-        assertEquals("Verification code not found for userId: " + userId, exception.getMessage());
+        assertEquals("Не найден проверочный код для идентификатора пользователя: " + userId, exception.getMessage());
     }
 
     @Test
@@ -375,7 +375,7 @@ public class VerificationCodeServiceTest {
 
         boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, emptyCode);
 
-        assertFalse(result, "Empty code should return false");
+        assertFalse(result, "Пустой код должен возвращать значение false");
         verify(userVerificationCodeRepository, never())
                 .delete(verificationCode);
     }
@@ -395,7 +395,7 @@ public class VerificationCodeServiceTest {
 
         boolean result = verificationCodeService.verifyUserVerificationCodeForUser(userId, nullCode);
 
-        assertFalse(result, "Null code should return false");
+        assertFalse(result, "Нулевой код должен возвращать значение false");
         verify(userVerificationCodeRepository, never())
                 .delete(verificationCode);
     }

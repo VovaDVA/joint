@@ -81,7 +81,7 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
         Optional<Profile> optionalProfile = profileRepository.findByUserId(registeredUser.getId());
 
-        assertTrue(optionalProfile.isPresent(), "Profile not found for userId: " + registeredUser.getId());
+        assertTrue(optionalProfile.isPresent(), "Не найден профиль для идентификатора пользователя: " + registeredUser.getId());
 
         Profile profile = optionalProfile.get();
 
@@ -127,7 +127,7 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("Expected date in ISO 8601 format: " + isoDateString);
+                description.appendText("Ожидаемая дата в формате ISO 8601: " + isoDateString);
             }
         };
     }
@@ -146,14 +146,14 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
                     .andExpect(status().isNotFound());
         } catch (jakarta.servlet.ServletException e) {
             if (e.getCause() != null && e.getCause() instanceof RuntimeException runtimeException) {
-                if (runtimeException.getMessage().contains("User not found with userId: 0")) {
+                if (runtimeException.getMessage().contains("Пользователь не найден с userId: 0")) {
                     assertTrue(true);
                     return;
                 }
             }
-            fail("Unexpected exception: " + e.getMessage());
+            fail("Неожиданное исключение: " + e.getMessage());
         }
-        fail("Expected exception for non-existing user, but request succeeded");
+        fail("Ожидаемое исключение для несуществующего пользователя, но запрос выполнен успешно");
     }
 
     @Test
@@ -168,10 +168,10 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
             assertTrue(true);
         } catch (Exception e) {
-            if (e instanceof io.jsonwebtoken.MalformedJwtException || e.getMessage().contains("JWT strings must contain exactly 2 period characters")) {
+            if (e instanceof io.jsonwebtoken.MalformedJwtException || e.getMessage().contains("Строки JWT должны содержать ровно 2 символа с точкой")) {
                 assertTrue(true);
             } else {
-                fail("Unexpected exception: " + e.getMessage());
+                fail("Неожиданное исключение: " + e.getMessage());
             }
         }
     }
@@ -193,10 +193,10 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            fail("Expected InvalidDataAccessApiUsageException to be thrown");
+            fail("Ожидается, что будет выдано исключение InvalidDataAccessApiUsageException");
         } catch (Exception e) {
             if (e instanceof org.springframework.dao.InvalidDataAccessApiUsageException &&
-                    e.getMessage().contains("The given id must not be null")) {
+                    e.getMessage().contains("Указанный идентификатор не должен быть нулевым")) {
                 assertTrue(true);
             }
         }
@@ -258,7 +258,7 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
             if (e instanceof io.jsonwebtoken.ExpiredJwtException || e.getMessage().contains("JWT expired")) {
                 assertTrue(true);
             } else {
-                fail("Unexpected exception: " + e.getMessage());
+                fail("Неожиданное исключение: " + e.getMessage());
             }
         }
     }

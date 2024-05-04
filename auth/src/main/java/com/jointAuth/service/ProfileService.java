@@ -32,7 +32,7 @@ public class ProfileService {
 
             return ProfileConverter.converterToBom(currentProfile);
         } catch (Exception e) {
-            throw new RuntimeException("An error occurred while fetching the current profile", e);
+            throw new RuntimeException("При выборе текущего профиля произошла ошибка", e);
         }
     }
 }

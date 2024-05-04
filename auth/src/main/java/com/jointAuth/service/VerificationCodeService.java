@@ -57,7 +57,7 @@ public class VerificationCodeService {
 
     public boolean verifyVerificationCodeFor2FA(Long userId, String code) {
         TwoFactorAuthVerificationCode verificationCode = verificationCodeRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Verification code not found for userId: " + userId));
+                .orElseThrow(() -> new RuntimeException("Не найден проверочный код для идентификатора пользователя: " + userId));
 
         if (verificationCode.getCode().equals(code) && !isVerificationCodeExpiredFor2FA(verificationCode)) {
             verificationCodeRepository.delete(verificationCode);
@@ -70,7 +70,7 @@ public class VerificationCodeService {
         Optional<UserVerificationCode> optionalVerificationCode = userVerificationCodeRepository.findByUserId(userId);
 
         if (optionalVerificationCode.isEmpty()) {
-            throw new RuntimeException("Verification code not found for userId: " + userId);
+            throw new RuntimeException("Не найден проверочный код для идентификатора пользователя: " + userId);
         }
 
         UserVerificationCode verificationCode = optionalVerificationCode.get();
@@ -101,7 +101,7 @@ public class VerificationCodeService {
 
     public void saveOrUpdateVerificationCodeForChangePassword(Long userId, String verificationCode, RequestType requestType, LocalDateTime expirationTime) {
         if (userId == null) {
-            throw new NullPointerException("User ID cannot be null");
+            throw new NullPointerException("Идентификатор пользователя не может быть пустым");
         }
 
         Optional<UserVerificationCode> existingCodeOptionalForPassword = userVerificationCodeRepository.findByUserIdAndRequestType(userId, requestType);
@@ -129,7 +129,7 @@ public class VerificationCodeService {
 
     public void saveOrUpdateVerificationCodeForAccountDeletion(Long userId, String newVerificationCode, LocalDateTime expirationTime) {
         if (userId == null) {
-            throw new NullPointerException("User ID cannot be null");
+            throw new NullPointerException("Идентификатор пользователя не может быть пустым");
         }
 
         Optional<UserVerificationCode> existingCodeOptionalForDeletion = userVerificationCodeRepository.findByUserIdAndRequestType(userId, RequestType.ACCOUNT_DELETION);
@@ -164,7 +164,7 @@ public class VerificationCodeService {
 
     public void saveOrUpdateVerificationCodeForPasswordReset(Long userId, String verificationCode, LocalDateTime expirationTime) {
         if (userId == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
+            throw new IllegalArgumentException("Идентификатор пользователя не может быть пустым");
         }
 
         Optional<PasswordResetVerificationCode> existingCodeOptional = passwordResetVerificationCodeRepository.findByUserId(userId);

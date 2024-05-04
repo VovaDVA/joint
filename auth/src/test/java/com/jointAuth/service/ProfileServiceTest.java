@@ -92,7 +92,7 @@ public class ProfileServiceTest {
     public void testGetCurrentProfileRepositoryError() {
         when(profileRepository
                 .findByUserId(1L))
-                .thenThrow(new RuntimeException("Database error"));
+                .thenThrow(new RuntimeException("Ошибка в базе данных"));
 
         assertThrows(RuntimeException.class, () -> {
             profileService.getCurrentProfile(validToken);
