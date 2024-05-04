@@ -20,7 +20,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     private PasswordResetVerificationCodeRepository repository = mock(PasswordResetVerificationCodeRepository.class);
 
     @Test
-    void testFindByUserId_CodeFound() {
+    public void testFindByUserId_CodeFound() {
         Long userId = 1L;
 
         User user = new User();
@@ -42,7 +42,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdCodeNotFound() {
+    public void testFindByUserIdCodeNotFound() {
         Long userId = 2L;
 
         when(repository
@@ -58,7 +58,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdNullUserId() {
+    public void testFindByUserIdNullUserId() {
         Long userId = null;
 
         when(repository
@@ -74,7 +74,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdNonExistentUserId() {
+    public void testFindByUserIdNonExistentUserId() {
         Long userId = 999L;
 
         when(repository
@@ -90,7 +90,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdExistingUserId() {
+    public void testFindByUserIdExistingUserId() {
         Long userId = 1L;
 
         User user = new User();
@@ -113,7 +113,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdZeroUserId() {
+    public void testFindByUserIdZeroUserId() {
         Long userId = 0L;
 
         when(repository
@@ -129,7 +129,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdNegativeUserId() {
+    public void testFindByUserIdNegativeUserId() {
         Long userId = -1L;
 
         when(repository
@@ -145,7 +145,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdMaxValueUserId() {
+    public void testFindByUserIdMaxValueUserId() {
         Long userId = Long.MAX_VALUE;
 
         when(repository
@@ -161,7 +161,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdMinValueUserId() {
+    public void testFindByUserIdMinValueUserId() {
         Long userId = Long.MIN_VALUE;
 
         when(repository
@@ -177,7 +177,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdLargePositiveUserId() {
+    public void testFindByUserIdLargePositiveUserId() {
         Long userId = 999999999L;
 
         User user = new User();
@@ -200,25 +200,25 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdDatabaseNotResponding() {
+    public void testFindByUserIdDatabaseNotResponding() {
         Long userId = 1L;
 
         when(repository
                 .findByUserId(userId))
-                .thenThrow(new RuntimeException("Database not responding"));
+                .thenThrow(new RuntimeException("База данных не отвечает"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             repository.findByUserId(userId);
         });
 
-        assertEquals("Database not responding", exception.getMessage());
+        assertEquals("База данных не отвечает", exception.getMessage());
 
         verify(repository)
                 .findByUserId(userId);
     }
 
     @Test
-    void testFindByUserIdAndCodeNullUserId() {
+    public void testFindByUserIdAndCodeNullUserId() {
         Long userId = null;
         String code = "1234";
 
@@ -235,7 +235,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdAndCodeNullCode() {
+    public void testFindByUserIdAndCodeNullCode() {
         Long userId = 1L;
         String code = null;
 
@@ -252,7 +252,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdAndCodeNullUserIdAndCode() {
+    public void testFindByUserIdAndCodeNullUserIdAndCode() {
         Long userId = null;
         String code = null;
 
@@ -269,7 +269,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdAndCodeLongMaxValueUserId() {
+    public void testFindByUserIdAndCodeLongMaxValueUserId() {
         Long userId = Long.MAX_VALUE;
         String code = "1234";
 
@@ -286,7 +286,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdAndCodeEmptyCode() {
+    public void testFindByUserIdAndCodeEmptyCode() {
         Long userId = 1L;
         String code = "";
 
@@ -303,7 +303,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdAndCodeCodeFound() {
+    public void testFindByUserIdAndCodeCodeFound() {
         Long userId = 1L;
         String code = "1234";
 
@@ -328,7 +328,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdAndCodeCodeNotFound() {
+    public void testFindByUserIdAndCodeCodeNotFound() {
         Long userId = 1L;
         String code = "1234";
 
@@ -345,26 +345,26 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindByUserIdAndCodeDatabaseNotResponding() {
+    public void testFindByUserIdAndCodeDatabaseNotResponding() {
         Long userId = 1L;
         String code = "1234";
 
         when(repository
                 .findByUserIdAndCode(userId, code))
-                .thenThrow(new RuntimeException("Database not responding"));
+                .thenThrow(new RuntimeException("База данных не отвечает"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             repository.findByUserIdAndCode(userId, code);
         });
 
-        assertEquals("Database not responding", exception.getMessage());
+        assertEquals("База данных не отвечает", exception.getMessage());
 
         verify(repository)
                 .findByUserIdAndCode(userId, code);
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeExpiredCodesExist() {
+    public void testFindAllByExpirationTimeBeforeExpiredCodesExist() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         PasswordResetVerificationCode code1 = new PasswordResetVerificationCode();
@@ -388,7 +388,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeNoExpiredCodesExist() {
+    public void testFindAllByExpirationTimeBeforeNoExpiredCodesExist() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         when(repository
@@ -404,7 +404,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeExpiredCodesEqualToCurrentTime() {
+    public void testFindAllByExpirationTimeBeforeExpiredCodesEqualToCurrentTime() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         PasswordResetVerificationCode code1 = new PasswordResetVerificationCode();
@@ -428,25 +428,25 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeDatabaseNotResponding() {
+    public void testFindAllByExpirationTimeBeforeDatabaseNotResponding() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         when(repository
                 .findAllByExpirationTimeBefore(currentTime))
-                .thenThrow(new RuntimeException("Database not responding"));
+                .thenThrow(new RuntimeException("База данных не отвечает"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             repository.findAllByExpirationTimeBefore(currentTime);
         });
 
-        assertEquals("Database not responding", exception.getMessage());
+        assertEquals("База данных не отвечает", exception.getMessage());
 
         verify(repository)
                 .findAllByExpirationTimeBefore(currentTime);
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeValidCodesExist() {
+    public void testFindAllByExpirationTimeBeforeValidCodesExist() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         PasswordResetVerificationCode code1 = new PasswordResetVerificationCode();
@@ -468,7 +468,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeValidAndExpiredCodesExist() {
+    public void testFindAllByExpirationTimeBeforeValidAndExpiredCodesExist() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         PasswordResetVerificationCode expiredCode = new PasswordResetVerificationCode();
@@ -490,7 +490,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeEmptyList() {
+    public void testFindAllByExpirationTimeBeforeEmptyList() {
         LocalDateTime currentTime = LocalDateTime.now();
         when(repository
                 .findAllByExpirationTimeBefore(currentTime))
@@ -502,7 +502,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeOneExpiredCode() {
+    public void testFindAllByExpirationTimeBeforeOneExpiredCode() {
         LocalDateTime currentTime = LocalDateTime.now();
 
         PasswordResetVerificationCode expiredCode = new PasswordResetVerificationCode();
@@ -518,7 +518,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeMultipleExpiredCodes() {
+    public void testFindAllByExpirationTimeBeforeMultipleExpiredCodes() {
         LocalDateTime currentTime = LocalDateTime.now();
         List<PasswordResetVerificationCode> expiredCodes = new ArrayList<>();
 
@@ -539,7 +539,7 @@ public class PasswordResetVerificationCodeRepositoryTest {
     }
 
     @Test
-    void testFindAllByExpirationTimeBeforeMixedCodes() {
+    public void testFindAllByExpirationTimeBeforeMixedCodes() {
         LocalDateTime currentTime = LocalDateTime.now();
         List<PasswordResetVerificationCode> codes = new ArrayList<>();
 
@@ -564,6 +564,101 @@ public class PasswordResetVerificationCodeRepositoryTest {
 
         assertEquals(expiredCodes.size(), result.size());
         assertTrue(result.containsAll(expiredCodes));
+    }
+
+    @Test
+    public void testFindByCodeFound() {
+        String code = "123456";
+        PasswordResetVerificationCode expectedCode = new PasswordResetVerificationCode();
+        expectedCode.setCode(code);
+
+        when(repository
+                .findByCode(code))
+                .thenReturn(Optional.of(expectedCode));
+
+        Optional<PasswordResetVerificationCode> result = repository.findByCode(code);
+        assertTrue(result.isPresent(), "Код должен быть найден");
+        assertEquals(expectedCode, result.get(), "Результат должен совпадать с ожидаемым объектом");
+    }
+
+    @Test
+    public void testFindByCodeNotFound() {
+        String code = "654321";
+
+        when(repository
+                .findByCode(code))
+                .thenReturn(Optional.empty());
+
+        Optional<PasswordResetVerificationCode> result = repository.findByCode(code);
+        assertFalse(result.isPresent(), "Код не должен быть найден");
+    }
+
+    @Test
+    public void testFindByCodeWithNull() {
+        String code = null;
+
+        when(repository
+                .findByCode(code))
+                .thenReturn(Optional.empty());
+
+        Optional<PasswordResetVerificationCode> result = repository.findByCode(code);
+        assertFalse(result.isPresent(), "Код не должен быть найден");
+    }
+
+    @Test
+    public void testFindByCodeEmptyString() {
+        String code = "";
+
+        when(repository
+                .findByCode(code))
+                .thenReturn(Optional.empty());
+
+        Optional<PasswordResetVerificationCode> result = repository.findByCode(code);
+        assertFalse(result.isPresent(), "Код не должен быть найден для пустой строки");
+    }
+
+    @Test
+    public void testFindByCodeWithSpaces() {
+        String code = " 123456 ";
+
+        when(repository
+                .findByCode(code.trim()))
+                .thenReturn(Optional.of(new PasswordResetVerificationCode()));
+
+        Optional<PasswordResetVerificationCode> result = repository.findByCode(code);
+        assertTrue(result.isEmpty(), "Код не должен быть найден при наличии пробелов");
+    }
+
+    @Test
+    public void testFindByCodeWithSpecialCharacters() {
+        String code = "!@#%^&*()_+";
+
+        when(repository
+                .findByCode(code))
+                .thenReturn(Optional.empty());
+
+        Optional<PasswordResetVerificationCode> result = repository.findByCode(code);
+        assertFalse(result.isPresent(), "Код не должен быть найден для строки со спецсимволами");
+    }
+
+    @Test
+    public void testFindByCodeWithDifferentLengths() {
+        String shortCode = "123";
+
+        when(repository
+                .findByCode(shortCode))
+                .thenReturn(Optional.empty());
+
+        Optional<PasswordResetVerificationCode> result = repository.findByCode(shortCode);
+        assertFalse(result.isPresent(), "Код не должен быть найден для слишком короткого кода");
+
+        String longCode = "1234567890123456789012345678901234567890";
+        when(repository
+                .findByCode(longCode))
+                .thenReturn(Optional.empty());
+
+        result = repository.findByCode(longCode);
+        assertFalse(result.isPresent(), "Код не должен быть найден для слишком длинного кода");
     }
 
 }

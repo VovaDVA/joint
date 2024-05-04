@@ -63,7 +63,7 @@ public class TwoFactorAuthVerificationCodeRepositoryTest {
         Long userId = 3L;
         when(verificationCodeRepository
                 .findByUserId(userId))
-                .thenThrow(new RuntimeException("Exception"));
+                .thenThrow(new RuntimeException("Исключение"));
 
         assertThrows(RuntimeException.class, () -> {
             verificationCodeRepository.findByUserId(userId);
