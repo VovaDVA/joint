@@ -118,7 +118,7 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
         } catch (jakarta.servlet.ServletException e) {
             Throwable rootCause = e.getRootCause();
 
-            if (rootCause instanceof RuntimeException && rootCause.getMessage().contains("User not found with userId: 999")) {
+            if (rootCause instanceof RuntimeException && rootCause.getMessage().contains("Пользователь не найден с userId: 999")) {
 
             } else {
                 throw e;
