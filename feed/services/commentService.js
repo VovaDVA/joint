@@ -19,7 +19,14 @@ class commentService {
     }
 
     async getCommentById(commentId) {
-        return Comment.findById(commentId);
+        return await Comment.findById(commentId);
+    }
+
+    async newLike(comment_id, user_id) {
+        const comment = await this.getCommentById(comment_id);
+		comment.likes.push(user_id);
+		await comment.save();
+		return comment;
     }
 }
 
