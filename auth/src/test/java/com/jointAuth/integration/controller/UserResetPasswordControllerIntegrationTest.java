@@ -35,7 +35,7 @@ public class UserResetPasswordControllerIntegrationTest {
         mockMvc.perform(post("/auth/request-reset-password")
                         .param("email", email))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Пользователь с таким email не найден."));
+                .andExpect(content().string("Пользователь с таким email не найден"));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class UserResetPasswordControllerIntegrationTest {
         mockMvc.perform(post("/auth/request-reset-password")
                         .param("email", email))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Не удалось отправить запрос на сброс пароля."));
+                .andExpect(content().string("Не удалось отправить запрос на сброс пароля"));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class UserResetPasswordControllerIntegrationTest {
         mockMvc.perform(post("/auth/request-reset-password")
                         .param("email", email))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Не удалось отправить запрос на сброс пароля."));
+                .andExpect(content().string("Не удалось отправить запрос на сброс пароля"));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class UserResetPasswordControllerIntegrationTest {
         mockMvc.perform(post("/auth/request-reset-password")
                         .param("email", email))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Не удалось отправить запрос на сброс пароля."));
+                .andExpect(content().string("Не удалось отправить запрос на сброс пароля"));
     }
 
     @Test
@@ -134,7 +134,7 @@ public class UserResetPasswordControllerIntegrationTest {
         mockMvc.perform(post("/auth/request-reset-password")
                         .param("email", email))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Не удалось отправить запрос на сброс пароля."));
+                .andExpect(content().string("Не удалось отправить запрос на сброс пароля"));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class UserResetPasswordControllerIntegrationTest {
         mockMvc.perform(post("/auth/request-reset-password")
                         .param("email", email))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Не удалось отправить запрос на сброс пароля."));
+                .andExpect(content().string("Не удалось отправить запрос на сброс пароля"));
     }
 
     @Test
