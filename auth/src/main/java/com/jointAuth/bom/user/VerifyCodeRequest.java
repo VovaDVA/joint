@@ -1,4 +1,4 @@
-package com.jointAuth.model.verification;
+package com.jointAuth.bom.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

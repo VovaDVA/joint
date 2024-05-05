@@ -6,13 +6,12 @@ import com.jointAuth.model.verification.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
+import com.jointAuth.model.verification.TwoFactorAuthVerificationCode;
 import com.jointAuth.model.verification.UserVerificationCode;
-import com.jointAuth.repository.PasswordResetVerificationCodeRepository;
-import com.jointAuth.repository.ProfileRepository;
-import com.jointAuth.repository.UserRepository;
-import com.jointAuth.repository.UserVerificationCodeRepository;
+import com.jointAuth.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +37,8 @@ public class UserService {
 
     private final PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
 
+    private final TwoFactorAuthVerificationCodeRepository twoFactorAuthVerificationCodeRepository;
+
     private final String COMBINATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private static final String PASSWORD_PATTERN =
@@ -58,7 +59,8 @@ public class UserService {
                        @Autowired VerificationCodeService verificationCodeService,
                        @Autowired EmailService emailService,
                        @Autowired UserVerificationCodeRepository userVerificationCodeRepository,
-                       @Autowired PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository) {
+                       @Autowired PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository,
+                       @Autowired TwoFactorAuthVerificationCodeRepository twoFactorAuthVerificationCodeRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.profileRepository = profileRepository;
@@ -66,6 +68,7 @@ public class UserService {
         this.emailService = emailService;
         this.userVerificationCodeRepository = userVerificationCodeRepository;
         this.passwordResetVerificationCodeRepository = passwordResetVerificationCodeRepository;
+        this.twoFactorAuthVerificationCodeRepository = twoFactorAuthVerificationCodeRepository;
     }
 
 
@@ -226,6 +229,12 @@ public class UserService {
         }).orElse(false);
     }
 
+    public Optional<User> findUserByCode(String code) {
+        Optional<TwoFactorAuthVerificationCode> verificationCodeOptional = twoFactorAuthVerificationCodeRepository.findByCode(code);
+
+        return verificationCodeOptional.map(TwoFactorAuthVerificationCode::getUser);
+    }
+
     public boolean resetPassword(String verificationCode, String newPassword) {
         Optional<PasswordResetVerificationCode> optionalPasswordResetVerificationCode = passwordResetVerificationCodeRepository.findByCode(verificationCode);
 
@@ -262,7 +271,7 @@ public class UserService {
 
     public UserProfileBom getUserInfoById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден с userId: " + userId));
+                .orElseThrow(() -> new NoSuchElementException("Пользователь не найден с userId: " + userId));
 
         UserProfileBom userResponseDTO = new UserProfileBom();
         userResponseDTO.setUserId(user.getId());
@@ -274,7 +283,7 @@ public class UserService {
         userResponseDTO.setTwoFactorEnabled(user.getTwoFactorVerified());
 
         Profile userProfile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Профиль не найден для userId: " + userId));
+                .orElseThrow(() -> new NoSuchElementException("Профиль не найден для userId: " + userId));
 
         userResponseDTO.setProfileId(userProfile.getId());
         userResponseDTO.setDescription(userProfile.getDescription());
@@ -305,12 +314,12 @@ public class UserService {
                 userDetailsDTO.setCountry(userProfile.getCountry());
                 userDetailsDTO.setCity(userProfile.getCity());
             } else {
-                throw new RuntimeException("Профиль не найден для userId: " + userId);
+                throw new NoSuchElementException("Профиль не найден для userId: " + userId);
             }
 
             return userDetailsDTO;
         } else {
-            throw new RuntimeException("Пользователь не найден с userId: " + userId);
+            throw new NoSuchElementException("Пользователь не найден с userId: " + userId);
         }
     }
 
