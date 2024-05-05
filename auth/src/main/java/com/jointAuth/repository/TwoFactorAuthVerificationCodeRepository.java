@@ -13,4 +13,6 @@ public interface TwoFactorAuthVerificationCodeRepository extends JpaRepository<T
     Optional<TwoFactorAuthVerificationCode> findByUserId(Long userId);
 
     List<TwoFactorAuthVerificationCode> findAllByExpirationTimeBefore(LocalDateTime expirationTime);
+
+
 }

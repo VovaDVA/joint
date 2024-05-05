@@ -7,11 +7,13 @@ import com.jointAuth.converter.UserConverter;
 import com.jointAuth.model.verification.ConfirmAccountDeletionRequest;
 import com.jointAuth.model.verification.ConfirmPasswordChangeRequest;
 import com.jointAuth.model.verification.ConfirmPasswordResetRequest;
-import com.jointAuth.model.verification.VerifyCodeRequest;
+import com.jointAuth.bom.user.VerifyCodeRequest;
 import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.service.UserService;
 import com.jointAuth.service.VerificationCodeService;
 import com.jointAuth.util.JwtTokenUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,9 +60,9 @@ public class UserController {
 
     @PostMapping(path = "/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
-        User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        try {
+            User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
-        if (user != null && userService.passwordsMatch(user.getPassword(), loginRequest.getPassword())) {
             if (user.getTwoFactorVerified()) {
                 LoginResponse response = new LoginResponse(true, null);
                 return ResponseEntity.ok(response);
@@ -69,70 +71,76 @@ public class UserController {
                 LoginResponse response = new LoginResponse(false, token);
                 return ResponseEntity.ok(response);
             }
+        } catch (IllegalArgumentException e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-
-        ApiResponse errorMessage = new ApiResponse("Неверный email или пароль");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
     }
 
     @PostMapping(path = "/verify-code")
     public ResponseEntity<BaseResponse> verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) {
-        boolean isValid = verificationCodeService.verifyVerificationCodeFor2FA(verifyCodeRequest.getUserId(), verifyCodeRequest.getCode());
+        try {
+            boolean isValid = verificationCodeService.verifyVerificationCodeFor2FA(verifyCodeRequest.getUserId(), verifyCodeRequest.getCode());
 
-        if (isValid) {
-            User user = userService.getUserById(verifyCodeRequest.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Пользователь не найден по userId: " + verifyCodeRequest.getUserId()));
+            if (isValid) {
+                User user = userService.getUserById(verifyCodeRequest.getUserId())
+                        .orElseThrow(() -> new RuntimeException("Пользователь не найден по userId: " + verifyCodeRequest.getUserId()));
 
-            String token = jwtTokenUtils.generateToken(user);
-            JwtResponse jwtResponse = new JwtResponse(token);
-            return ResponseEntity.ok(jwtResponse);
-        } else if (verifyCodeRequest.getUserId() == null || verifyCodeRequest.getCode() == null) {
-            ApiResponse apiResponse = new ApiResponse("Отсутствует код подтверждения или userId");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
-        } else {
-            ApiResponse apiResponse = new ApiResponse("Неверный код подтверждения");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+                String token = jwtTokenUtils.generateToken(user);
+                JwtResponse jwtResponse = new JwtResponse(token);
+                return ResponseEntity.ok(jwtResponse);
+            } else if (verifyCodeRequest.getUserId() == null || verifyCodeRequest.getCode() == null) {
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Отсутствует код подтверждения или userId");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            } else {
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Неверный код подтверждения");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            }
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
     @PostMapping(path = "/two-factor/enable")
-    public ResponseEntity<ApiResponse> enableTwoFactorAuth(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> enableTwoFactorAuth(@RequestHeader("Authorization") String token) {
         try {
             Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+
             userService.enableTwoFactorAuth(currentUserId);
+
             ApiResponse apiResponse = new ApiResponse("Двухфакторная аутентификация успешно включена");
             return ResponseEntity.ok(apiResponse);
         } catch (IllegalArgumentException e) {
-            ApiResponse apiResponse;
             if (e.getMessage().equals("Двухфакторная аутентификация уже включена")) {
-                apiResponse = new ApiResponse("Двухфакторная аутентификация уже включена");
+                ApiResponse apiResponse = new ApiResponse("Двухфакторная аутентификация уже включена");
                 return ResponseEntity.ok(apiResponse);
             } else {
-                apiResponse = new ApiResponse("Пользователь не найден");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Пользователь не найден");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
             }
         }
     }
 
     @PostMapping(path = "/two-factor/disable")
-    public ResponseEntity<ApiResponse> disableTwoFactorAuth(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<BaseResponse> disableTwoFactorAuth(@RequestHeader("Authorization") String token) {
         try {
             Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+
             userService.disableTwoFactorAuth(currentUserId);
+
             ApiResponse apiResponse = new ApiResponse("Двухфакторная аутентификация успешно отключена");
             return ResponseEntity.ok(apiResponse);
         } catch (IllegalArgumentException e) {
-            ApiResponse apiResponse;
             if (e.getMessage().equals("Двухфакторная аутентификация уже отключена")) {
-                apiResponse = new ApiResponse(e.getMessage());
+                ApiResponse apiResponse = new ApiResponse("Двухфакторная аутентификация уже отключена");
                 return ResponseEntity.ok(apiResponse);
             } else {
-                apiResponse = new ApiResponse("Пользователь не найден");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Пользователь не найден");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
             }
         }
     }
-
 
     @PostMapping(path = "/request-reset-password")
     public ResponseEntity<?> requestPasswordReset(@RequestParam("email") String email) {
