@@ -80,24 +80,18 @@ public class UserController {
     @PostMapping(path = "/verify-code")
     public ResponseEntity<BaseResponse> verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) {
         try {
-            boolean isValid = verificationCodeService.verifyVerificationCodeFor2FA(verifyCodeRequest.getUserId(), verifyCodeRequest.getCode());
-
-            if (isValid) {
-                User user = userService.getUserById(verifyCodeRequest.getUserId())
-                        .orElseThrow(() -> new RuntimeException("Пользователь не найден по userId: " + verifyCodeRequest.getUserId()));
-
-                String token = jwtTokenUtils.generateToken(user);
-                JwtResponse jwtResponse = new JwtResponse(token);
-                return ResponseEntity.ok(jwtResponse);
-            } else if (verifyCodeRequest.getUserId() == null || verifyCodeRequest.getCode() == null) {
-                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Отсутствует код подтверждения или userId");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-            } else {
-                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Неверный код подтверждения");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            Optional<User> userOptional = userService.findUserByCode(verifyCodeRequest.getCode());
+            if (userOptional.isEmpty()) {
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Пользователь не найден по коду: " + verifyCodeRequest.getCode());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
             }
+
+            User user = userOptional.get();
+            String token = jwtTokenUtils.generateToken(user);
+            JwtResponse jwtResponse = new JwtResponse(token);
+            return ResponseEntity.ok(jwtResponse);
         } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Внутренняя ошибка сервера");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }

@@ -6,11 +6,9 @@ import com.jointAuth.model.verification.RequestType;
 import com.jointAuth.model.user.User;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
+import com.jointAuth.model.verification.TwoFactorAuthVerificationCode;
 import com.jointAuth.model.verification.UserVerificationCode;
-import com.jointAuth.repository.PasswordResetVerificationCodeRepository;
-import com.jointAuth.repository.ProfileRepository;
-import com.jointAuth.repository.UserRepository;
-import com.jointAuth.repository.UserVerificationCodeRepository;
+import com.jointAuth.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +36,8 @@ public class UserService {
 
     private final PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
 
+    private final TwoFactorAuthVerificationCodeRepository twoFactorAuthVerificationCodeRepository;
+
     private final String COMBINATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private static final String PASSWORD_PATTERN =
@@ -58,7 +58,8 @@ public class UserService {
                        @Autowired VerificationCodeService verificationCodeService,
                        @Autowired EmailService emailService,
                        @Autowired UserVerificationCodeRepository userVerificationCodeRepository,
-                       @Autowired PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository) {
+                       @Autowired PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository,
+                       @Autowired TwoFactorAuthVerificationCodeRepository twoFactorAuthVerificationCodeRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.profileRepository = profileRepository;
@@ -66,6 +67,7 @@ public class UserService {
         this.emailService = emailService;
         this.userVerificationCodeRepository = userVerificationCodeRepository;
         this.passwordResetVerificationCodeRepository = passwordResetVerificationCodeRepository;
+        this.twoFactorAuthVerificationCodeRepository = twoFactorAuthVerificationCodeRepository;
     }
 
 
@@ -224,6 +226,12 @@ public class UserService {
 
             return emailService.sendPasswordResetConfirmationEmail(currentUser, verificationCode);
         }).orElse(false);
+    }
+
+    public Optional<User> findUserByCode(String code) {
+        Optional<TwoFactorAuthVerificationCode> verificationCodeOptional = twoFactorAuthVerificationCodeRepository.findByCode(code);
+
+        return verificationCodeOptional.map(TwoFactorAuthVerificationCode::getUser);
     }
 
     public boolean resetPassword(String verificationCode, String newPassword) {
