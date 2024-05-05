@@ -11,6 +11,7 @@ import com.jointAuth.model.verification.UserVerificationCode;
 import com.jointAuth.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -270,7 +271,7 @@ public class UserService {
 
     public UserProfileBom getUserInfoById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден с userId: " + userId));
+                .orElseThrow(() -> new NoSuchElementException("Пользователь не найден с userId: " + userId));
 
         UserProfileBom userResponseDTO = new UserProfileBom();
         userResponseDTO.setUserId(user.getId());
@@ -282,7 +283,7 @@ public class UserService {
         userResponseDTO.setTwoFactorEnabled(user.getTwoFactorVerified());
 
         Profile userProfile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Профиль не найден для userId: " + userId));
+                .orElseThrow(() -> new NoSuchElementException("Профиль не найден для userId: " + userId));
 
         userResponseDTO.setProfileId(userProfile.getId());
         userResponseDTO.setDescription(userProfile.getDescription());

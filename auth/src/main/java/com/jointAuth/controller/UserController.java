@@ -18,9 +18,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -141,15 +143,18 @@ public class UserController {
         Optional<User> currentUser = userService.getUserByEmail(email);
 
         if (currentUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Пользователь с таким email не найден");
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Пользователь с таким email не найден");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
 
         boolean emailSent = userService.sendPasswordResetRequest(currentUser.get().getEmail());
         if (emailSent) {
             String maskedEmail = userService.maskEmail(currentUser.get().getEmail());
-            return ResponseEntity.ok("Код отправлен на email: " + maskedEmail);
+            ApiResponse successResponse = new ApiResponse("Код отправлен на email: " + maskedEmail);
+            return ResponseEntity.ok(successResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Не удалось отправить запрос на сброс пароля");
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Не удалось отправить запрос на сброс пароля");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
@@ -159,24 +164,29 @@ public class UserController {
                 confirmPasswordResetRequest.getNewPassword());
 
         if (passwordReset) {
-            return ResponseEntity.ok("Успешный сброс пароля");
+            ApiResponse successResponse = new ApiResponse("Успешный сброс пароля");
+            return ResponseEntity.ok(successResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный проверочный код или не удалось сбросить пароль");
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Неверный проверочный код или не удалось сбросить пароль");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
-
 
     @GetMapping(path = "/user")
-    public ResponseEntity<UserProfileBom> getUserByIdWithToken(@RequestHeader("Authorization") String token) {
-        Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
-        UserProfileBom userResponseDTO = userService.getUserInfoById(currentUserId);
+    public ResponseEntity<?> getUserByIdWithToken(@RequestHeader("Authorization") String token) {
 
-        if (userResponseDTO != null) {
+        try {
+            Long currentUserId = jwtTokenUtils.getCurrentUserId(token);
+            UserProfileBom userResponseDTO = userService.getUserInfoById(currentUserId);
+
             return ResponseEntity.ok(userResponseDTO);
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (NoSuchElementException e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
+
     }
+
 
     @GetMapping("/user/get")
     public ResponseEntity<UserBom> getUserDetailsById(@RequestParam Long userId) {
