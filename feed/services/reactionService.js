@@ -19,6 +19,10 @@ class reactionService {
     async getReactionById(reactionId) {
         return Reaction.findById(reactionId);
     }
+
+    async getReactionByUser(userId) {
+        return Reaction.findById(userId);
+    }
 }
 
 module.exports = new reactionService;
