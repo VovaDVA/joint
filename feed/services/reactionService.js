@@ -21,7 +21,7 @@ class reactionService {
     }
 
     async getReactionByUser(userId) {
-        return Reaction.findById(userId);
+        return Reaction.findOne({"user_id": userId});
     }
 }
 

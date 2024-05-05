@@ -3,6 +3,7 @@ const router = express.Router();
 const reactionController = require('../controllers/reactionController');
 
 router.post('/createReaction', reactionController.createReaction);
-router.get('/getReaction', reactionController.getReactionById);
+router.get('/getReactionById', reactionController.getReactionById);
+router.get('/getReactionByUser', reactionController.getReactionByUser);
 
 module.exports = router;

@@ -33,6 +33,22 @@ class reactionController {
             res.status(500).json({message: error.message});
         }
     }
+
+    async getReactionByUser(req, res) {
+        try {
+            const user_id = req.query.user_id;
+            const reaction = await reactionService.getReactionByUser(user_id);
+
+            if (!reaction) {
+                return res.status(404).json("Reaction not found");
+            } 
+
+            return res.status(201).json(reaction);
+        }
+        catch (error) {
+            res.status(500).json({message: error.message});
+        }
+    }
 }
 
 module.exports = new reactionController();
