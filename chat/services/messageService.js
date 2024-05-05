@@ -22,13 +22,13 @@ class messageService {
         return message;
     }
 
-    async createMessage(chat_id, sender_id, text){
-        let today = await new Date();
+    async createMessage(data){
+        let today = new Date();
 
         const message = new Message({
-            "chat_id": chat_id,
-            "sender_id": sender_id,
-            "text": text,
+            "chat_id": data.chat_id,
+            "sender_id": data.sender_id,
+            "text": data.text,
             "created_at": today
         });
         

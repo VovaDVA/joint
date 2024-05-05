@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const chatSchema = new mongoose.Schema({
     members: {
-        type: [String],
+        type: [Number],
         required: true
     }, 
     created_at:{ 

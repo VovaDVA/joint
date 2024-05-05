@@ -7,7 +7,7 @@ const messageSchema = new mongoose.Schema({
         required: true
     },
     sender_id: {
-        type: String,
+        type: Number,
         required: true
     },
     text: {

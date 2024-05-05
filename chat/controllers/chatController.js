@@ -65,7 +65,7 @@ class chatController {
                 return response.status(404).json({message: "ERROR, Chat not found"});
             }
     
-            return response.status(201).json(chat)
+            return response.status(200).json(chat)
     
         }
         catch (error){
