@@ -314,12 +314,12 @@ public class UserService {
                 userDetailsDTO.setCountry(userProfile.getCountry());
                 userDetailsDTO.setCity(userProfile.getCity());
             } else {
-                throw new RuntimeException("Профиль не найден для userId: " + userId);
+                throw new NoSuchElementException("Профиль не найден для userId: " + userId);
             }
 
             return userDetailsDTO;
         } else {
-            throw new RuntimeException("Пользователь не найден с userId: " + userId);
+            throw new NoSuchElementException("Пользователь не найден с userId: " + userId);
         }
     }
 

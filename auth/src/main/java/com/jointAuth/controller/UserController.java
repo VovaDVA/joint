@@ -12,13 +12,10 @@ import com.jointAuth.repository.TwoFactorAuthVerificationCodeRepository;
 import com.jointAuth.service.UserService;
 import com.jointAuth.service.VerificationCodeService;
 import com.jointAuth.util.JwtTokenUtils;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -189,13 +186,19 @@ public class UserController {
 
 
     @GetMapping("/user/get")
-    public ResponseEntity<UserBom> getUserDetailsById(@RequestParam Long userId) {
-        UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userId);
+    public ResponseEntity<?> getUserDetailsById(@RequestParam Long userId) {
+        try {
+            UserBom userDetailsDTO = userService.getUserByIdWithoutToken(userId);
 
-        if (userDetailsDTO != null) {
-            return ResponseEntity.ok(userDetailsDTO);
-        } else {
-            return ResponseEntity.notFound().build();
+            if (userDetailsDTO != null) {
+                return ResponseEntity.ok(userDetailsDTO);
+            } else {
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Пользователь не найден");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+        } catch (NoSuchElementException e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
 
