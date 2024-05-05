@@ -33,6 +33,17 @@ class commentController {
             return res.status(500).json({message: error.message});
         }
     }
+
+    async newLike(req, res) {
+        try {
+            const {comment_id, user_id} = req.body;
+            const comment = await commentService.newLike(comment_id, user_id);
+            return res.status(201).json(comment);
+        }
+        catch (error) {
+            return res.status(500).json({message: error.message});
+        }
+    }
 }
 
 module.exports = new commentController();
