@@ -1,8 +1,9 @@
 <template>
 	<auth-block v-if="!resetForm && form !== 'two-factor'">
 		<content-block-title>Авторизация</content-block-title>
+		<div class="lost-password">{{ errorMessage }}</div>
 		<form @submit.prevent="login">
-			<email-input v-model="email">Почта</email-input>
+			<email-input v-model="email">E-mail</email-input>
 			<password-input v-model="password">Пароль</password-input>
 
 			<input :class="$store.state.theme" type="submit" name="submit" value="Войти">
@@ -49,7 +50,8 @@ export default {
 			resetForm: false,
 			form: 'send-code',
 			resetPasswordMessage: '',
-			resetPasswordCode: ''
+			resetPasswordCode: '',
+			errorMessage: ''
 		};
 	},
 	created() {
@@ -59,14 +61,13 @@ export default {
 		async login(event) {
 			event.preventDefault();
 			await apiClient.auth.login({ email: this.email, password: this.password }, (data) => {
-				if (!data['twoFactorVerified']) {
+				if (data['twoFactorVerified']) {
 					this.form = 'two-factor';
 				} else {
-					saveToken(data['token']);
-					this.$router.push('/');
+					this.confirmLogin(data);
 				}
-			}, () => {
-				console.log('Неверный логин или пароль');
+			}, (data) => {
+				this.errorMessage = data['message'];
 			});
 		},
 		resetPassword() {
@@ -90,11 +91,14 @@ export default {
 		},
 		async confirmTwoFactor() {
 			await apiClient.auth.verifyCode({
-				verificationCode: this.verificationCode,
+				code: this.verificationCode,
 			}, (data) => {
-				saveToken(data['token']);
-				this.$router.push('/');
+				this.confirmLogin(data);
 			});
+		},
+		confirmLogin(data) {
+			saveToken(data['token']);
+			this.$router.push('/');
 		}
 	}
 };
