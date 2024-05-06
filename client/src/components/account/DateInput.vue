@@ -1,5 +1,5 @@
 <template>
-	<form-input type="date" v-model="value"><slot></slot></form-input>
+	<form-input type="date" data="Дата"><slot></slot></form-input>
 </template>
 
 <script>

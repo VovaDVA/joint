@@ -3,8 +3,8 @@
 		<content-block-title>Авторизация</content-block-title>
 		<div class="lost-password">{{ errorMessage }}</div>
 		<form @submit.prevent="login">
-			<email-input v-model="email">E-mail</email-input>
-			<password-input v-model="password">Пароль</password-input>
+			<email-input v-model="email" required>E-mail</email-input>
+			<password-input v-model="password" required>Пароль</password-input>
 
 			<input :class="$store.state.theme" type="submit" name="submit" value="Войти">
 		</form>
@@ -14,22 +14,25 @@
 
 	<auth-block v-if="resetForm">
 		<content-block-title>Восстановление пароля</content-block-title>
+		<div class="lost-password">{{ errorMessage }}</div>
 		<form v-if="form == 'send-code'" @submit.prevent="sendResetCode">
 			<email-input v-model="email">E-mail для восстановления пароля</email-input>
 			<input :class="$store.state.theme" type="submit" name="submit" value="Отправить код">
 		</form>
 		<form v-if="form == 'enter-code'" @submit.prevent="enterResetCode">
-			<form-input v-model="resetPasswordCode">{{ resetPasswordMessage }}</form-input>
+			<form-input v-model="resetPasswordCode" data="Код из E-mail">{{ resetPasswordMessage }}</form-input>
 			<input :class="$store.state.theme" type="submit" name="submit" value="Восстановить пароль">
 		</form>
 		<form v-if="form == 'enter-new-password'" @submit.prevent="confirmResetPassword">
-			<password-input v-model="newPassword">Новый пароль</password-input>
+			<password-input v-model="newPassword" data="Новый пароль">Новый пароль</password-input>
 			<input :class="$store.state.theme" type="submit" name="submit" value="Подтвердить">
 		</form>
+		<div class="lost-password recall" @click="resetForm = false">Вспомнили пароль?</div>
 	</auth-block>
 
 	<auth-block v-if="form == 'two-factor'">
 		<content-block-title>Авторизация</content-block-title>
+		<div class="lost-password">{{ errorMessage }}</div>
 		<form @submit.prevent="confirmTwoFactor">
 			<form-input v-model="verificationCode">На Ваш email отправлен код</form-input>
 			<input :class="$store.state.theme" type="submit" name="submit" value="Подтвердить">
@@ -73,10 +76,11 @@ export default {
 		resetPassword() {
 			this.resetForm = true;
 			this.email = '';
+			this.errorMessage = '';
 		},
 		async sendResetCode() {
 			await apiClient.auth.sendPasswordResetCode({ email: this.email }, (data) => {
-				this.resetPasswordMessage = data;
+				this.resetPasswordMessage = data['message'];
 				this.form = 'enter-code';
 			});
 		},
@@ -87,13 +91,17 @@ export default {
 			await apiClient.auth.confirmPasswordReset({
 				verificationCode: this.resetPasswordCode,
 				newPassword: this.newPassword
-			}, () => { });
+			}, () => { }, (data) => {
+				this.errorMessage = data['message'];
+			});
 		},
 		async confirmTwoFactor() {
 			await apiClient.auth.verifyCode({
 				code: this.verificationCode,
 			}, (data) => {
 				this.confirmLogin(data);
+			}, (data) => {
+				this.errorMessage = data['message'];
 			});
 		},
 		confirmLogin(data) {
@@ -140,17 +148,5 @@ input.light-theme:hover {
 	color: #ffffff !important;
 
 	transition: color, background .3s linear;
-}
-
-.lost-password {
-	text-align: center;
-	margin: 10px auto;
-	max-width: 300px;
-	color: #ff6767;
-	user-select: none;
-}
-
-.lost-password:hover {
-	cursor: pointer;
 }
 </style>

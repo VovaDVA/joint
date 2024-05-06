@@ -9,8 +9,9 @@
     </auth-block>
     <auth-block v-if="modal == 'confirm-delete'">
         <content-block-title>Удаление аккаунта</content-block-title>
+		<div class="lost-password">{{ errorMessage }}</div>
         <form @submit.prevent="confirmAccountDelete">
-            <form-input v-model="verificationCode">На ваш email отправлен код</form-input>
+            <form-input v-model="verificationCode" data="Код из E-mail">На ваш email отправлен код</form-input>
             <div class="modal-buttons">
                 <div class="submit-btn" :class="$store.state.theme" @click="hideModal">Отмена</div>
                 <input class="submit-btn red" :class="$store.state.theme" type="submit" name="submit"
@@ -30,6 +31,7 @@ export default {
             user: {},
             modal: '',
             verificationCode: '',
+            errorMessage: ''
         }
     },
     mounted() {
@@ -40,7 +42,7 @@ export default {
     },
     methods: {
         async sendDeleteAccountCode() {
-            await apiClient.auth.delete(() => {
+            await apiClient.auth.delete({}, () => {
                 this.modal = 'confirm-delete';
             });
         },
@@ -48,7 +50,9 @@ export default {
             await apiClient.auth.confirmDelete({
                 userId: getUser().userId,
                 verificationCode: this.verificationCode
-            }, () => deleteSession());
+            }, () => deleteSession(), (data) => {
+                this.errorMessage = data['message'];
+            });
         },
         hideModal() {
             this.modal = '';
