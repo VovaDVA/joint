@@ -1953,4 +1953,52 @@ public class UserServiceTest {
             userService.findUserByCode(code);
         });
     }
+
+    @Test
+    public void testValidPassword() {
+        String validPassword = "ValidPassword123@";
+        assertFalse(userService.isPasswordValid(validPassword), "Password should be valid");
+    }
+
+    @Test
+    public void testInvalidPasswordShort() {
+        String shortPassword = "Short1!";
+        assertTrue(userService.isPasswordValid(shortPassword), "Password should be invalid (too short)");
+    }
+
+    @Test
+    public void testInvalidPasswordLong() {
+        String longPassword = "a".repeat(100) + "1!";
+        assertTrue(userService.isPasswordValid(longPassword), "Password should be invalid (too long)");
+    }
+
+    @Test
+    public void testInvalidPasswordWithoutSpecialCharacter() {
+        String noSpecialCharacterPassword = "Password123";
+        assertTrue(userService.isPasswordValid(noSpecialCharacterPassword), "Password should be invalid (no special character)");
+    }
+
+    @Test
+    public void testInvalidPasswordWithoutUpperCase() {
+        String noUpperCasePassword = "password123!";
+        assertTrue(userService.isPasswordValid(noUpperCasePassword), "Password should be invalid (no upper case letter)");
+    }
+
+    @Test
+    public void testInvalidPasswordWithoutLowerCase() {
+        String noLowerCasePassword = "PASSWORD123!";
+        assertTrue(userService.isPasswordValid(noLowerCasePassword), "Password should be invalid (no lower case letter)");
+    }
+
+    @Test
+    public void testInvalidPasswordWithoutDigits() {
+        String noDigitPassword = "Password!";
+        assertTrue(userService.isPasswordValid(noDigitPassword), "Password should be invalid (no digits)");
+    }
+
+    @Test
+    public void testInvalidPasswordWithSpaces() {
+        String spacePassword = "Password 123!";
+        assertTrue(userService.isPasswordValid(spacePassword), "Password should be invalid (contains spaces)");
+    }
 }

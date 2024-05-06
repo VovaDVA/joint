@@ -276,16 +276,13 @@ public class UserController {
                 ApiResponse apiResponse = new ApiResponse("Пароль успешно изменен");
                 return ResponseEntity.ok(apiResponse);
             } else {
-                // Если изменение пароля не удалось, возвращаем HTTP-ответ 401 (UNAUTHORIZED)
                 ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Не удалось изменить пароль");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
             }
         } catch (IllegalArgumentException e) {
-            // Обработка `IllegalArgumentException` и возврат HTTP-ответа с соответствующим кодом и сообщением
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
-            // Обработка любых других исключений и возврат HTTP-ответа 500 (INTERNAL SERVER ERROR)
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Внутренняя ошибка сервера");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
