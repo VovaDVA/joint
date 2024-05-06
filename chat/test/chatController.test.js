@@ -34,6 +34,7 @@ describe("/chat", () => {
         dbClear();
     });
 
+    
     test("The request to receive the chat should return the code 200 (GET /getChat)", async () => {
         const responce = await request(app).post("/chat/createChat").send({
             "members": [123, 456]
@@ -55,7 +56,24 @@ describe("/chat", () => {
 
         expect(responce.statusCode).toBe(404);
         expect(responce.body.message).toStrictEqual("ERROR, Chat not found");
+        dbClear();
+    });
 
+    test("A request to receive all user chats should return the code 200", async () => {
+        await request(app).post("/chat/createChat").send({
+            "members": [123, 456]
+        });
+
+        await request(app).post("/chat/createChat").send({
+            "members": [123, 777]
+        });
+
+        const responce = await request(app).get("/chat/getUserChats").query({
+            "user_id": 123
+        });
+
+        expect(responce.statusCode).toBe(200);
+        dbClear();
     });
 
 });

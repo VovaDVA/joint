@@ -48,7 +48,7 @@ class chatController {
             }
 
             const chats = await chatService.getUserChats(user_id);
-            return response.status(201).json(chats);
+            return response.status(200).json(chats);
 
         }catch(error){
             return response.status(500).json({message: error.message});
