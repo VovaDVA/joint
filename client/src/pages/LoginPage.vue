@@ -1,5 +1,5 @@
 <template>
-	<auth-block v-if="!resetForm">
+	<auth-block v-if="!resetForm && form !== 'two-factor'">
 		<content-block-title>Авторизация</content-block-title>
 		<form @submit.prevent="login">
 			<email-input v-model="email">Почта</email-input>
@@ -30,7 +30,7 @@
 	<auth-block v-if="form == 'two-factor'">
 		<content-block-title>Авторизация</content-block-title>
 		<form @submit.prevent="confirmTwoFactor">
-			<email-input v-model="email">На Ваш email отправлен код</email-input>
+			<form-input v-model="verificationCode">На Ваш email отправлен код</form-input>
 			<input :class="$store.state.theme" type="submit" name="submit" value="Подтвердить">
 		</form>
 	</auth-block>
@@ -59,9 +59,14 @@ export default {
 		async login(event) {
 			event.preventDefault();
 			await apiClient.auth.login({ email: this.email, password: this.password }, (data) => {
-				// this.form = 'two-factor';
-				saveToken(data['token']);
-				this.$router.push('/');
+				if (!data['twoFactorVerified']) {
+					this.form = 'two-factor';
+				} else {
+					saveToken(data['token']);
+					this.$router.push('/');
+				}
+			}, () => {
+				console.log('Неверный логин или пароль');
 			});
 		},
 		resetPassword() {
@@ -73,26 +78,6 @@ export default {
 				this.resetPasswordMessage = data;
 				this.form = 'enter-code';
 			});
-			// try {
-			// 	const response = await fetch('/auth/request-reset-password?email=' + this.email, {
-			// 		method: 'POST',
-			// 		headers: {
-			// 			'Content-Type': 'application/json'
-			// 		},
-			// 		body: JSON.stringify({
-			// 			email: this.email,
-			// 		})
-			// 	});
-
-			// 	const data = await response.text();
-			// 	this.resetPasswordMessage = data;
-			// 	if (data !== 'Пользователь с таким email не найден') {
-			// 		this.form = 'enter-code';
-			// 	}
-
-			// } catch (error) {
-			// 	console.error(error);
-			// }
 		},
 		enterResetCode() {
 			this.form = 'enter-new-password';
@@ -101,10 +86,15 @@ export default {
 			await apiClient.auth.confirmPasswordReset({
 				verificationCode: this.resetPasswordCode,
 				newPassword: this.newPassword
-			}, () => {});
+			}, () => { });
 		},
-		confirmTwoFactor() {
-
+		async confirmTwoFactor() {
+			await apiClient.auth.verifyCode({
+				verificationCode: this.verificationCode,
+			}, (data) => {
+				saveToken(data['token']);
+				this.$router.push('/');
+			});
 		}
 	}
 };

@@ -16,7 +16,7 @@
 
 <script>
 // import apiClient from '@/modules/ApiClient';
-import { getUserById, getUserId } from '@/modules/auth';
+import { getUserById, isUserIdEqual } from '@/modules/auth';
 
 export default {
     name: 'chat-preview-block',
@@ -27,7 +27,7 @@ export default {
         }
     },
     async mounted() {
-        const otherUserId = this.chat.members.find(id => getUserId(id));
+        const otherUserId = this.chat.members.find(id => isUserIdEqual(id));
         // this.otherUser = await apiClient.auth.getUserById(() => {}, otherUserId);
         this.otherUser = await getUserById(otherUserId);
         // console.log(this.otherUser)

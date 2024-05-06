@@ -56,10 +56,16 @@ export function getUser() {
     return JSON.parse(localStorage.getItem('user'));
 }
 
-export function getUserId(id) {
+export function isUserIdEqual(id) {
     const user = getUser();
     if (!user) return;
     return id != getUser().userId;
+}
+
+export function getUserId() {
+    const user = getUser();
+    if (!user) return null;
+    return user.userId;
 }
 
 export function getUserName() {
