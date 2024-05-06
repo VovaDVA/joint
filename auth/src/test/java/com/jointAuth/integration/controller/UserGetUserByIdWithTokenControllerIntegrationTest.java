@@ -134,26 +134,16 @@ public class UserGetUserByIdWithTokenControllerIntegrationTest {
 
     @Test
     public void testGetUserByIdUserNotFound() throws Exception {
+        // Сгенерируйте токен для несуществующего пользователя
         User fakeUser = new User();
         fakeUser.setId(0L);
-
         String token = jwtTokenUtils.generateToken(fakeUser);
 
-        try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/auth/user")
-                            .header("Authorization", "Bearer " + token)
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isNotFound());
-        } catch (jakarta.servlet.ServletException e) {
-            if (e.getCause() != null && e.getCause() instanceof RuntimeException runtimeException) {
-                if (runtimeException.getMessage().contains("Пользователь не найден с userId: 0")) {
-                    assertTrue(true);
-                    return;
-                }
-            }
-            fail("Неожиданное исключение: " + e.getMessage());
-        }
-        fail("Ожидаемое исключение для несуществующего пользователя, но запрос выполнен успешно");
+        // Выполните запрос и ожидайте NOT_FOUND
+        mockMvc.perform(get("/auth/user")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test

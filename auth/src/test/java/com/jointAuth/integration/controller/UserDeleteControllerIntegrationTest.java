@@ -2,6 +2,7 @@ package com.jointAuth.integration.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jointAuth.bom.user.ApiResponse;
+import com.jointAuth.bom.user.ErrorResponse;
 import com.jointAuth.model.verification.ConfirmAccountDeletionRequest;
 import com.jointAuth.service.UserService;
 import com.jointAuth.util.JwtTokenUtils;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -196,6 +198,21 @@ public class UserDeleteControllerIntegrationTest {
                         .content(asJsonString(request)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().json(asJsonString(new ApiResponse("Неверный код подтверждения или не удалось удалить аккаунт"))));
+    }
+
+    @Test
+    public void testNonExistentUser() throws Exception {
+        when(userService
+                .deleteUser(99999L, "validCode"))
+                .thenReturn(false);
+
+        ConfirmAccountDeletionRequest request = new ConfirmAccountDeletionRequest(99999L, "validCode");
+
+        mockMvc.perform(delete("/auth/confirm-delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().json(asJsonString(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Неверный код подтверждения или не удалось удалить аккаунт"))));
     }
 
     private String asJsonString(Object obj) {
