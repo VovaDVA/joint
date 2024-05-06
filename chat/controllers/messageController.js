@@ -10,7 +10,7 @@ class messageController {
     async deleteMessage(request, response){
         try {
             const message_id = request.query.message_id;
-            console.log(message_id);
+            //console.log(message_id);
 
             if (!message_id){
                 return response.status(500).json({message: "ERROR, invalid parameter: cannot get \'message_id\' "});
@@ -34,6 +34,10 @@ class messageController {
         
         if (!message_id || !text){
             return response.status(500).json({message: "ERROR, invalid request body, fields \'message_id\', \'text\' are required"});
+        }
+
+        if (!(await messageService.findMessage(message_id))){
+            return response.status(500).json({message: "fail"});
         }
 
         const updatedMessage = await messageService.editMessage(message_id, text);

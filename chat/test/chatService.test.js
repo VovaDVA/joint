@@ -88,6 +88,5 @@ describe("Actions on chats", () => {
         expect(updatedChat).toBeTruthy();
         await dbClear();
     });
-    
 
 });
