@@ -1,9 +1,9 @@
-import { getToken, getUser } from "./auth";
+import { getToken, getUserId } from "./auth";
 
 class ApiClient {
     constructor() {
         if (!ApiClient.instance) {
-            this.baseUrl = ''; // https://ssou.ru
+            this.baseUrl = ''; 
             ApiClient.instance = this;
         }
         return ApiClient.instance;
@@ -19,9 +19,11 @@ class ApiClient {
         return headers;
     }
 
-    async handleResponse(response, callback) {
-        if (!response.ok) {
-            throw new Error('Ошибка получения данных');
+    async handleResponse(response, callback, errorCallback) {
+        if (response.status !== 200) {
+            errorCallback();
+            console.log(response)
+            return;
         }
 
         const result = await response.json();
@@ -30,11 +32,11 @@ class ApiClient {
     }
 
     async handleError(error) {
-        console.error(error);
+        console.log(error)
         return null;
     }
 
-    async request(method, url, callback, body = null) {
+    async request(method, url, callback = () => {}, body = null, errorCallback = () => {}) {
         try {
             const response = await fetch(this.baseUrl + url, {
                 method: method,
@@ -42,33 +44,34 @@ class ApiClient {
                 body: body
             });
 
-            return this.handleResponse(response, callback);
+            return this.handleResponse(response, callback, errorCallback);
 
         } catch (error) {
             return this.handleError(error);
         }
     }
 
-    async get(url, callback) {
-        await this.request('get', url, callback);
+    async get(url, callback, errorCallback) {
+        await this.request('get', url, callback, errorCallback);
     }
 
-    async post(url, data, callback) {
-        await this.request('post', url, callback, JSON.stringify(data));
+    async post(url, data, callback, errorCallback) {
+        await this.request('post', url, callback, JSON.stringify(data), errorCallback);
     }
 
-    async delete(url, data, callback) {
-        await this.request('delete', url, callback, JSON.stringify(data));
+    async delete(url, data, callback, errorCallback) {
+        await this.request('delete', url, callback, JSON.stringify(data), errorCallback);
     }
 
     auth = {
-        register: (data, callback) => this.post('/auth/register', data, callback),
-        login: (data, callback) => this.post('/auth/login', data, callback),
-        getAll: (callback) => this.get('/auth/get-all', callback),
+        register: (data, callback, errorCallback) => this.post('/auth/register', data, callback, errorCallback),
+        login: (data, callback, errorCallback) => this.post('/auth/login', data, callback, errorCallback),
+        verifyCode: (data, callback, errorCallback) => this.post('/auth/verify-code', data, callback, errorCallback),
+        getAll: (callback, errorCallback) => this.get('/auth/get-all', callback, errorCallback),
         getUserById: (callback, userId) => this.get('/auth/user/get?userId=' + userId, callback),
         // Two Factor Auth
-        enableTwoFactorAuth: (data, callback) => this.post('/auth/two-factor/enable', data, callback),
-        disableTwoFactorAuth: (data, callback) => this.post('/auth/two-factor/disable', data, callback),
+        enableTwoFactorAuth: (data, callback, errorCallback) => this.post('/auth/two-factor/enable', data, callback, errorCallback),
+        disableTwoFactorAuth: (data, callback, errorCallback) => this.post('/auth/two-factor/disable', data, callback, errorCallback),
         // Password Reset
         sendPasswordResetCode: (data, callback) => this.post('/auth/request-reset-password?email=' + data.email, data, callback),
         confirmPasswordReset: (data, callback) => this.post('/auth/confirm-reset-password', data, callback),
@@ -81,7 +84,7 @@ class ApiClient {
     }
 
     chat = {
-        getUserChats: (callback) => this.get('/chat/getUserChats?user_id=' + getUser().userId, callback),
+        getUserChats: (callback) => this.get('/chat/getUserChats?user_id=' + getUserId(), callback),
         createChat: (data, callback) => this.post('/chat/createChat', data, callback),
     }
 
@@ -91,7 +94,7 @@ class ApiClient {
 
     content = {
         getAllPosts: (callback) => this.get('/post/getAllPosts', callback),
-        getPostsByAuthor: (callback) => this.get('/post/getPostsByAuthor?author_id=' + getUser().userId, callback),
+        getPostsByAuthor: (callback) => this.get('/post/getPostsByAuthor?author_id=' + getUserId(), callback),
         createPost: (data, callback) => this.post('/post/createPost', data, callback),
     }
 }

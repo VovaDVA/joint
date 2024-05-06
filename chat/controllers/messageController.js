@@ -41,28 +41,26 @@ class messageController {
 
         }catch(error){
             return response.status(500).json({message: error.message});
-
         }
     }
 
     async sendMessage(request, response){
         try{
-            const {chat_id, sender_id, text} = request.body;
+            const data = request.body;
 
-            if (!chat_id || !sender_id || !text){
-                return responce.status(500).json({message: "ERROR, invalid request body, fields \'chat_id\', \'sender_id\', \'text\' are required"});
+            if (!data.chat_id || !data.sender_id || !data.text){
+                return response.status(500).json({message: "ERROR, invalid request body, fields \'chat_id\', \'sender_id\', \'text\' are required"});
             }
             
-            if (!(await chatService.getChatById(chat_id))){
-                return response.status(500).json({message: `ERROR, chat with id: ${chat_id} does not exist`});
+            if (!(await chatService.getChatById(data.chat_id))){
+                return response.status(500).json({message: `ERROR, chat with id: ${data.chat_id} does not exist`});
             }
             
-            const message = await messageService.createMessage(chat_id, sender_id, text);
+            const message = await messageService.createMessage(data);
             return response.status(201).json(message);
         
         }catch(error){
             return response.status(500).json({message: error.message});
-
         }
     }
 

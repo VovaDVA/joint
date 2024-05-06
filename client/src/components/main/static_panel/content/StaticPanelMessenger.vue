@@ -25,7 +25,7 @@
 
 <script>
 import apiClient from '@/modules/ApiClient';
-import { getUser, getUserId, getUserById } from '@/modules/auth';
+import { getUser, isUserIdEqual, getUserById } from '@/modules/auth';
 import { io } from 'socket.io-client';
 
 export default {
@@ -70,7 +70,7 @@ export default {
         });
     },
     async mounted() {
-        const otherUserId = this.chat.members.find(id => getUserId(id));
+        const otherUserId = this.chat.members.find(id => isUserIdEqual(id));
         this.otherUser = await getUserById(otherUserId);
         if (this.otherUser) {
             this.chatName = this.otherUser.firstName + ' ' + this.otherUser.lastName;
@@ -111,11 +111,11 @@ export default {
     methods: {
         sendMessage() {
             const messageData = {
-                chat_id: this.chat._id,
-                sender_id: getUser().userId,
-                text: this.newMessage,
-                created_at: new Date(),
+                "chat_id": this.chat._id,
+                "sender_id": getUser().userId,
+                "text": this.newMessage,
             }
+            console.log(messageData);
             if (this.newMessage !== '') {
                 this.socket.emit('sendMessage', messageData);
                 this.newMessage = '';
