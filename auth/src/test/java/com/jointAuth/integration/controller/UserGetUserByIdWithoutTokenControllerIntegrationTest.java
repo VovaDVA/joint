@@ -16,8 +16,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import java.util.Date;
 
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -133,22 +132,18 @@ public class UserGetUserByIdWithoutTokenControllerIntegrationTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(result -> {
                         String errorMessage = result.getResponse().getErrorMessage();
+                        assert errorMessage != null;
                         assertFalse(errorMessage.contains("Требуемый параметр запроса 'userId' для параметра метода типа Long отсутствует"));
                     });
         } catch (Exception e) {
-            if (e instanceof MissingServletRequestParameterException) {
-                MissingServletRequestParameterException ex = (MissingServletRequestParameterException) e;
-                assertTrue(ex.getParameterType().equals("Long"));
-                assertTrue(ex.getParameterName().equals("userId"));
+            if (e instanceof MissingServletRequestParameterException ex) {
+                assertEquals("Long", ex.getParameterType());
+                assertEquals("userId", ex.getParameterName());
             } else {
                 fail("Неожиданное исключение: " + e.getMessage());
             }
         }
     }
-
-
-
-
 
     @Test
     public void testGetUserByIdInvalidFormat() throws Exception {

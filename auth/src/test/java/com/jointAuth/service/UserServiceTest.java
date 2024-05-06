@@ -6,11 +6,9 @@ import com.jointAuth.model.user.User;
 import com.jointAuth.model.profile.Profile;
 import com.jointAuth.bom.user.UserBom;
 import com.jointAuth.bom.user.UserProfileBom;
+import com.jointAuth.model.verification.TwoFactorAuthVerificationCode;
 import com.jointAuth.model.verification.UserVerificationCode;
-import com.jointAuth.repository.PasswordResetVerificationCodeRepository;
-import com.jointAuth.repository.ProfileRepository;
-import com.jointAuth.repository.UserRepository;
-import com.jointAuth.repository.UserVerificationCodeRepository;
+import com.jointAuth.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,10 +48,13 @@ public class UserServiceTest {
     private EmailService emailService;
 
     @Mock
-    UserVerificationCodeRepository userVerificationCodeRepository;
+    private UserVerificationCodeRepository userVerificationCodeRepository;
 
     @Mock
-    PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
+    private TwoFactorAuthVerificationCodeRepository twoFactorAuthVerificationCodeRepository;
+
+    @Mock
+    private PasswordResetVerificationCodeRepository passwordResetVerificationCodeRepository;
 
     @InjectMocks
     private UserService userService;
@@ -69,6 +70,7 @@ public class UserServiceTest {
         emailService = mock(EmailService.class);
         userVerificationCodeRepository = mock(UserVerificationCodeRepository.class);
         passwordResetVerificationCodeRepository = mock(PasswordResetVerificationCodeRepository.class);
+        twoFactorAuthVerificationCodeRepository = mock(TwoFactorAuthVerificationCodeRepository.class);
 
         userServiceSpy = spy(userService);
 
@@ -78,7 +80,8 @@ public class UserServiceTest {
                 verificationCodeService,
                 emailService,
                 userVerificationCodeRepository,
-                passwordResetVerificationCodeRepository);
+                passwordResetVerificationCodeRepository,
+                twoFactorAuthVerificationCodeRepository);
 
         userRepository.deleteAll();
         profileRepository.deleteAll();
@@ -1875,5 +1878,79 @@ public class UserServiceTest {
                 .sendVerificationCodeByEmail(user, verificationCode);
 
         assertThrows(RuntimeException.class, () -> userService.sendVerificationCode(user, verificationCode));
+    }
+
+    //findByCode
+    @Test
+    public void testFindUserByCodeCodeExists() {
+        String code = "testCode";
+        User expectedUser = new User();
+        TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
+        verificationCode.setUser(expectedUser);
+
+        when(twoFactorAuthVerificationCodeRepository
+                .findByCode(code))
+                .thenReturn(Optional.of(verificationCode));
+
+        Optional<User> result = userService.findUserByCode(code);
+
+        assertTrue(result.isPresent());
+        assertEquals(expectedUser, result.get());
+    }
+
+    @Test
+    public void testFindUserByCodeCodeDoesNotExist() {
+        String code = "testCode";
+
+        when(twoFactorAuthVerificationCodeRepository
+                .findByCode(code))
+                .thenReturn(Optional.empty());
+
+        Optional<User> result = userService.findUserByCode(code);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testFindUserByCodeCodeExpired() {
+        String code = "expiredCode";
+        TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
+        verificationCode.setExpirationTime(LocalDateTime.now().minusDays(1));
+
+        when(twoFactorAuthVerificationCodeRepository
+                .findByCode(code))
+                .thenReturn(Optional.of(verificationCode));
+
+        Optional<User> result = userService.findUserByCode(code);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testFindUserByCodeCodeAlreadyUsed() {
+        String code = "usedCode";
+        TwoFactorAuthVerificationCode verificationCode = new TwoFactorAuthVerificationCode();
+        verificationCode.setUser(new User());
+
+        when(twoFactorAuthVerificationCodeRepository
+                .findByCode(code))
+                .thenReturn(Optional.empty());
+
+        Optional<User> result = userService.findUserByCode(code);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testFindUserByCodeErrorDuringExecution() {
+        String code = "errorCode";
+
+        when(twoFactorAuthVerificationCodeRepository
+                .findByCode(code))
+                .thenThrow(new RuntimeException("Ошибка во время выполнения"));
+
+        assertThrows(RuntimeException.class, () -> {
+            userService.findUserByCode(code);
+        });
     }
 }

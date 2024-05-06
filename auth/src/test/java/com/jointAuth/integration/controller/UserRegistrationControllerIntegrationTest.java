@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.jointAuth.repository.UserRepository;
@@ -71,92 +72,76 @@ public class UserRegistrationControllerIntegrationTest {
     @Test
     public void testRegisterUserInvalidEmail() throws Exception {
         String newUserJson = "{\"firstName\": \"Александра\", " +
-                             "\"lastName\": \"Дурова\", " +
-                             "\"email\": \"invalid-email\", " +
-                             "\"password\": \"Password123+\"}";
+                "\"lastName\": \"Дурова\", " +
+                "\"email\": \"invalid-email\", " +
+                "\"password\": \"Password123+\"}";
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-            fail("Ожидалась ошибка, связанная с недопустимым форматом email.");
-        } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("Неверный формат электронной почты"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Неверный формат электронной почты"));
     }
 
     @Test
     public void testRegisterUserEmptyFirstName() throws Exception {
         String newUserJson = "{\"firstName\": \"\", " +
-                             "\"lastName\": \"Савалина\", " +
-                             "\"email\": \"emptyfield@gmail.com\", " +
-                             "\"password\": \"Password123@\"}";
+                "\"lastName\": \"Савалина\", " +
+                "\"email\": \"emptyfield@gmail.com\", " +
+                "\"password\": \"Password123@\"}";
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-            fail("Expected exception for empty first name.");
-        } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("First name не может быть пустым или состоять только из пробелов"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("First name не может быть пустым или состоять только из пробелов"));
     }
 
     @Test
     public void testRegisterUserEmptyLastName() throws Exception {
         String newUserJson = "{\"firstName\": \"Коля\", " +
-                             "\"lastName\": \"\", " +
-                             "\"email\": \"kolyan1208@gmail.com\", " +
-                             "\"password\": \"Password123@\"}";
+                "\"lastName\": \"\", " +
+                "\"email\": \"kolyan1208@gmail.com\", " +
+                "\"password\": \"Password123@\"}";
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-            fail("Expected exception for empty last name.");
-        } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("Last name не может быть пустым или состоять только из пробелов"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value())) // Check the status code in the response JSON
+                .andExpect(jsonPath("$.message").value("Last name не может быть пустым или состоять только из пробелов")); // Check the error message in the response JSON
     }
 
     @Test
-    public void testRegisterUserEmptyEmail() {
+    public void testRegisterUserEmptyEmail() throws Exception {
         String newUserJson = "{\"firstName\": \"Екатерина\", " +
-                             "\"lastName\": \"Петровна\", " +
-                             "\"email\": \"\", " +
-                             "\"password\": \"Password123@\"}";
+                "\"lastName\": \"Петровна\", " +
+                "\"email\": \"\", " +
+                "\"password\": \"Password123@\"}";
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-
-            fail("Ожидалась ошибка, связанная с пустым полем email.");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("Неверный формат электронной почты"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value())) // Check the status code in the response JSON
+                .andExpect(jsonPath("$.message").value("Неверный формат электронной почты")); // Check the error message in the response JSON
     }
 
     @Test
     public void testRegisterUserInvalidPassword() throws Exception {
         String newUserJson = "{\"firstName\": \"Дарья\", " +
-                             "\"lastName\": \"Парова\", " +
-                             "\"email\": \"DaHello@gmail.com\", " +
-                             "\"password\": \"1234\"}";
+                "\"lastName\": \"Парова\", " +
+                "\"email\": \"DaHello@gmail.com\", " +
+                "\"password\": \"1234\"}";
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-            fail("Ожидаемое исключение для неверного пароля");
-        } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("Пароль не соответствует требованиям безопасности"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Пароль не соответствует требованиям безопасности"));
     }
 
     @Test
@@ -164,7 +149,6 @@ public class UserRegistrationControllerIntegrationTest {
         String existingEmail = "existingEmail@gmail.com";
 
         User currentNewUser = new User();
-
         currentNewUser.setFirstName("Влада");
         currentNewUser.setLastName("Астрова");
         currentNewUser.setEmail(existingEmail);
@@ -173,108 +157,91 @@ public class UserRegistrationControllerIntegrationTest {
         userRepository.save(currentNewUser);
 
         String newUserJson = "{\"firstName\": \"Дарина\", " +
-                             "\"lastName\": \"Дремина\", " +
-                             "\"email\": \"" + existingEmail + "\", " +
-                             "\"password\": \"Password123@\"}";
+                "\"lastName\": \"Дремина\", " +
+                "\"email\": \"" + existingEmail + "\", " +
+                "\"password\": \"Password123@\"}";
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-            fail("Ожидаемое исключение для существующей электронной почты");
-        } catch (ServletException e) {
-            assertTrue(e.getMessage().contains("Пользователь с такой электронной почтой уже существует"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Пользователь с такой электронной почтой уже существует"));
     }
 
     @Test
-    public void testRegisterUserInvalidFirstNameLength() {
+    public void testRegisterUserInvalidFirstNameLength() throws Exception {
         String longFirstName = "О".repeat(NAME_MAX_LENGTH + 1);
 
         String newUserJson = String.format("{\"firstName\": \"%s\", " +
-                                           "\"lastName\": \"Теодорович\", " +
-                                           "\"email\": \"knowingem@gmail.com\", " +
-                                           "\"password\": \"Password123@\"}",
-                                           longFirstName);
+                        "\"lastName\": \"Теодорович\", " +
+                        "\"email\": \"knowingem@gmail.com\", " +
+                        "\"password\": \"Password123@\"}",
+                longFirstName);
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-
-            fail("Ожидалась ошибка, связанная с недопустимой длиной firstName.");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("не должно превышать"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("First name не должно превышать " + NAME_MAX_LENGTH + " символов"));
     }
 
     @Test
-    public void testRegisterUserInvalidLastNameLength() {
+    public void testRegisterUserInvalidLastNameLength() throws Exception {
         String longLastName = "А".repeat(NAME_MAX_LENGTH + 1);
 
         String newUserJson = String.format("{\"firstName\": \"Полина\", " +
-                                           "\"lastName\": \"%s\", " +
-                                           "\"email\": \"polibeauty@gmail.com\", " +
-                                           "\"password\": \"Password123@\"}",
-                                           longLastName);
+                        "\"lastName\": \"%s\", " +
+                        "\"email\": \"polibeauty@gmail.com\", " +
+                        "\"password\": \"Password123@\"}",
+                longLastName);
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-
-            fail("Ожидалась ошибка, связанная с недопустимой длиной lastName.");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("не должно превышать"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value())) // Check the status code in the response JSON
+                .andExpect(jsonPath("$.message").value("Last name не должно превышать " + NAME_MAX_LENGTH + " символов")); // Check the error message in the response JSON
     }
 
     @Test
-    public void testRegisterUserInvalidFirstNameCharacters() {
+    public void testRegisterUserInvalidFirstNameCharacters() throws Exception {
         String invalidFirstName = "М@ксим!";
 
         String newUserJson = String.format("{\"firstName\": \"%s\", " +
-                                           "\"lastName\": \"Форсин\", " +
-                                           "\"email\": \"Forsin2003@gmail.com\", " +
-                                           "\"password\": \"Password123@\"}",
-                                           invalidFirstName);
+                        "\"lastName\": \"Форсин\", " +
+                        "\"email\": \"Forsin2003@gmail.com\", " +
+                        "\"password\": \"Password123@\"}",
+                invalidFirstName);
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-
-            fail("Ожидалась ошибка, связанная с firstName, содержащим запрещенные символы.");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("должно содержать только буквы"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value())) // Check the status code in the response JSON
+                .andExpect(jsonPath("$.message").value("First name должно содержать только буквы")); // Check the error message in the response JSON
     }
+
 
     @Test
-    public void testRegisterUserInvalidLastNameCharacters() {
-        String invalidLastName = "В@слин!n";
+    public void testRegisterUserInvalidLastNameCharacters() throws Exception {
+        String invalidLastName = "В@слин!";
 
         String newUserJson = String.format("{\"firstName\": \"Максим\", " +
-                                           "\"lastName\": \"%s\", " +
-                                           "\"email\": \"maxVol@gmail.com\", " +
-                                           "\"password\": \"Password123@\"}",
-                                           invalidLastName);
+                        "\"lastName\": \"%s\", " +
+                        "\"email\": \"maxVol@gmail.com\", " +
+                        "\"password\": \"Password123@\"}",
+                invalidLastName);
 
-        try {
-            mockMvc.perform(post("/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(newUserJson))
-                    .andExpect(status().isBadRequest());
-
-            fail("Ожидалась ошибка, связанная с lastName, содержащим запрещенные символы.");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("должно содержать только буквы"));
-        }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Last name должно содержать только буквы"));
     }
+
 
     @Test
     public void testRegisterUserProfileCreated() throws Exception {
@@ -296,5 +263,18 @@ public class UserRegistrationControllerIntegrationTest {
         } catch (Exception e) {
             fail("Тест завершился неудачей из-за исключения: " + e.getMessage());
         }
+    }
+
+    @Test
+    public void testRegisterUserMissingFirstName() throws Exception {
+        String newUserJson = "{\"lastName\": \"Волсин\", " +
+                "\"email\": \"maxVol@gmail.com\", " +
+                "\"password\": \"Password123@\"}";
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("First name не может быть пустым или состоять только из пробелов"));
     }
 }

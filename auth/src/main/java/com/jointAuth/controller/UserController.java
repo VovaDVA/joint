@@ -47,14 +47,19 @@ public class UserController {
 
     @PostMapping(path = "/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        User registeredUser = userService.register(user);
+        try {
+            User registeredUser = userService.register(user);
 
-        if (registeredUser != null) {
             UserDTO userDTO = UserConverter.convertToDto(registeredUser);
-            return ResponseEntity.ok(userDTO);
-        }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Не удалось зарегистрировать пользователя");
+            return ResponseEntity.ok(userDTO);
+        } catch (IllegalArgumentException e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Произошла ошибка при регистрации пользователя");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     @PostMapping(path = "/login")
@@ -184,7 +189,6 @@ public class UserController {
 
     }
 
-
     @GetMapping("/user/get")
     public ResponseEntity<?> getUserDetailsById(@RequestParam Long userId) {
         try {
@@ -245,26 +249,20 @@ public class UserController {
         }
     }
 
-
     @PostMapping(path = "/confirm-change-password")
     public ResponseEntity<BaseResponse> confirmPasswordChange(@RequestBody ConfirmPasswordChangeRequest confirmPasswordChangeRequest) {
-        try {
-            boolean passwordReset = userService.changePassword(
-                    confirmPasswordChangeRequest.getUserId(),
-                    confirmPasswordChangeRequest.getVerificationCode(),
-                    confirmPasswordChangeRequest.getNewPassword(),
-                    confirmPasswordChangeRequest.getCurrentPassword()
-            );
+        boolean passwordReset = userService.changePassword(
+                confirmPasswordChangeRequest.getUserId(),
+                confirmPasswordChangeRequest.getVerificationCode(),
+                confirmPasswordChangeRequest.getNewPassword(),
+                confirmPasswordChangeRequest.getCurrentPassword()
+        );
 
-            if (passwordReset) {
-                ApiResponse apiResponse = new ApiResponse("Пароль успешно изменен");
-                return ResponseEntity.ok(apiResponse);
-            } else {
-                ApiResponse apiResponse = new ApiResponse("Не удалось изменить пароль");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
-            }
-        } catch (IllegalArgumentException e) {
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+        if (passwordReset) {
+            ApiResponse apiResponse = new ApiResponse("Пароль успешно изменен");
+            return ResponseEntity.ok(apiResponse);
+        } else {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Не удалось изменить пароль");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
@@ -288,7 +286,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
-
 
     @DeleteMapping(path = "/confirm-delete")
     public ResponseEntity<?> confirmAccountDeletion(@RequestBody ConfirmAccountDeletionRequest confirmAccountDeletionRequest) {

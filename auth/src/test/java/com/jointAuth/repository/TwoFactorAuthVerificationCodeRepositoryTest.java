@@ -252,4 +252,112 @@ public class TwoFactorAuthVerificationCodeRepositoryTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    public void testFindByCodeCodeExists() {
+        String code = "existingCode";
+        TwoFactorAuthVerificationCode expectedCode = new TwoFactorAuthVerificationCode();
+        expectedCode.setCode(code);
+
+        when(verificationCodeRepository
+                .findByCode(code))
+                .thenReturn(Optional.of(expectedCode));
+
+        Optional<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findByCode(code);
+
+        assertTrue(result.isPresent());
+        assertEquals(expectedCode, result.get());
+    }
+
+    @Test
+    public void testFindByCodeCodeDoesNotExist() {
+        String code = "nonExistingCode";
+
+        when(verificationCodeRepository
+                .findByCode(code))
+                .thenReturn(Optional.empty());
+
+        Optional<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findByCode(code);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testFindByCodeErrorDuringExecution() {
+        String code = "errorCode";
+
+        when(verificationCodeRepository
+                .findByCode(code))
+                .thenThrow(new RuntimeException("Ошибка во время выполнения"));
+
+        assertThrows(RuntimeException.class, () -> {
+            verificationCodeRepository.findByCode(code);
+        });
+    }
+
+    @Test
+    public void testFindByCodeInvalidCodeFormat() {
+        String invalidCode = "123";
+
+        when(verificationCodeRepository
+                .findByCode(invalidCode))
+                .thenReturn(Optional.empty());
+
+        Optional<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findByCode(invalidCode);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testFindByCodeEmptyCode() {
+        String emptyCode = "";
+
+        when(verificationCodeRepository
+                .findByCode(emptyCode))
+                .thenReturn(Optional.empty());
+
+        Optional<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findByCode(emptyCode);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testFindByCodeCaseSensitivity() {
+        String upperCaseCode = "CODE123";
+        String lowerCaseCode = "code123";
+        TwoFactorAuthVerificationCode codeObj = new TwoFactorAuthVerificationCode();
+        codeObj.setCode(lowerCaseCode);
+
+        when(verificationCodeRepository
+                .findByCode(upperCaseCode))
+                .thenReturn(Optional.of(codeObj));
+        when(verificationCodeRepository
+                .findByCode(lowerCaseCode))
+                .thenReturn(Optional.of(codeObj));
+
+        Optional<TwoFactorAuthVerificationCode> result1 = verificationCodeRepository.findByCode(upperCaseCode);
+        Optional<TwoFactorAuthVerificationCode> result2 = verificationCodeRepository.findByCode(lowerCaseCode);
+
+        assertTrue(result1.isPresent());
+        assertTrue(result2.isPresent());
+    }
+
+    @Test
+    public void testFindByCodeDuplicateCodes() {
+        String duplicateCode = "duplicateCode";
+        TwoFactorAuthVerificationCode code1 = new TwoFactorAuthVerificationCode();
+        TwoFactorAuthVerificationCode code2 = new TwoFactorAuthVerificationCode();
+
+        code1.setCode(duplicateCode);
+        code2.setCode(duplicateCode);
+
+        when(verificationCodeRepository
+                .findByCode(duplicateCode))
+                .thenReturn(Optional.of(code1));
+
+        Optional<TwoFactorAuthVerificationCode> result = verificationCodeRepository.findByCode(duplicateCode);
+
+        assertTrue(result.isPresent());
+        assertEquals(code1, result.get());
+    }
 }
