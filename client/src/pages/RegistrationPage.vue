@@ -1,7 +1,7 @@
 <template>
 	<auth-block>
 		<content-block-title>Регистрация</content-block-title>
-		<div v-if="errorMessage" class="error">Форма заполнена некорректно</div>
+		<div class="error">{{ errorMessage }}</div>
 
 		<form @submit.prevent="register">
 			<form-input v-model="firstName" required>Имя</form-input>
@@ -31,42 +31,15 @@ export default {
 			email: '',
 			password: '',
 			confirmPassword: '',
-			agreeTerms: true,
-			errorMessage: false
+			errorMessage: ''
 		};
 	},
 	created() {
 		checkToken();
 	},
 	methods: {
-		validateName(value) {
-			return /[а-яА-Я]/.test(value);
-		},
-		validateEmail() {
-			return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email);
-		},
-		validatePassword() {
-			const value = this.password;
-
-			return (value.length >= 8) &&
-				(/[A-Z]/.test(value)) &&
-				(/[!@#$%^&*()_,.?":{}|<>]/.test(value)) &&
-				(/\d/.test(value)) &&
-				(!/[а-яА-Я]/.test(value));
-		},
-		validateForm() {
-			return this.validateName(this.firstName) &&
-				this.validateName(this.lastName) &&
-				this.validateEmail() &&
-				this.validatePassword();
-		},
 		async register(event) {
 			event.preventDefault();
-
-			if (!this.validateForm()) {
-				this.errorMessage = true;
-				return;
-			}
 
 			await apiClient.auth.register({
 				firstName: this.firstName,
@@ -75,7 +48,9 @@ export default {
 				password: this.password
 			}, () => {
 				this.$router.push('/login');
-			});
+			}, (data) => {
+				this.errorMessage = data['message'];
+			});	
 		}
 	}
 };

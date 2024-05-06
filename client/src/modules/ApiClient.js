@@ -21,6 +21,7 @@ class ApiClient {
 
     async handleResponse(response, callback, errorCallback) {
         const result = await response.json();
+        console.log(result);
 
         if (!response.ok) {
             errorCallback(result);
