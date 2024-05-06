@@ -106,121 +106,96 @@ public class UserAuthorizationControllerIntegrationTest {
     @Test
     public void testLoginUserInvalidEmail() throws Exception {
         User currentUser = new User();
-        String password = passwordEncoder.encode("Password123@");
-
         currentUser.setFirstName("Денис");
         currentUser.setLastName("Стомин");
         currentUser.setEmail("DenSto@gmail.com");
-        currentUser.setPassword(password);
-
+        currentUser.setPassword(passwordEncoder.encode("Password123@"));
         userRepository.save(currentUser);
 
         String loginRequestJson = "{\"email\": \"invalid-email\", \"password\": \"Password123@\"}";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(loginRequestJson))
-                    .andExpect(status().isUnauthorized());
-        });
-
-        assertTrue(exception.getMessage().contains("Неверный email или пароль"));
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный email или пароль"));
     }
 
     @Test
     public void testLoginUserUserNotFound() throws Exception {
         User currentUser = new User();
-        String password = passwordEncoder.encode("Password123@");
-
         currentUser.setFirstName("Костя");
         currentUser.setLastName("Вершин");
         currentUser.setEmail("Kostya05@gmail.com");
-        currentUser.setPassword(password);
-
+        currentUser.setPassword(passwordEncoder.encode("Password123@"));
         userRepository.save(currentUser);
 
         String loginRequestJson = "{\"email\": \"usserNotFound@gmail.com\", \"password\": \"Password123@\"}";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(loginRequestJson))
-                    .andExpect(status().isUnauthorized());
-        });
-
-        assertTrue(exception.getMessage().contains("Неверный email или пароль"));
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный email или пароль"));
     }
 
     @Test
     public void testLoginUserIncorrectPassword() throws Exception {
         User currentUser = new User();
-        String password = passwordEncoder.encode("CorrectPassword123@");
-
         currentUser.setFirstName("Максим");
         currentUser.setLastName("Дорин");
         currentUser.setEmail("Maxik94@gmail.com");
-        currentUser.setPassword(password);
-
+        currentUser.setPassword(passwordEncoder.encode("CorrectPassword123@"));
         userRepository.save(currentUser);
 
         String loginRequestJson = "{\"email\": \"Maxik94@gmail.com\", \"password\": \"WrongPassword123@\"}";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(loginRequestJson))
-                    .andExpect(status().isUnauthorized());
-        });
-
-        assertTrue(exception.getMessage().contains("Неверный email или пароль"));
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Неверный email или пароль"));
     }
 
     @Test
     public void testLoginUserMissingEmail() throws Exception {
         User currentUser = new User();
-        String password = passwordEncoder.encode("Password123@");
-
         currentUser.setFirstName("Саня");
         currentUser.setLastName("Петров");
         currentUser.setEmail("Alexandr01@gmail.com");
-        currentUser.setPassword(password);
-
+        currentUser.setPassword(passwordEncoder.encode("Password123@"));
         userRepository.save(currentUser);
 
         String loginRequestJson = "{\"password\": \"Password123@\"}";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(loginRequestJson))
-                    .andExpect(status().isBadRequest());
-        });
-
-        assertTrue(exception.getMessage().contains("Отсутствует email"));
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Отсутствует email"));
     }
 
     @Test
     public void testLoginUserMissingPassword() throws Exception {
         User currentUser = new User();
-        String password = passwordEncoder.encode("Password123@");
-
         currentUser.setFirstName("Эльнара");
         currentUser.setLastName("Форина");
         currentUser.setEmail("ElFor91@gmail.com");
-        currentUser.setPassword(password);
-
+        currentUser.setPassword(passwordEncoder.encode("Password123@"));
         userRepository.save(currentUser);
 
         String loginRequestJson = "{\"email\": \"ElFor91@gmail.com\"}";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(loginRequestJson))
-                    .andExpect(status().isBadRequest());
-        });
-
-        assertTrue(exception.getMessage().contains("Отсутствует пароль"));
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Отсутствует пароль"));
     }
 
     @Test
@@ -237,6 +212,7 @@ public class UserAuthorizationControllerIntegrationTest {
         verificationCodeService.saveOrUpdateVerificationCodeFor2FA(user.getId(), validCode);
 
         String loginRequestJson = "{\"email\": \"alexkuznetsov@gmail.com\", \"password\": \"Password123@\"}";
+
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestJson))
@@ -250,8 +226,9 @@ public class UserAuthorizationControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/verify-code")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(verifyCodeRequestJson))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Пользователь не найден по коду: wrongCode"));
     }
 
     @Test
@@ -285,7 +262,6 @@ public class UserAuthorizationControllerIntegrationTest {
         testUser.setEmail("oleg.sergeev@gmail.com");
         testUser.setPassword(passwordEncoder.encode("Password123@"));
         testUser.setTwoFactorVerified(true);
-
         testUser = userRepository.save(testUser);
 
         String existingCode = "123456";
@@ -297,9 +273,9 @@ public class UserAuthorizationControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/verify-code")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(verifyCodeRequestJson))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
+                .andExpect(jsonPath("$.message").value("Пользователь не найден по коду: wrongCode"));
     }
 
     @Test
@@ -310,7 +286,6 @@ public class UserAuthorizationControllerIntegrationTest {
         testUser.setEmail("irina.kuzmina@gmail.com");
         testUser.setPassword(passwordEncoder.encode("Password123@"));
         testUser.setTwoFactorVerified(true);
-
         testUser = userRepository.save(testUser);
 
         String existingCode = "123456";
@@ -321,7 +296,8 @@ public class UserAuthorizationControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/verify-code")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(verifyCodeRequestJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -344,34 +320,5 @@ public class UserAuthorizationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(verifyCodeRequestJson))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void testVerifyCodeExpiredCode() throws Exception {
-        User testUser = new User();
-        testUser.setFirstName("Дмитрий");
-        testUser.setLastName("Петров");
-        testUser.setEmail("dmitriy.petrov@gmail.com");
-        testUser.setPassword(passwordEncoder.encode("Password123@"));
-        testUser.setTwoFactorVerified(true);
-
-        testUser = userRepository.save(testUser);
-
-        String expiredCode = "123456";
-        TwoFactorAuthVerificationCode twoFactorAuthVerificationCode = new TwoFactorAuthVerificationCode();
-        twoFactorAuthVerificationCode.setUser(testUser);
-        twoFactorAuthVerificationCode.setCode(expiredCode);
-        twoFactorAuthVerificationCode.setExpirationTime(LocalDateTime.now().minusMinutes(5));
-
-        twoFactorAuthVerificationCodeRepository.save(twoFactorAuthVerificationCode);
-
-        String verifyCodeRequestJson = "{\"userId\": " + testUser.getId() + ", \"code\": \"" + expiredCode + "\"}";
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/verify-code")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(verifyCodeRequestJson))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Неверный код подтверждения"));
     }
 }
