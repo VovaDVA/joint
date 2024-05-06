@@ -10,15 +10,16 @@
     <auth-block v-if="modal == 'enter-code'">
         <content-block-title>Смена пароля</content-block-title>
         <form @submit.prevent="submitCode">
-            <form-input v-model="verificationCode">На ваш email отправлен код</form-input>
+            <form-input v-model="verificationCode" data="Код из E-mail">На ваш email отправлен код</form-input>
             <input class="submit-btn" :class="$store.state.theme" type="submit" name="submit" value="Отправить">
         </form>
     </auth-block>
     <auth-block v-if="modal == 'confirm'">
         <content-block-title>Смена пароля</content-block-title>
+		<div class="lost-password">{{ errorMessage }}</div>
         <form @submit.prevent="confirmChangePassword">
             <password-input v-model="password">Текущий пароль</password-input>
-            <password-input v-model="newPassword">Новый пароль</password-input>
+            <password-input v-model="newPassword" data="Новый пароль">Новый пароль</password-input>
             <input class="submit-btn" :class="$store.state.theme" type="submit" name="submit" value="Подтвердить">
         </form>
     </auth-block>
@@ -35,7 +36,8 @@ export default {
             modal: '',
             verificationCode: '',
             password: '',
-            newPassword: ''
+            newPassword: '',
+            errorMessage: '',
         }
     },
     mounted() {
@@ -59,7 +61,9 @@ export default {
                 verificationCode: this.verificationCode,
                 currentPassword: this.password,
                 newPassword: this.newPassword
-            }, () => this.hideModal());
+            }, () => this.hideModal(), (data) => {
+                this.errorMessage = data['message'];
+            });
         },
         hideModal() {
             this.modal = '';

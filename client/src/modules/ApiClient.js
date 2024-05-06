@@ -74,14 +74,14 @@ class ApiClient {
         enableTwoFactorAuth: (data, callback, errorCallback) => this.post('/auth/two-factor/enable', data, callback, errorCallback),
         disableTwoFactorAuth: (data, callback, errorCallback) => this.post('/auth/two-factor/disable', data, callback, errorCallback),
         // Password Reset
-        sendPasswordResetCode: (data, callback) => this.post('/auth/request-reset-password?email=' + data.email, data, callback),
-        confirmPasswordReset: (data, callback) => this.post('/auth/confirm-reset-password', data, callback),
+        sendPasswordResetCode: (data, callback, errorCallback) => this.post('/auth/request-reset-password?email=' + data.email, data, callback, errorCallback),
+        confirmPasswordReset: (data, callback, errorCallback) => this.post('/auth/confirm-reset-password', data, callback, errorCallback),
         // Password Change
-        changePassword: (data, callback) => this.post('/auth/change-password', data, callback),
-        confirmChangePassword: (data, callback) => this.post('/auth/confirm-change-password', data, callback),
+        changePassword: (data, callback, errorCallback) => this.post('/auth/change-password', data, callback, errorCallback),
+        confirmChangePassword: (data, callback, errorCallback) => this.post('/auth/confirm-change-password', data, callback, errorCallback),
         // Delete
-        delete: (callback) => this.delete('/auth/delete', callback),
-        confirmDelete: (data, callback) => this.delete('/auth/confirm-delete', data, callback),
+        delete: (data, callback, errorCallback) => this.delete('/auth/delete', data, callback, errorCallback),
+        confirmDelete: (data, callback, errorCallback) => this.delete('/auth/confirm-delete', data, callback, errorCallback),
     }
 
     chat = {

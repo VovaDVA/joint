@@ -1,5 +1,5 @@
 <template>
-  <form-input type="email">
+  <form-input type="email" data="E-mail">
     <slot></slot>
   </form-input>
 </template>
