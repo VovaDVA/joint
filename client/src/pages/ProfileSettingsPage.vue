@@ -20,7 +20,7 @@
         </form>
 
         <div class="toggle-wrapper">
-            <input name="terms" id="terms" type="checkbox" :value="user.twoFactorEnabled" v-model="twoFactorEnabled">
+            <input name="terms" id="terms" type="checkbox" v-model="twoFactorEnabled" :value="user.twoFactorEnabled">
             <label for="terms">Включить двухфакторнуй аутентификацию</label>
         <submit-button data="Включить" @click="toggleTwoFactorAuth"></submit-button>
         </div>
@@ -73,32 +73,6 @@ export default {
 .text-button-container.light-theme {
     color: #000000af;
 }
-
-/* .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-    grid-gap: 10px;
-} */
-
-/* input,
-.settings_cancel {
-    line-height: 28px;
-    font-size: 13px;
-    border: 1px #ffffff solid;
-    border-radius: 30px;
-    max-height: 30px;
-    margin: 5px 0 15px 10px;
-    padding: 0 20px;
-    width: 49%;
-    text-align: center;
-    color: #ffffff;
-
-    transition: color, background .3s linear;
-}
-
-input {
-    margin-left: 0;
-} */
 
 .password {
     margin-bottom: 20px;
