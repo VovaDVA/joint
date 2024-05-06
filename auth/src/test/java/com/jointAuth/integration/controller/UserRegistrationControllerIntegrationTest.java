@@ -34,7 +34,7 @@ public class UserRegistrationControllerIntegrationTest {
     @Autowired
     private ProfileRepository profileRepository;
 
-    private static final int NAME_MAX_LENGTH = 15;
+    private static final int NAME_MAX_LENGTH = 20;
 
     @BeforeEach
     void setUp() {
@@ -96,7 +96,7 @@ public class UserRegistrationControllerIntegrationTest {
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value("First name не может быть пустым или состоять только из пробелов"));
+                .andExpect(jsonPath("$.message").value("Имя не может состоять только из пробелов"));
     }
 
     @Test
@@ -110,8 +110,8 @@ public class UserRegistrationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value())) // Check the status code in the response JSON
-                .andExpect(jsonPath("$.message").value("Last name не может быть пустым или состоять только из пробелов")); // Check the error message in the response JSON
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Фамилия не может состоять только из пробелов"));
     }
 
     @Test
@@ -125,8 +125,8 @@ public class UserRegistrationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value())) // Check the status code in the response JSON
-                .andExpect(jsonPath("$.message").value("Неверный формат электронной почты")); // Check the error message in the response JSON
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Неверный формат электронной почты"));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class UserRegistrationControllerIntegrationTest {
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value("Пользователь с такой электронной почтой уже существует"));
+                .andExpect(jsonPath("$.message").value("Пользователь с таким email уже существует"));
     }
 
     @Test
@@ -184,7 +184,7 @@ public class UserRegistrationControllerIntegrationTest {
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value("First name не должно превышать " + NAME_MAX_LENGTH + " символов"));
+                .andExpect(jsonPath("$.message").value("Имя не может превышать " + NAME_MAX_LENGTH + " символов"));
     }
 
     @Test
@@ -201,8 +201,8 @@ public class UserRegistrationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value())) // Check the status code in the response JSON
-                .andExpect(jsonPath("$.message").value("Last name не должно превышать " + NAME_MAX_LENGTH + " символов")); // Check the error message in the response JSON
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Фамилия не может превышать " + NAME_MAX_LENGTH + " символов"));
     }
 
     @Test
@@ -219,8 +219,8 @@ public class UserRegistrationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value())) // Check the status code in the response JSON
-                .andExpect(jsonPath("$.message").value("First name должно содержать только буквы")); // Check the error message in the response JSON
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Имя может содержать только русские буквы"));
     }
 
 
@@ -239,7 +239,7 @@ public class UserRegistrationControllerIntegrationTest {
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value("Last name должно содержать только буквы"));
+                .andExpect(jsonPath("$.message").value("Фамилия может содержать только русские буквы"));
     }
 
 
@@ -275,6 +275,6 @@ public class UserRegistrationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("First name не может быть пустым или состоять только из пробелов"));
+                .andExpect(jsonPath("$.message").value("Имя не может состоять только из пробелов"));
     }
 }

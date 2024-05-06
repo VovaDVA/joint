@@ -109,7 +109,7 @@ public class UserServiceTest {
         newUser.setPassword("NewPassword123@");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
-        assertEquals("Пользователь с такой электронной почтой уже существует", exception.getMessage());
+        assertEquals("Пользователь с таким email уже существует", exception.getMessage());
 
         verify(userRepository, times(1)).findByEmail("Ivanova10@gmail.com");
         verify(userRepository, never())
@@ -198,7 +198,7 @@ public class UserServiceTest {
         newUser.setPassword("NewPassword123@");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.register(newUser));
-        assertEquals("Last name не может быть пустым или состоять только из пробелов", exception.getMessage());
+        assertEquals("Фамилия не может состоять только из пробелов", exception.getMessage());
 
         verify(userRepository, never())
                 .findByEmail(any());

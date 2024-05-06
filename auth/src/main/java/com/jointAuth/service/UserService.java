@@ -49,7 +49,7 @@ public class UserService {
 
     private static final String NAME_REGEX = "^[а-яА-ЯёЁ]+$";
 
-    private static final int NAME_MAX_LENGTH = 15;
+    private static final int NAME_MAX_LENGTH = 20;
 
     private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
@@ -73,9 +73,9 @@ public class UserService {
 
 
     public User register(User user) {
-        validateName(user.getFirstName(), "First name");
+        validateName(user.getFirstName(), "Имя");
 
-        validateName(user.getLastName(), "Last name");
+        validateName(user.getLastName(), "Фамилия");
 
         String email = user.getEmail();
         if (email == null || !isValidEmail(email)) {
@@ -84,7 +84,7 @@ public class UserService {
 
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null) {
-            throw new IllegalArgumentException("Пользователь с такой электронной почтой уже существует");
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
 
         if (validatePassword(user.getPassword())) {
@@ -112,11 +112,11 @@ public class UserService {
 
     private void validateName(String name, String fieldName) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException(fieldName + " не может быть пустым или состоять только из пробелов");
+            throw new IllegalArgumentException(fieldName + " не может состоять только из пробелов");
         } else if (!name.matches(NAME_REGEX)) {
-            throw new IllegalArgumentException(fieldName + " должно содержать только буквы");
+            throw new IllegalArgumentException(fieldName + " может содержать только русские буквы");
         } else if (name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException(fieldName + " не должно превышать " + NAME_MAX_LENGTH + " символов");
+            throw new IllegalArgumentException(fieldName + " не может превышать " + NAME_MAX_LENGTH + " символов");
         }
     }
 
