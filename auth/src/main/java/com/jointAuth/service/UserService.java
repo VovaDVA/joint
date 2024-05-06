@@ -120,6 +120,10 @@ public class UserService {
         }
     }
 
+    public boolean isPasswordValid(String password) {
+        return validatePassword(password);
+    }
+
     private boolean validatePassword(String password) {
         return !pattern.matcher(password).matches();
     }

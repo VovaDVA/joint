@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -161,16 +162,28 @@ public class UserController {
     }
 
     @PostMapping(path = "/confirm-reset-password")
-    public ResponseEntity<BaseResponse> confirmPasswordReset(@RequestBody ConfirmPasswordResetRequest confirmPasswordResetRequest) {
-        boolean passwordReset = userService.resetPassword(confirmPasswordResetRequest.getVerificationCode(),
-                confirmPasswordResetRequest.getNewPassword());
+    public ResponseEntity<BaseResponse> confirmPasswordReset(@RequestBody ConfirmPasswordResetRequest request) {
+        try {
+            if (userService.isPasswordValid(request.getNewPassword())) {
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Пароль не соответствует требованиям");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
 
-        if (passwordReset) {
-            ApiResponse successResponse = new ApiResponse("Успешный сброс пароля");
-            return ResponseEntity.ok(successResponse);
-        } else {
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Неверный проверочный код или не удалось сбросить пароль");
+            boolean passwordReset = userService.resetPassword(request.getVerificationCode(), request.getNewPassword());
+
+            if (passwordReset) {
+                ApiResponse successResponse = new ApiResponse("Успешный сброс пароля");
+                return ResponseEntity.ok(successResponse);
+            } else {
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Неверный проверочный код или не удалось сбросить пароль");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            }
+        } catch (IllegalArgumentException | AuthenticationException e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Неверный проверочный код");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Внутренняя ошибка сервера");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
