@@ -5,9 +5,8 @@
         </label>
         <div class="input-wrapper">
             <input :type="type" class="input-field" :placeholder="data ?? 'Введите данные'" v-bind="$attrs"
-                v-model="value" @input="handleInput">
+                v-model="value">
         </div>
-        <div v-if="errorMessage" class="error" :class="{ 'active': !isValid }">{{ errorMessage }}</div>
     </div>
 </template>
 
@@ -15,55 +14,6 @@
 export default {
     name: 'form-input',
     props: ['data', 'type'],
-    data() {
-        return {
-            errorMessage: '',
-            isValid: true
-        }
-    },
-    methods: {
-        handleInput(event) {
-            const value = event.target.value;
-            this.isValid = false;
-
-            switch (this.type) {
-                case 'password':
-                    if (value.length < 8) {
-                        this.errorMessage = 'Пароль должен содержать не менее 8 символов';
-                    } else if (!/[A-Z]/.test(value)) {
-                        this.errorMessage = 'Пароль должен содержать хотя бы одну заглавную букву';
-                    } else if (!/[!@#$%^&*()_,.?":{}|<>]/.test(value)) {
-                        this.errorMessage = 'Пароль должен содержать хотя бы один специальный символ';
-                    } else if (!/\d/.test(value)) {
-                        this.errorMessage = 'Пароль должен содержать хотя бы одну цифру';
-                    } else if (/[а-яА-Я]/.test(value)) {
-                        this.errorMessage = 'Пароль не должен содержать русские буквы';
-                    } else {
-                        this.errorMessage = '';
-                        this.isValid = true;
-                    }
-                    break;
-                // default:
-                //     if (!/[а-яА-Я]/.test(value)) {
-                //         this.errorMessage = 'Имя и фамилия могут содержать только русские буквы';
-                //     } else {
-                //         this.errorMessage = '';
-                //         this.isValid = true;
-                //     }
-                //     break;
-                case 'email':
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                        this.errorMessage = 'Некорректный формат адреса электронной почты';
-                    } else {
-                        this.errorMessage = '';
-                        this.isValid = true;
-                    }
-                    break;
-            }
-
-            this.$emit('input', value);
-        }
-    }
 }
 </script>
 
@@ -131,22 +81,5 @@ input {
 label {
     padding: 20px;
     font-size: 15px;
-}
-
-.error {
-    display: none;
-    visibility: hidden;
-    /* margin-top: -45px; */
-    font-size: 14px;
-    padding: 0 15px 10px 15px;
-    color: #ff8686;
-    transition: visibility .3s, margin-top .3s ease-out;
-}
-
-.error.active {
-    display: block;
-    visibility: visible;
-    margin-top: 0;
-    transition: visibility .3s, margin-top .3s, display ease-out;
 }
 </style>
