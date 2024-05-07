@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
 
   chat_mongo:
-    container_name: joint_chat_mongo
+    container_name: joint_chat_db
     image: mongo
     environment:
       MONGO_INITDB_DATABASE: joint_chat
