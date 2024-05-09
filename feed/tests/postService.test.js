@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
-const {dbConnect, dbClear} = require('./mongo');
+const {dbConnect, dbDisconnect, dbClear} = require('./mongo');
 const postService = require('../services/postService');
 const commentService = require('../services/commentService');
 
 beforeAll(async () => await dbConnect()); 
+afterAll(async () => await dbDisconnect());
 
 describe('Post', () => {
     describe('Create', () => {
@@ -89,6 +90,42 @@ describe('Post', () => {
             expect(post).toHaveProperty("likes");
             expect(post.likes[0]).toEqual(user_id);
             
+            await dbClear();
+        });
+    });
+
+    describe('Edit', () => {
+        test('edit the post', async() => {
+            let author_id = "2";
+            let content = "<3";
+            const Post = await postService.createPost(author_id, content);
+
+            let post_id = Post._id;
+            let new_content = "Something";
+            const post = await postService.editPost(post_id, new_content);
+
+            expect(post).toBeTruthy();
+            expect(post.author_id).toEqual(author_id);
+            expect(post.content).not.toEqual(content);
+            expect(post.content).toEqual(new_content);
+
+            await dbClear();
+        });
+    });
+
+    describe('Delete', () => {
+        test('delete the post', async() => {
+            let author_id = "2";
+            let content = "<3";
+            const Post = await postService.createPost(author_id, content);
+
+            let post_id = Post._id;
+            const deleted_post = await postService.deletePost(post_id);
+            const post = await postService.getPostById(post_id);
+
+            expect(deleted_post).toBeTruthy();
+            expect(post).toBeFalsy();
+
             await dbClear();
         });
     });

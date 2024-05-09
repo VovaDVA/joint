@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
-const {dbConnect, dbClear} = require('./mongo');
+const {dbConnect, dbDisconnect, dbClear} = require('./mongo');
 const postService = require('../services/postService');
 const commentService = require('../services/commentService');
 
 beforeAll(async () => await dbConnect()); 
+afterAll(async () => await dbDisconnect());
 
 describe('Comment', () => {
     test('create comment', async() => {
@@ -61,6 +62,43 @@ describe('Comment', () => {
 
         expect(comment).toBeTruthy();
         expect(comment["likes"]).toEqual(["321"]);
+
+        await dbClear();
+    });
+
+    test('edit the comment', async() => {
+        const post = await postService.createPost("1", "Hello Joint!");
+
+        let post_id = post._id;
+        let author_id = "123";
+        let content = "comment";
+        const Comment = await commentService.createComment(post_id, author_id, content);
+
+        let comment_id = Comment._id;
+        let new_content = "something";
+        const comment = await commentService.editComment(comment_id, new_content);
+
+        expect(comment).toBeTruthy();
+        expect(comment.content).toEqual(new_content);
+        expect(comment._id).toEqual(comment_id);
+
+        await dbClear();
+    });
+
+    test('delete the comment', async() => {
+        const post = await postService.createPost("1", "Hello Joint!");
+
+        let post_id = post._id;
+        let author_id = "123";
+        let content = "comment";
+        const Comment = await commentService.createComment(post_id, author_id, content);
+
+        let comment_id = Comment._id;
+        const deleted_comment = await commentService.deleteComment(comment_id);
+        const comment = await commentService.getCommentById(comment_id);
+
+        expect(deleted_comment).toBeTruthy();
+        expect(comment).toBeFalsy();
 
         await dbClear();
     });

@@ -3,7 +3,8 @@ const router = express.Router();
 const reactionController = require('../controllers/reactionController');
 
 router.post('/createReaction', reactionController.createReaction);
-router.get('/getReactionById', reactionController.getReactionById);
+router.get('/getReaction', reactionController.getReactionById);
 router.get('/getReactionByUser', reactionController.getReactionByUser);
+router.get('/deleteReaction', reactionController.deleteReaction);
 
 module.exports = router;

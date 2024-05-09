@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
-const {dbConnect, dbClear} = require('./mongo');
+const {dbConnect, dbDisconnect, dbClear} = require('./mongo');
 const reactionService = require('../services/reactionService');
 const postService = require('../services/postService');
 
 beforeAll(async () => await dbConnect()); 
+afterAll(async () => await dbDisconnect());
 
 describe('Reaction', () => {
     test('create reaction for post', async() => {
@@ -19,7 +20,7 @@ describe('Reaction', () => {
         expect(reaction).toHaveProperty("user_id");
         expect(reaction.user_id).toEqual(user_id);
 
-        dbClear();
+        await dbClear();
     });
 
     test('get reaction by ID', async() => {
@@ -38,7 +39,7 @@ describe('Reaction', () => {
         expect(reaction).toHaveProperty("user_id");
         expect(reaction.user_id).toEqual(user_id);
 
-        dbClear();
+        await dbClear();
     });
 
     test('get reaction by user', async() => {
@@ -56,6 +57,23 @@ describe('Reaction', () => {
         expect(reaction).toHaveProperty("user_id");
         expect(reaction.user_id).toEqual(user_id);
 
-        dbClear();
+        await dbClear();
+    });
+
+    test('delete the reaction', async() => {
+        const post = await postService.createPost("1", "Hello Joint!");
+
+        let post_id = post._id;
+        let user_id = "123";
+        const Reaction = await reactionService.createReaction(post_id, user_id);
+
+        let reaction_id = Reaction._id;
+        const deleted_reaction = await reactionService.deleteReaction(reaction_id);
+        const reaction = await reactionService.getReactionById(reaction_id);
+
+        expect(deleted_reaction).toBeTruthy();
+        expect(reaction).toBeFalsy();
+
+        await dbClear();
     });
 });
