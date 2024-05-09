@@ -151,3 +151,19 @@ button {
 .lost-password:hover {
 	cursor: pointer;
 }
+
+/* Online Mark In Avatar */
+.online-mark.active {
+    visibility: visible;
+    margin-top: 76%;
+    margin-left: 76%;
+    width: 10px;
+    height: 10px;
+    border: 1px #ffffff2f solid;
+    background: rgb(94, 255, 0);
+    border-radius: 50%;
+}
+
+.online-mark {
+    visibility: hidden;
+}

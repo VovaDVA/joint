@@ -26,7 +26,6 @@
 <script>
 import apiClient from '@/modules/ApiClient';
 import { getUser, isUserIdEqual, getUserById } from '@/modules/auth';
-import { io } from 'socket.io-client';
 
 export default {
     props: ['chat'],
@@ -93,16 +92,14 @@ export default {
             console.error(error);
         }
 
-        this.socket = io('http://192.168.0.107:3000', {
-            query: {
-                chatId: this.chat._id
-            }
-        });
+        this.socket = this.$store.state.chatSocket;
+        this.socket.emit('joinChat', this.chat._id);
+
         this.socket.on('message', (message) => {
             this.messages.unshift(message);
         });
         this.socket.on('typing', () => {
-            this.status = 'Печатает...';
+            this.status = `${this.otherUser.firstName} печатает...`;
         });
         this.socket.on('stopTyping', () => {
             this.status = 'Был(а) в сети недавно';
@@ -115,7 +112,7 @@ export default {
                 "sender_id": getUser().userId,
                 "text": this.newMessage,
             }
-            console.log(messageData);
+            // console.log(messageData);
             if (this.newMessage !== '') {
                 this.socket.emit('sendMessage', messageData);
                 this.newMessage = '';
@@ -139,10 +136,10 @@ export default {
         },
         type() {
             clearTimeout(this.typingTimeout);
-            this.socket.emit('typing');
+            this.socket.emit('typing', this.chat._id);
 
             this.typingTimeout = setTimeout(() => {
-                this.socket.emit('stopTyping');
+                this.socket.emit('stopTyping', this.chat._id);
             }, 1000);
         },
         selectMessage(message) {

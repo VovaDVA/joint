@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { getUserId } from './modules/auth';
+
 export default {
     name: 'App',
     computed: {
@@ -32,6 +34,15 @@ export default {
         isRegisterPage() {
             return this.$route.path === '/register'; // Проверка текущего маршрута на страницу регистрации (register)
         }
+    },
+    mounted() {
+        const userId = getUserId();
+        if (!userId) return;
+        this.$store.state.chatSocket.emit('userConnected', userId);
+
+        this.$store.state.chatSocket.on('updateOnlineUsers', (onlineUsers) => {
+            this.$store.state.onlineUsers = onlineUsers;
+        });
     },
     methods: {
         isPageScrollable() {
