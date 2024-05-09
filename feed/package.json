@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand --detectOpenHandles"
+    "test": "jest --runInBand --detectOpenHandles",
+    "cover": "jest --coverage --detectOpenHandles"
   },
   "author": "kristina",
   "license": "ISC",

@@ -28,6 +28,14 @@ class commentService {
 		await comment.save();
 		return comment;
     }
+
+    async editComment(comment_id, content) {
+        return await Comment.findByIdAndUpdate(comment_id, {"content": content}, { new: true });
+    }
+    
+    async deleteComment(commentId) {
+        return await Comment.findByIdAndDelete(commentId);
+    }
 }
 
 module.exports = new commentService;

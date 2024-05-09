@@ -43,6 +43,14 @@ class postService {
 		await post.save();
 		return post;
 	}
+
+	async editPost(post_id, content) {
+		return await Post.findByIdAndUpdate(post_id, {"content": content}, { new: true });
+	}
+
+	async deletePost(postId) {
+		return await Post.findByIdAndDelete(postId);
+	}
 }
 
 module.exports = new postService;

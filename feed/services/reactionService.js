@@ -17,11 +17,15 @@ class reactionService {
     }
 
     async getReactionById(reactionId) {
-        return Reaction.findById(reactionId);
+        return await Reaction.findById(reactionId);
     }
 
     async getReactionByUser(userId) {
-        return Reaction.findOne({"user_id": userId});
+        return await Reaction.findOne({"user_id": userId});
+    }
+
+    async deleteReaction(reactionId) {
+        return await Reaction.findByIdAndDelete(reactionId);
     }
 }
 
