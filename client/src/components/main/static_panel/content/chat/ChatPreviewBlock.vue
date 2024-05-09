@@ -1,21 +1,25 @@
 <template>
     <div class="chat-preview-block" :class="$store.state.theme">
-        <div class="avatar"></div>
+        <div class="avatar">
+            <div class="online-mark" :class="{ active: isOnline }"></div>
+        </div>
         <div class="chat-info">
             <div class="chat-header">
                 <div class="chat-title">{{ getUserName() }}</div>
                 <div class="chat-last-changed">{{ chat.last_message_at ?? '15:00' }}</div>
             </div>
-            <div class="last-message">
-                <div class="last-message-avatar"></div>
-                <div class="last-message-text">{{ chat.last_message }}</div>
+            <div class="messages">
+                <div class="last-message">
+                    <div class="last-message-avatar"></div>
+                    <div class="last-message-text" :class="{ typing: isTyping }">{{ status ?? chat.last_message }}</div>
+                </div>
+                <div v-if="unreadMessages > 0" class="unread-messages">{{ unreadMessages }}</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-// import apiClient from '@/modules/ApiClient';
 import { getUserById, isUserIdEqual } from '@/modules/auth';
 
 export default {
@@ -24,13 +28,44 @@ export default {
     data() {
         return {
             otherUser: null,
+            isOnline: false,
+            unreadMessages: 0,
+            isTyping: false,
+            status: null
         }
     },
     async mounted() {
         const otherUserId = this.chat.members.find(id => isUserIdEqual(id));
-        // this.otherUser = await apiClient.auth.getUserById(() => {}, otherUserId);
         this.otherUser = await getUserById(otherUserId);
-        // console.log(this.otherUser)
+
+        this.socket = this.$store.state.chatSocket;
+
+        this.socket.on('typing', (chatId) => {
+            if (this.chat._id === chatId) {
+                this.status = 'Печатает...';
+                this.isTyping = true;
+            }
+        });
+
+        this.socket.on('message', (message) => {
+            console.log(message)
+            if (this.chat._id === message.chat_id) {
+                // this.chat.last_message = message.text;
+                this.unreadMessages++;
+            }
+        });
+
+        this.socket.on('stopTyping', (chatId) => {
+            if (this.chat._id === chatId) {
+                this.status = null;
+                this.isTyping = false;
+            }
+        });
+
+        this.isOnline = otherUserId in this.$store.state.onlineUsers;
+        this.socket.on('updateOnlineUsers', (onlineUsers) => {
+            this.isOnline = otherUserId in onlineUsers;
+        });
     },
     methods: {
         getUserName() {
@@ -101,6 +136,12 @@ export default {
     font-size: 15px;
 }
 
+.messages {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .last-message {
     display: flex;
     align-items: center;
@@ -116,5 +157,16 @@ export default {
 .chat-last-changed {
     font-size: 13px;
     color: #969696;
+}
+
+.typing {
+    color: #fff;
+}
+
+.unread-messages {
+    padding: 5px 10px;
+    font-size: 13px;
+    background: #ffffff3b;
+    border-radius: 30px;
 }
 </style>

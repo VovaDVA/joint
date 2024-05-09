@@ -1,6 +1,8 @@
 <template>
     <div class="chat-preview-block" :class="$store.state.theme">
-        <div class="avatar"></div>
+        <div class="avatar">
+            <div class="online-mark" :class="{ active: isOnline }"></div>
+        </div>
         <div class="chat-info">
             <div class="chat-header">
                 <div class="chat-title">{{ person.firstName + " " + person.lastName }}</div>
@@ -22,6 +24,17 @@ import { getUser } from '@/modules/auth';
 export default {
     name: 'account-preview-block',
     props: ['person'],
+    data() {
+        return {
+            isOnline: false,
+        }
+    },
+    mounted() {
+        this.isOnline = this.person.id in this.$store.state.onlineUsers;
+        this.$store.state.chatSocket.on('updateOnlineUsers', (onlineUsers) => {
+            this.isOnline = this.person.id in onlineUsers;
+        });
+    },
     methods: {
         openChat() {
             this.emitter.emit('create-chat', {
