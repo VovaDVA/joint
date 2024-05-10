@@ -37,13 +37,14 @@ services:
 
     healthcheck:
       test: [
-        "CMD",
+        "CMD", 
         "mongo",
         "--quiet",
-        "127.0.0.1/test",
+        "127.0.0.1/joint_chat",
+        "--username", "joint_chat_admin",
+        "--password", "p;rXG1Y75E",
         "--eval",
-        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
-      ]
+        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -72,10 +73,11 @@ services:
         "CMD",
         "mongo",
         "--quiet",
-        "127.0.0.1/test",
+        "127.0.0.1/joint_feed",
+        "--username", "joint_feed_admin",
+        "--password", "p;rXG1Y75E",
         "--eval",
-        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
-      ]
+        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'" ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -104,10 +106,11 @@ services:
         "CMD",
         "mongo",
         "--quiet",
-        "127.0.0.1/test",
+        "127.0.0.1/joint_notifications",
+        "--username", "joint_notifications_admin",
+        "--password", "p;rXG1Y75E",
         "--eval",
-        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
-      ]
+        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'" ]
       interval: 10s
       timeout: 10s
       retries: 5
