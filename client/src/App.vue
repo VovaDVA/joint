@@ -39,7 +39,7 @@ export default {
         const userId = getUserId();
         if (!userId) return;
 
-        this.$store.commit('socketInit');
+        // this.$store.commit('socketInit');
         this.$store.state.chatSocket.emit('userConnected', userId);
 
         this.$store.state.chatSocket.on('updateOnlineUsers', (onlineUsers) => {

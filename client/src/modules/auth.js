@@ -1,5 +1,6 @@
-export function saveToken(token) {
+export async function saveToken(token) {
     localStorage.setItem('jwtToken', token);
+    await isTokenValid(token);
 }
 
 export function getToken() {
@@ -36,7 +37,7 @@ async function isTokenValid(token) {
         if (data['userId']) {
             saveUserData(data);
         } else {
-            // alert(data['message']);
+            deleteSession();
         }
 
     } catch (error) {

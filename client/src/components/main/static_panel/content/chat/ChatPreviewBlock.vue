@@ -42,6 +42,7 @@ export default {
         this.otherUser = await getUserById(otherUserId);
 
         this.socket = this.$store.state.chatSocket;
+        console.log(this.socket)
 
         this.socket.on('typing', (chatId) => {
             if (this.chat._id === chatId) {
