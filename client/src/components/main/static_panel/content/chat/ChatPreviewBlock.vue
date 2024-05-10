@@ -6,12 +6,12 @@
         <div class="chat-info">
             <div class="chat-header">
                 <div class="chat-title">{{ getUserName() }}</div>
-                <div class="chat-last-changed">{{ chat.last_message_at ?? '15:00' }}</div>
+                <div class="chat-last-changed">{{ lastMessageAt ?? '15:00' }}</div>
             </div>
             <div class="messages">
                 <div class="last-message">
                     <div class="last-message-avatar"></div>
-                    <div class="last-message-text" :class="{ typing: isTyping }">{{ status ?? chat.last_message }}</div>
+                    <div class="last-message-text" :class="{ typing: isTyping }">{{ status ?? ellipsify(lastMessage) }}</div>
                 </div>
                 <div v-if="unreadMessages > 0" class="unread-messages">{{ unreadMessages }}</div>
             </div>
@@ -21,6 +21,7 @@
 
 <script>
 import { getUserById, isUserIdEqual } from '@/modules/auth';
+import { formatTime } from '@/modules/utils';
 
 export default {
     name: 'chat-preview-block',
@@ -29,6 +30,8 @@ export default {
         return {
             otherUser: null,
             isOnline: false,
+            lastMessage: this.chat.last_message,
+            lastMessageAt: formatTime(this.chat.last_message_at),
             unreadMessages: 0,
             isTyping: false,
             status: null
@@ -48,9 +51,9 @@ export default {
         });
 
         this.socket.on('message', (message) => {
-            console.log(message)
             if (this.chat._id === message.chat_id) {
-                // this.chat.last_message = message.text;
+                this.lastMessage = message.text;
+                this.lastMessageAt = formatTime(message.created_at);
                 this.unreadMessages++;
             }
         });
@@ -71,6 +74,14 @@ export default {
         getUserName() {
             if (!this.otherUser) return '';
             return this.otherUser.firstName + ' ' + this.otherUser.lastName;
+        },
+        ellipsify(str) {
+            if (str.length > 15) {
+                return (str.substring(0, 15) + "...");
+            }
+            else {
+                return str;
+            }
         }
     }
 }
@@ -168,5 +179,9 @@ export default {
     font-size: 13px;
     background: #ffffff3b;
     border-radius: 30px;
+}
+
+.chat-preview-block.light-theme .unread-messages {
+    background: #0000003b;
 }
 </style>

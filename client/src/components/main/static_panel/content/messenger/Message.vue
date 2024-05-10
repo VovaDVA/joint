@@ -3,7 +3,7 @@
         <div class="message-inner" @click="messageClick">
             <div>{{ message.text }}</div>
             <div class="send-time">
-                <span>{{ createdTime() }}</span>
+                <span>{{ (message.edited ? 'Ред. |' : '') + ' ' + createdTime() }}</span>
                 <div class="icon">
                     <font-awesome-icon icon="check" />
                 </div>
@@ -18,6 +18,7 @@
 <script>
 import { FontAwesomeIcon } from '@/fontawesome';
 import { getUser } from '@/modules/auth';
+import { formatTime } from '@/modules/utils';
 
 export default {
     name: 'single-message',
@@ -38,11 +39,7 @@ export default {
             return this.message['sender_id'] == user.userId;
         },
         createdTime() {
-            const date = new Date(this.message.created_at);
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            const formattedTime = `${hours}:${minutes}`;
-            return formattedTime;
+            return formatTime(this.message.created_at);
         },
         messageClick() {
             this.$emit('message-click');
@@ -73,6 +70,8 @@ export default {
 
 .message-inner {
     width: fit-content;
+    text-wrap: pretty;
+    overflow-wrap: break-word;
     max-width: 70%;
     height: 100%;
     padding: 10px;
@@ -123,10 +122,6 @@ export default {
 @media (max-width: 800px) {
     .message-inner {
         font-size: 17px;
-    }
-
-    .send-time {
-        font-size: 10px;
     }
 }
 </style>
