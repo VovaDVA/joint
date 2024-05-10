@@ -24,101 +24,101 @@ services:
 
     restart: unless-stopped
 
-#  chat_mongo:
-#    container_name: joint_chat_db
-#    image: mongo
-#    environment:
-#      MONGO_INITDB_DATABASE: joint_chat
-#      MONGO_INITDB_ROOT_USERNAME: joint_chat_admin
-#      MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
-#
-#    volumes:
-#      - joint_data:/data/db
-#
-#    healthcheck:
-#      test: [
-#        "CMD",
-#        "mongo",
-#        "--quiet",
-#        "127.0.0.1/test",
-#        "--eval",
-#        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
-#      ]
-#      interval: 10s
-#      timeout: 10s
-#      retries: 5
-#
-#    networks:
-#      - joint_net
-#
-#    ports:
-#      - "27018:27017"
-#
-#    restart: unless-stopped
-#
-#  feed_mongo:
-#    container_name: joint_feed_db
-#    image: mongo
-#    environment:
-#      MONGO_INITDB_DATABASE: joint_feed
-#      MONGO_INITDB_ROOT_USERNAME: joint_feed_admin
-#      MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
-#
-#    volumes:
-#      - joint_data:/data/db
-#
-#    healthcheck:
-#      test: [
-#        "CMD",
-#        "mongo",
-#        "--quiet",
-#        "127.0.0.1/test",
-#        "--eval",
-#        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
-#      ]
-#      interval: 10s
-#      timeout: 10s
-#      retries: 5
-#
-#    networks:
-#      - joint_net
-#
-#    ports:
-#      - "27019:27017"
-#
-#    restart: unless-stopped
-#
-#  notifications_mongo:
-#    container_name: joint_notifications_db
-#    image: mongo
-#    environment:
-#      MONGO_INITDB_DATABASE: joint_notifications
-#      MONGO_INITDB_ROOT_USERNAME: joint_notifications_admin
-#      MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
-#
-#    volumes:
-#      - joint_data:/data/db
-#
-#    healthcheck:
-#      test: [
-#        "CMD",
-#        "mongo",
-#        "--quiet",
-#        "127.0.0.1/test",
-#        "--eval",
-#        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
-#      ]
-#      interval: 10s
-#      timeout: 10s
-#      retries: 5
-#
-#    networks:
-#      - joint_net
-#
-#    ports:
-#      - "27020:27017"
-#
-#    restart: unless-stopped
+  chat_mongo:
+    container_name: joint_chat_db
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: joint_chat
+      MONGO_INITDB_ROOT_USERNAME: joint_chat_admin
+      MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
+
+    volumes:
+      - joint_data:/data/db
+
+    healthcheck:
+      test: [
+        "CMD",
+        "mongo",
+        "--quiet",
+        "127.0.0.1/test",
+        "--eval",
+        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
+      ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+    networks:
+      - joint_net
+
+    ports:
+      - "27018:27017"
+
+    restart: unless-stopped
+
+  feed_mongo:
+    container_name: joint_feed_db
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: joint_feed
+      MONGO_INITDB_ROOT_USERNAME: joint_feed_admin
+      MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
+
+    volumes:
+      - joint_data:/data/db
+
+    healthcheck:
+      test: [
+        "CMD",
+        "mongo",
+        "--quiet",
+        "127.0.0.1/test",
+        "--eval",
+        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
+      ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+    networks:
+      - joint_net
+
+    ports:
+      - "27019:27017"
+
+    restart: unless-stopped
+
+  notifications_mongo:
+    container_name: joint_notifications_db
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: joint_notifications
+      MONGO_INITDB_ROOT_USERNAME: joint_notifications_admin
+      MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
+
+    volumes:
+      - joint_data:/data/db
+
+    healthcheck:
+      test: [
+        "CMD",
+        "mongo",
+        "--quiet",
+        "127.0.0.1/test",
+        "--eval",
+        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
+      ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+    networks:
+      - joint_net
+
+    ports:
+      - "27020:27017"
+
+    restart: unless-stopped
 
   auth:
     container_name: joint_auth
@@ -164,77 +164,77 @@ services:
 
     restart: unless-stopped
 
-#  chat:
-#    container_name: joint_chat
-#    image: joint_chat:test
-#    build: ./chat
-#    environment:
-#      MONGO_HOST: chat_mongo
-#
-#    depends_on:
-#      chat_mongo:
-#        condition: service_healthy
-#        restart: true
-#
-#      auth:
-#        condition: service_started
-#        restart: false
-#
-#    networks:
-#      - joint_net
-#
-#    ports:
-#      - "3000:3000"
-#
-#    restart: unless-stopped
-#
-#  feed:
-#    container_name: joint_feed
-#    image: joint_feed:test
-#    build: ./feed
-#    environment:
-#      MONGO_HOST: feed_mongo
-#
-#    depends_on:
-#      feed_mongo:
-#        condition: service_healthy
-#        restart: true
-#
-#      auth:
-#        condition: service_started
-#        restart: false
-#
-#    networks:
-#      - joint_net
-#
-#    ports:
-#      - "3001:3001"
-#
-#    restart: unless-stopped
-#
-#  notifications:
-#    container_name: joint_notifications
-#    image: joint_notifications:test
-#    build: ./notifications
-#    environment:
-#      MONGO_HOST: notifications_mongo
-#
-#    depends_on:
-#      notifications_mongo:
-#        condition: service_healthy
-#        restart: true
-#
-#      auth:
-#        condition: service_started
-#        restart: false
-#
-#    networks:
-#      - joint_net
-#
-#    ports:
-#      - "3002:3002"
-#
-#    restart: unless-stopped
+  chat:
+    container_name: joint_chat
+    image: joint_chat:test
+    build: ./chat
+    environment:
+      MONGO_HOST: chat_mongo
+
+    depends_on:
+      chat_mongo:
+        condition: service_healthy
+        restart: true
+
+      auth:
+        condition: service_started
+        restart: false
+
+    networks:
+      - joint_net
+
+    ports:
+      - "3000:3000"
+
+    restart: unless-stopped
+
+  feed:
+    container_name: joint_feed
+    image: joint_feed:test
+    build: ./feed
+    environment:
+      MONGO_HOST: feed_mongo
+
+    depends_on:
+      feed_mongo:
+        condition: service_healthy
+        restart: true
+
+      auth:
+        condition: service_started
+        restart: false
+
+    networks:
+      - joint_net
+
+    ports:
+      - "3001:3001"
+
+    restart: unless-stopped
+
+  notifications:
+    container_name: joint_notifications
+    image: joint_notifications:test
+    build: ./notifications
+    environment:
+      MONGO_HOST: notifications_mongo
+
+    depends_on:
+      notifications_mongo:
+        condition: service_healthy
+        restart: true
+
+      auth:
+        condition: service_started
+        restart: false
+
+    networks:
+      - joint_net
+
+    ports:
+      - "3002:3002"
+
+    restart: unless-stopped
 
 volumes:
   joint_data:
