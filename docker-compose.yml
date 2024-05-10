@@ -20,7 +20,7 @@ services:
       - joint_net
 
     ports:
-      - "5432:5432"
+      - "54321:5432"
 
     restart: unless-stopped
 
