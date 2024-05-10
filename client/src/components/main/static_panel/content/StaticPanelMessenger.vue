@@ -1,9 +1,9 @@
 <template>
     <static-panel-header>
-        <messenger-action-icon icon-name="arrow-left" @click="openChatList"></messenger-action-icon>
-        <static-panel-search-bar></static-panel-search-bar>
+        <!-- <messenger-action-icon icon-name="arrow-left" @click="openChatList"></messenger-action-icon> -->
+        <!-- <static-panel-search-bar></static-panel-search-bar> -->
+        <chat-title :status="status" @close-chat="openChatList">{{ chatName }}</chat-title>
     </static-panel-header>
-    <chat-title :status="status">{{ chatName }}</chat-title>
     <static-panel-content>
         <div class="message-container">
             <single-message v-for="message in messages" :key="message._id" :message="message"
@@ -13,7 +13,7 @@
     <div class="chat-input" :class="$store.state.theme">
         <icon-button icon-name="paperclip"></icon-button>
         <input class="message-input" type="text" placeholder="Напишите сообщение..." v-model="newMessage"
-            @keyup.enter="sendMessage" @input="type()">
+            @keyup.enter="inputAction()" @input="type()">
         <icon-button icon-name="face-smile"></icon-button>
         <icon-button v-if="!messageEdited" class="right" icon-name="paper-plane" @click="sendMessage"></icon-button>
         <icon-button v-if="messageEdited" class="right" icon-name="check" @click="editMessage"></icon-button>
@@ -73,7 +73,7 @@ export default {
     async mounted() {
         const otherUserId = this.chat.members.find(id => isUserIdEqual(id));
         this.otherUser = await getUserById(otherUserId);
-        
+
         if (this.otherUser) {
             this.chatName = this.otherUser.firstName + ' ' + this.otherUser.lastName;
         }
@@ -112,6 +112,13 @@ export default {
         this.socket.on('updateOnlineUsers', (onlineUsers) => this.showStatus(onlineUsers, otherUserId));
     },
     methods: {
+        inputAction() {
+            if (this.messageEdited) {
+                this.editMessage();
+            } else {
+                this.sendMessage();
+            }
+        },
         sendMessage() {
             if (this.newMessage !== '') {
                 const encryptedMessage = CryptoJS.AES.encrypt(this.newMessage, 'secret').toString();

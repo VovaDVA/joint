@@ -1,4 +1,25 @@
 <template>
+    <!-- Bottom buttons panel (screen width < 1000px) **At the top so that static-panel can be affected in CSS** -->
+    <div class="bottom-container" :class="[{ 'active': isBottomActive, 'hidden': bottomHidden }, $store.state.theme]">
+        <div class="bottom-inner">
+            <router-link to="/feed" class="nav-item" :class="{ selected: selectedTab === 0 }"
+                @click="$store.commit('hideStaticPanel')">
+                <icon-button icon-name="home"></icon-button>
+            </router-link>
+            <icon-button icon-name="user-group" @click="changeSection('people')"></icon-button>
+            <icon-button icon-name="message" @click="changeSection('chat')"></icon-button>
+            <icon-button icon-name="bell" @click="changeSection('notifications')"></icon-button>
+            <icon-button icon-name="grip" @click="toggleBottom()"></icon-button>
+        </div>
+        <div class="bottom-menu">
+            <filled-icon-button icon-name="image" @click="changeSection('images')">Изображения</filled-icon-button>
+            <filled-icon-button icon-name="video" @click="changeSection('videos')">Видео</filled-icon-button>
+            <filled-icon-button icon-name="music" @click="changeSection('music')">Музыка</filled-icon-button>
+            <filled-icon-button icon-name="book" @click="changeSection('books')">Книги</filled-icon-button>
+        </div>
+    </div>
+
+    <!-- Static Panel -->
     <div class="static-panel" :class="[{ 'active': $store.state.staticPanelVisible }, $store.state.theme]">
         <component :is="currentSectionComponent" :key="currentSection" />
     </div>
@@ -43,25 +64,6 @@
         <filled-icon-button icon-name="book" @click="changeSection('books')">Книги</filled-icon-button>
     </div>
 
-    <!-- Bottom buttons panel (screen width < 1000px) -->
-    <div class="bottom-container" :class="[{ 'active': isBottomActive }, $store.state.theme]">
-        <div class="bottom-inner">
-            <router-link to="/feed" class="nav-item" :class="{ selected: selectedTab === 0 }"
-                @click="$store.commit('hideStaticPanel')">
-                <icon-button icon-name="home"></icon-button>
-            </router-link>
-            <icon-button icon-name="user-group" @click="changeSection('people')"></icon-button>
-            <icon-button icon-name="message" @click="changeSection('chat')"></icon-button>
-            <icon-button icon-name="bell" @click="changeSection('notifications')"></icon-button>
-            <icon-button icon-name="grip" @click="toggleBottom()"></icon-button>
-        </div>
-        <div class="bottom-menu">
-            <filled-icon-button icon-name="image" @click="changeSection('images')">Изображения</filled-icon-button>
-            <filled-icon-button icon-name="video" @click="changeSection('videos')">Видео</filled-icon-button>
-            <filled-icon-button icon-name="music" @click="changeSection('music')">Музыка</filled-icon-button>
-            <filled-icon-button icon-name="book" @click="changeSection('books')">Книги</filled-icon-button>
-        </div>
-    </div>
 </template>
 
 <script>
@@ -90,12 +92,21 @@ export default {
             messages: [],
             newMessage: '',
             isBottomActive: false,
+            bottomHidden: false,
         }
     },
     created() {
         this.emitter.on('create-chat', (data) => {
             this.currentSection = 'chat';
             setTimeout(this.emitter.emit('open-messenger', data), 100);
+        });
+
+        this.emitter.on('open-messenger', () => {
+            this.bottomHidden = true;
+        });
+
+        this.emitter.on('close-chat', () => {
+            this.bottomHidden = false;
         });
     },
     computed: {
@@ -128,6 +139,7 @@ export default {
         changeSection(section) {
             this.currentSection = section;
             this.$store.commit('showStaticPanel');
+            this.bottomHidden = false;
         },
         toggleBottom() {
             this.isBottomActive = !this.isBottomActive;
@@ -254,19 +266,23 @@ a {
 
 @media (max-width: 1000px) {
     .static-panel {
-        /* display: flex; */
         position: fixed;
         top: 70px;
         right: 0;
         left: 0;
         margin: auto;
 
-        padding-bottom: 60px;
+        padding-bottom: 80px;
 
         width: 100%;
+        height: calc(100% - 70px);
         background: #2d3844;
         border: none;
         border-radius: 0;
+    }
+
+    .static-panel.light-theme {
+        border: none;
     }
 
     .icon-container {
@@ -275,6 +291,14 @@ a {
 
     .bottom-container {
         display: flex;
+    }
+
+    .bottom-container.hidden {
+        display: none;
+    }
+
+    .bottom-container.hidden+.static-panel {
+        padding-bottom: 10px;
     }
 }
 </style>

@@ -104,8 +104,8 @@ export default {
 				this.errorMessage = data['message'];
 			});
 		},
-		confirmLogin(data) {
-			saveToken(data['token']);
+		async confirmLogin(data) {
+			await saveToken(data['token']);
 			this.$router.push('/');
 		},
 		returnToLogin() {

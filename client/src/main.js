@@ -21,14 +21,14 @@ const store = createStore({
         return {
             staticPanelVisible: false,
             theme: localStorage.getItem('ui_theme') ?? 'light-theme',
-            chatSocket: null,
+            chatSocket: io('http://192.168.0.107:3000'),
             onlineUsers: {}
         }
     },
     mutations: {
-        socketInit(state) {
-            state.chatSocket = io('http://192.168.0.107:3000');
-        },
+        // socketInit(state) {
+        //     state.chatSocket = io('http://192.168.0.107:3000');
+        // },
         showStaticPanel(state) {
             state.staticPanelVisible = true;
         },
