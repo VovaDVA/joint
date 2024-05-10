@@ -72,6 +72,7 @@ export default {
     methods: {
         changePage() {
             this.$store.commit('hideStaticPanel');
+            this.emitter.emit('close-chat');
         },
         selectTab(index) {
             this.selectedTab = index;

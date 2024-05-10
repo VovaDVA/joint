@@ -29,8 +29,9 @@ export default {
 <style scoped>
 .content-stats-button {
     display: flex;
+    gap: 10px;
     width: auto;
-    /* padding: 10px; */
+    padding: 10px;
     font-family: 'Montserrat';
     font-size: 15px;
     line-height: 15px;
@@ -62,13 +63,11 @@ export default {
 
 .icon-button-text {
     white-space: nowrap;
-    margin-right: 10px;
 }
 
 .icon {
     display: flex;
     justify-content: center;
-    margin: 10px;
     width: 15px;
     height: 15px;
 }
