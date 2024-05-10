@@ -1,4 +1,5 @@
 const messageService = require("../services/messageService");
+const CryptoJS = require('crypto-js');
 
 const onlineUsers = {};
 const chats = {};
@@ -32,7 +33,9 @@ module.exports = function (io) {
         });
 
         socket.on('sendMessage', (message) => {
-            console.log(message);
+            const decryptedMessage = CryptoJS.AES.decrypt(message.text, 'secret').toString(CryptoJS.enc.Utf8);
+            message.text = decryptedMessage;
+
             io.to(message['chat_id']).emit('message', message);
             messageService.createMessage(message);
         });

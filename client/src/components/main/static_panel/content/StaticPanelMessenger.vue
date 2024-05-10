@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js";
 import apiClient from '@/modules/ApiClient';
 import { getUser, isUserIdEqual, getUserById } from '@/modules/auth';
 
@@ -43,7 +44,8 @@ export default {
                 // },
             ],
             newMessage: '',
-            status: 'Был(а) в сети недавно',
+            isOnline: false,
+            status: this.getStatus(),
             typingTimeout: null,
             showMenu: false,
             menuTop: 0,
@@ -71,6 +73,7 @@ export default {
     async mounted() {
         const otherUserId = this.chat.members.find(id => isUserIdEqual(id));
         this.otherUser = await getUserById(otherUserId);
+        
         if (this.otherUser) {
             this.chatName = this.otherUser.firstName + ' ' + this.otherUser.lastName;
         }
@@ -102,18 +105,24 @@ export default {
             this.status = `${this.otherUser.firstName} печатает...`;
         });
         this.socket.on('stopTyping', () => {
-            this.status = 'Был(а) в сети недавно';
+            this.status = this.getStatus();
         });
+
+        this.showStatus(this.$store.state.onlineUsers, otherUserId);
+        this.socket.on('updateOnlineUsers', (onlineUsers) => this.showStatus(onlineUsers, otherUserId));
     },
     methods: {
         sendMessage() {
-            const messageData = {
-                "chat_id": this.chat._id,
-                "sender_id": getUser().userId,
-                "text": this.newMessage,
-            }
-            // console.log(messageData);
             if (this.newMessage !== '') {
+                const encryptedMessage = CryptoJS.AES.encrypt(this.newMessage, 'secret').toString();
+
+                const messageData = {
+                    "chat_id": this.chat._id,
+                    "sender_id": getUser().userId,
+                    "text": encryptedMessage,
+                    "created_at": new Date()
+                }
+
                 this.socket.emit('sendMessage', messageData);
                 this.newMessage = '';
             }
@@ -164,6 +173,13 @@ export default {
                 window.removeEventListener('click', this.handleClickOutside);
             }
         },
+        getStatus() {
+            return this.isOnline ? 'В сети' : 'Был(а) в сети недавно';
+        },
+        showStatus(onlineUsers, userId) {
+            this.isOnline = userId in onlineUsers;
+            this.status = this.getStatus();
+        }
     }
 }
 </script>
@@ -246,5 +262,11 @@ export default {
 
 .icon-button {
     font-size: 20px;
+}
+
+@media (max-width: 380px) {
+    .message-input {
+        font-size: 14px;
+    }
 }
 </style>
