@@ -5,16 +5,25 @@ class settingsService {
     this.NotificationSettins = NotificationSettins;
 	}
 	
-	async createSettings( user_id, email_notifications, push_notifications, in_app_notifications) {
+	async createSettings(data) {
 		const settings = new NotificationSettins({ 
-			"user_id": user_id,
-			"email_notifications": email_notifications, 
-			"push_notifications": push_notifications, 
-			"in_app_notifications": in_app_notifications });
+			"user_id": data.user_id,
+			"email_notifications": data.email_notifications, 
+			"push_notifications": data.push_notifications, 
+			"in_app_notifications": data.in_app_notifications });
 		await settings.save();
 		return settings;
 	}
-	
+
+	async updateSettings(data) {
+		return await NotificationSettins.findByIdAndUpdate(data.id, {
+			"user_id": data.user_id,
+			"email_notifications": data.email_notifications, 
+			"push_notifications": data.push_notifications, 
+			"in_app_notifications": data.in_app_notifications
+		});
+	}
+
 	async getSettingsById(settingsId) {
 	  return await NotificationSettins.findById(settingsId);
 	}
