@@ -25,7 +25,8 @@ export default {
 	padding: 20px;
 	border: 1px #ffffff4f solid;
 	border-radius: 20px;
-	background: rgb(21, 27, 37);
+	background: #151c25;
+	background: #252d3a;
 }
 
 .auth-block.light-theme {

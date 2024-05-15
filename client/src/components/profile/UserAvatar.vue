@@ -1,6 +1,6 @@
 <template>
     <div class="user-info" :class="$store.state.theme">
-        <div class="avatar"></div>
+        <div class="avatar" @click="change"></div>
         <div class="user-info-text">
             <div class="username">{{ getName() }}</div>
         </div>
@@ -15,6 +15,9 @@ export default {
     methods: {
         getName() {
             return getUserName();
+        },
+        change() {
+            this.emitter.emit('request-change-avatar');
         }
     }
 }
