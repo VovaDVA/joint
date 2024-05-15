@@ -2,7 +2,7 @@
     <div class="banner" :class="$store.state.theme">
         <div class="banner-inner">
             <div class="banner-content">
-                <filled-icon-button>Изменить обложку</filled-icon-button>
+                <filled-icon-button @click="change">Изменить обложку</filled-icon-button>
             </div>
             <user-avatar></user-avatar>
         </div>
@@ -19,6 +19,11 @@
 <script>
 export default {
     name: 'profile-banner',
+    methods: {
+        change() {
+            this.emitter.emit('request-change-banner');
+        }
+    }
 }
 </script>
 
