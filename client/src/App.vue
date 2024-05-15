@@ -12,7 +12,7 @@
     </div>
     <static-panel v-if="!isLoginPage && !isRegisterPage"></static-panel>
 
-    <!-- <modal-change-banner></modal-change-banner> -->
+    <modal-change-banner></modal-change-banner>
     <modal-change-avatar></modal-change-avatar>
 
     <div class="intro" :class="$store.state.theme">
