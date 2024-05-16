@@ -12,6 +12,8 @@ import ModalChangeBanner from "@/components/main/modals/ModalChangeBanner.vue";
 import ModalChangeAvatar from "@/components/main/modals/ModalChangeAvatar.vue";
 import ModalDeleteAccount from "@/components/main/modals/ModalDeleteAccount.vue";
 import ModalChangePassword from "@/components/main/modals/ModalChangePassword.vue";
+// Crop
+import { CircleStencil } from "vue-advanced-cropper";
 
 // Input
 import FormInput from '@/components/account/FormInput.vue';
@@ -32,6 +34,8 @@ import SingleIcon from "./main/buttons/SingleIcon.vue";
 import FilledIconButton from "./main/buttons/FilledIconButton.vue";
 import ContentStatsButton from "./main/buttons/ContentStatsButton.vue";
 import StrokeIconButton from "./main/buttons/StrokeIconButton.vue";
+import ModalButton from "./main/buttons/ModalButton.vue";
+import FileInputButton from "./main/buttons/FileInputButton.vue";
 // Profile
 import ProfileBanner from "@/components/profile/ProfileBanner.vue";
 import PageHeader from "@/components/main/page/PageHeader.vue";
@@ -71,13 +75,15 @@ export default [
     PageHeader, ContentGrid, PostGrid, 
     // Modals
     ModalTemplate, ModalDeleteAccount, ModalChangePassword, ModalChangeAvatar, ModalChangeBanner,
+    // Crop 
+    CircleStencil,
     FormBlock,
     ContentBlockTitle, ContentBlockText,
     BarChart, CalendarBlock,
     ContentBlock, FormInput, FormTextArea, AuthBlock, PasswordInput, EmailInput, NumberInput, DateInput, SubmitButton,
     TokenCheck,
     // Buttons
-    SingleIcon, IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton,
+    SingleIcon, IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton, ModalButton, FileInputButton,
     // Profile
     ProfileBanner, UserAvatar, ProfileContent,
     // Feed

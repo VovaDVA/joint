@@ -1,24 +1,26 @@
 <template>
     <div class="banner" :class="$store.state.theme">
-        <div class="banner-inner">
-            <div class="banner-content">
-                <filled-icon-button @click="change">Изменить обложку</filled-icon-button>
+        <div class="banner-main">
+            <div class="banner-inner">
+                <img :src="url"
+                    alt="">
+                <div class="banner-content">
+                    <filled-icon-button @click="change">Изменить обложку</filled-icon-button>
+                </div>
             </div>
             <user-avatar></user-avatar>
         </div>
         <div class="banner-promo">
-            <div class="banner-ad">
-            </div>
-            <div class="banner-ad">
-            </div>
+            <div class="banner-ad"></div>
+            <div class="banner-ad"></div>
         </div>
     </div>
-    <!-- <profile-content></profile-content> -->
 </template>
 
 <script>
 export default {
     name: 'profile-banner',
+    props: ['url'],
     methods: {
         change() {
             this.emitter.emit('request-change-banner');
@@ -30,17 +32,26 @@ export default {
 <style scoped>
 .banner {
     display: flex;
+    gap: 10px;
     width: 100%;
 }
 
-.banner-inner {
-    flex: 1;
+.banner-main {
     position: relative;
-    height: 0;
-    padding-top: 22%;
+    flex: 1;
+}
+
+.banner-inner {
+    aspect-ratio: 77/22 !important;
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+img {
+    width: 100%;
+    height: 100%;
 }
 
 .banner.light-theme .banner-inner {
@@ -54,21 +65,18 @@ export default {
 }
 
 .banner-promo {
-    flex: 0.3;
-    /* height: 20vw; */
-    /* padding-top: 22%; */
+    flex: 0 1 calc(22% - 8px);
+    height: calc(100% - 40px);
     display: flex;
+    gap: 10px;
     justify-content: space-between;
     flex-direction: column;
-    margin-left: 10px;
-    /* border: 1px #ffffff7c solid; */
     border-radius: 20px;
 }
 
 .banner-ad {
-    padding-top: calc(48% - 5px);
-    margin-bottom: 10px;
     flex: 1;
+    aspect-ratio: 2;
     border: 1px #ffffff7c solid;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
@@ -114,8 +122,7 @@ export default {
     }
 
     .banner-inner {
-        aspect-ratio: 16/5;
-        padding-top: 31%;
+        aspect-ratio: 16/5 !important;
     }
 
     .banner * {
@@ -124,7 +131,7 @@ export default {
 
     .banner-promo {
         flex-direction: row;
-        margin-top: 80px;
+        margin-top: 20px;
     }
 
     .banner-ad {
