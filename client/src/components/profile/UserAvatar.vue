@@ -1,6 +1,13 @@
 <template>
     <div class="user-info" :class="$store.state.theme">
-        <div class="avatar" @click="change"></div>
+        <div class="avatar-container" @click="change">
+            <div class="avatar">
+                <img :src="url" alt="">
+            </div>
+            <div class="cover">
+                <single-icon iconName="camera"></single-icon>
+            </div>
+        </div>
         <div class="user-info-text">
             <div class="username">{{ getName() }}</div>
         </div>
@@ -12,6 +19,12 @@ import { getUserName } from '@/modules/auth';
 
 export default {
     name: 'user-avatar',
+    props: ['url'],
+    // data() {
+    //     return {
+    //         url: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+    //     }
+    // },
     methods: {
         getName() {
             return getUserName();
@@ -25,11 +38,11 @@ export default {
 
 <style scoped>
 .user-info {
-    margin-left: -20px;
     display: flex;
 }
 
-.avatar {
+.avatar-container {
+    position: relative;
     width: 5.5vw;
     height: 5.5vw;
 
@@ -38,10 +51,35 @@ export default {
 
     border: 1px #ffffff7c solid;
     border-radius: 50%;
+    overflow: hidden;
+    background: #555555;
+}
 
-    background: #555555 center no-repeat;
-    background-size: cover;
-    transition: background .3s linear;
+.avatar,
+.cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    background: #0000007c;
+    transition: opacity .2s linear;
+}
+
+.avatar-container:hover>.cover {
+    opacity: 1;
+    cursor: pointer;
+    transition: opacity .2s linear;
+}
+
+img {
+    width: 100%;
+    height: 100%;
 }
 
 .user-info.light-theme {
@@ -54,11 +92,6 @@ export default {
     background-size: cover;
 }
 
-.avatar:hover {
-    background-color: rgba(0, 0, 0, 1);
-    transition: background .3s linear;
-}
-
 .user-info-text {
     display: flex;
     flex-direction: column;
@@ -66,25 +99,29 @@ export default {
     margin-left: 10px;
 }
 
+.icon {
+    color: #ffffffa1;
+    font-size: 30px;
+}
+
 
 @media (max-width: 1300px) {
-    .avatar {
+    .avatar-container {
         width: 80px;
         height: 80px;
         margin-top: -40px;
-        margin-left: 50px;
+        margin-left: 30px;
     }
 }
 
 
 @media (max-width: 800px) {
-    .avatar {
+    .avatar-container {
         margin: auto;
         margin-top: -40px;
     }
 
     .user-info {
-        margin: 0;
         text-align: center;
         flex-direction: column;
     }

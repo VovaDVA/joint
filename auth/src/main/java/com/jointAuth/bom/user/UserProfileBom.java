@@ -21,5 +21,6 @@ public class UserProfileBom {
     private String city;
     private String phone;
     private Date lastEdited;
-
+    private String avatar;
+    private String banner;
 }

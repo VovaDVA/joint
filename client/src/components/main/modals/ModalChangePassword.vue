@@ -3,8 +3,8 @@
     <auth-block v-if="modal == 'request'">
         <content-block-title>Изменить пароль?</content-block-title>
         <div class="modal-buttons">
-            <div class="submit-btn" @click="hideModal">Нет</div>
-            <div class="submit-btn" @click="sendCode">Да</div>
+            <modal-button @click="hideModal">Нет</modal-button>
+            <modal-button class="cancel" @click="sendCode">Да</modal-button>
         </div>
     </auth-block>
     <auth-block v-if="modal == 'enter-code'">
@@ -114,8 +114,8 @@ export default {
 
 .modal-buttons {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    justify-content: center;
+    gap: 10px;
 }
 
 .red {

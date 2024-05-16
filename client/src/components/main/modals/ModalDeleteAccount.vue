@@ -3,8 +3,8 @@
     <auth-block v-if="modal == 'delete'">
         <content-block-text>Вы действительно хотите удалить аккаунт?</content-block-text>
         <div class="modal-buttons">
-            <div class="submit-btn" :class="$store.state.theme" @click="hideModal">Нет</div>
-            <div class="submit-btn red" @click="sendDeleteAccountCode">Да</div>
+            <modal-button class="cancel" @click="hideModal">Нет</modal-button>
+            <modal-button class="red" @click="sendDeleteAccountCode">Да</modal-button>
         </div>
     </auth-block>
     <auth-block v-if="modal == 'confirm-delete'">
@@ -62,6 +62,10 @@ export default {
 </script>
 
 <style scoped>
+.content-block-text {
+    text-align: center;
+}
+
 .submit-btn {
     line-height: 28px;
     padding: 5px;
@@ -103,17 +107,8 @@ export default {
 
 .modal-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: 10px;
-}
-
-.red {
-    border: 1px #ff6161 solid;
-    color: #ff6161 !important;
-}
-
-.red:hover {
-    background-color: #ff6161;
 }
 
 .dark-bg {

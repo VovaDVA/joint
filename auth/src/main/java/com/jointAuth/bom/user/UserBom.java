@@ -14,4 +14,6 @@ public class UserBom {
     private String country;
     private String city;
     private Date lastLogin;
+    private String avatar;
+    private String banner;
 }
