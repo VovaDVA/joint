@@ -277,27 +277,29 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Пользователь не найден с userId: " + userId));
 
-        UserProfileBom userResponseDTO = new UserProfileBom();
-        userResponseDTO.setUserId(user.getId());
-        userResponseDTO.setFirstName(user.getFirstName());
-        userResponseDTO.setLastName(user.getLastName());
-        userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setRegistrationDate(user.getRegistrationDate());
-        userResponseDTO.setLastLogin(user.getLastLogin());
-        userResponseDTO.setTwoFactorEnabled(user.getTwoFactorVerified());
+        UserProfileBom userResponseBom = new UserProfileBom();
+        userResponseBom.setUserId(user.getId());
+        userResponseBom.setFirstName(user.getFirstName());
+        userResponseBom.setLastName(user.getLastName());
+        userResponseBom.setEmail(user.getEmail());
+        userResponseBom.setRegistrationDate(user.getRegistrationDate());
+        userResponseBom.setLastLogin(user.getLastLogin());
+        userResponseBom.setTwoFactorEnabled(user.getTwoFactorVerified());
 
         Profile userProfile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("Профиль не найден для userId: " + userId));
 
-        userResponseDTO.setProfileId(userProfile.getId());
-        userResponseDTO.setDescription(userProfile.getDescription());
-        userResponseDTO.setBirthday(userProfile.getBirthday());
-        userResponseDTO.setCountry(userProfile.getCountry());
-        userResponseDTO.setCity(userProfile.getCity());
-        userResponseDTO.setPhone(userProfile.getPhone());
-        userResponseDTO.setLastEdited(userProfile.getLastEdited());
+        userResponseBom.setProfileId(userProfile.getId());
+        userResponseBom.setDescription(userProfile.getDescription());
+        userResponseBom.setBirthday(userProfile.getBirthday());
+        userResponseBom.setCountry(userProfile.getCountry());
+        userResponseBom.setCity(userProfile.getCity());
+        userResponseBom.setPhone(userProfile.getPhone());
+        userResponseBom.setAvatar(userProfile.getAvatar());
+        userResponseBom.setBanner(userProfile.getBanner());
+        userResponseBom.setLastEdited(userProfile.getLastEdited());
 
-        return userResponseDTO;
+        return userResponseBom;
     }
 
     public UserBom getUserByIdWithoutToken(Long userId) {
@@ -305,23 +307,25 @@ public class UserService {
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            UserBom userDetailsDTO = new UserBom();
-            userDetailsDTO.setFirstName(user.getFirstName());
-            userDetailsDTO.setLastName(user.getLastName());
-            userDetailsDTO.setLastLogin(user.getLastLogin());
+            UserBom userDetailsBom = new UserBom();
+            userDetailsBom.setFirstName(user.getFirstName());
+            userDetailsBom.setLastName(user.getLastName());
+            userDetailsBom.setLastLogin(user.getLastLogin());
 
             Optional<Profile> userProfileOptional = profileRepository.findByUserId(userId);
             if (userProfileOptional.isPresent()) {
                 Profile userProfile = userProfileOptional.get();
-                userDetailsDTO.setDescription(userProfile.getDescription());
-                userDetailsDTO.setBirthday(userProfile.getBirthday());
-                userDetailsDTO.setCountry(userProfile.getCountry());
-                userDetailsDTO.setCity(userProfile.getCity());
+                userDetailsBom.setDescription(userProfile.getDescription());
+                userDetailsBom.setBirthday(userProfile.getBirthday());
+                userDetailsBom.setCountry(userProfile.getCountry());
+                userDetailsBom.setCity(userProfile.getCity());
+                userDetailsBom.setAvatar(userProfile.getAvatar());
+                userDetailsBom.setBanner(userProfile.getBanner());
             } else {
                 throw new NoSuchElementException("Профиль не найден для userId: " + userId);
             }
 
-            return userDetailsDTO;
+            return userDetailsBom;
         } else {
             throw new NoSuchElementException("Пользователь не найден с userId: " + userId);
         }
