@@ -1,7 +1,7 @@
 <template>
     <div class="modal-container" v-if="modal !== ''">
         <div class="dark-bg"></div>
-        <div class="modal">
+        <div class="modal" :class="$store.state.theme">
             <slot></slot>
         </div>
     </div>
@@ -31,6 +31,7 @@ export default {
     height: fit-content;
     width: fit-content;
     min-width: 400px;
+    max-width: 100%;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -42,8 +43,12 @@ export default {
     padding: 15px 20px;
     border: 1px #ffffff4f solid;
     border-radius: 20px;
-    /* background: #191e27; */
     background: #252d3a;
+}
+
+.modal.light-theme {
+    background: #ffffff;
+    color: #000000;
 }
 
 .dark-bg {
@@ -56,5 +61,11 @@ export default {
     right: 0;
     z-index: 1000;
     background-color: #00000094;
+}
+
+@media (max-width: 800px) {
+    .modal {
+        min-width: auto;
+    }
 }
 </style>
