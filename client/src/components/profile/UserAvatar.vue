@@ -93,12 +93,6 @@ img {
     color: #000;
 }
 
-.user-info.light-theme .avatar {
-    border: 1px #0000007c solid;
-    background: #a3a3a3 center no-repeat;
-    background-size: cover;
-}
-
 .user-info-text {
     display: flex;
     flex-direction: column;

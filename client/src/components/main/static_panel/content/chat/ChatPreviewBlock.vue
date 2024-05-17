@@ -1,6 +1,9 @@
 <template>
     <div class="chat-preview-block" :class="$store.state.theme">
-        <div class="avatar">
+        <div class="avatar-container">
+            <div class="avatar">
+                <img :src="otherUser.avatar" alt="">
+            </div>
             <div class="online-mark" :class="{ active: isOnline }"></div>
         </div>
         <div class="chat-info">
@@ -11,7 +14,8 @@
             <div class="messages">
                 <div class="last-message">
                     <div class="last-message-avatar"></div>
-                    <div class="last-message-text" :class="{ typing: isTyping }">{{ status ?? ellipsify(lastMessage) }}</div>
+                    <div class="last-message-text" :class="{ typing: isTyping }">{{ status ?? ellipsify(lastMessage) }}
+                    </div>
                 </div>
                 <div v-if="unreadMessages > 0" class="unread-messages">{{ unreadMessages }}</div>
             </div>
@@ -28,7 +32,9 @@ export default {
     props: ['chat'],
     data() {
         return {
-            otherUser: null,
+            otherUser: {
+                avatar: '',
+            },
             isOnline: false,
             lastMessage: this.chat.last_message,
             lastMessageAt: formatTime(this.chat.last_message_at),
@@ -91,6 +97,7 @@ export default {
 <style scoped>
 .chat-preview-block {
     display: flex;
+    gap: 15px;
     flex: 0 0 100px;
     width: auto;
     margin: 10px;
@@ -113,18 +120,27 @@ export default {
     background: rgba(0, 0, 0, 0.1);
 }
 
+.avatar-container {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
 .avatar,
 .last-message-avatar {
     width: 60px;
     height: 60px;
-    margin-right: 20px;
-    border: 1px #ffffff2f solid;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
+    overflow: hidden;
+}
+
+img {
+    width: 100%;
+    height: 100%;
 }
 
 .chat-preview-block.light-theme .avatar {
-    border: 1px #0000002f solid;
     background: rgba(0, 0, 0, 0.2);
 }
 
@@ -185,5 +201,12 @@ export default {
 
 .chat-preview-block.light-theme .unread-messages {
     background: #0000003b;
+}
+
+
+@media (max-width: 500px) {
+    .chat-title {
+        font-size: 14px;
+    }
 }
 </style>
