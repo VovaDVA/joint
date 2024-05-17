@@ -12,6 +12,13 @@ module.exports = defineConfig({
 					'^/auth': '/auth'
 				}
 			},
+			'/profile': {
+				target: 'http://localhost:8081',
+				changeOrigin: true,
+				pathRewrite: {
+					'^/profile': '/profile'
+				}
+			},
 			'/chat': {
 				target: 'http://127.0.0.1:3000',
 				changeOrigin: true,

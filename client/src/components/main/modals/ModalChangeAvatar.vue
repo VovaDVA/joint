@@ -15,15 +15,16 @@
             <div class="title">Аватар профиля</div>
             <icon-button icon-name="close" @click="hideModal"></icon-button>
         </div>
-        <cropper class="photo" :src="url" :stencil-component="stencil" />
+        <cropper ref="cropper" class="photo" :src="url" :stencil-component="stencil" />
         <div class="buttons">
-            <modal-button>Сохранить</modal-button>
+            <modal-button @click="confirmChange">Сохранить</modal-button>
             <modal-button class="cancel" @click="returnToLoad">Назад</modal-button>
         </div>
     </modal-template>
 </template>
 
 <script>
+import { checkToken, getToken } from '@/modules/auth';
 import { CircleStencil, Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.classic.css';
@@ -36,7 +37,7 @@ export default {
     props: ['name'],
     data() {
         return {
-            modal: 'preview',
+            modal: '',
             url: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
             stencil: CircleStencil,
         }
@@ -49,6 +50,7 @@ export default {
     methods: {
         loadImage(e) {
             const file = e.target.files[0];
+            this.file = file;
             this.url = URL.createObjectURL(file);
             this.modal = 'preview';
         },
@@ -57,6 +59,35 @@ export default {
         },
         hideModal() {
             this.modal = '';
+        },
+        async confirmChange() {
+            const { canvas } = this.$refs.cropper.getResult();
+
+            if (canvas) {
+                const formData = new FormData();
+                canvas.toBlob(async (blob) => {
+                    formData.append('avatar', blob);
+
+                    const response = await fetch('/profile/update-avatar', {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + getToken(),
+                        },
+                        body: formData
+                    });
+
+                    console.log(response);
+                    if (response.ok) {
+                        await checkToken();
+                        this.hideModal();
+                        this.emitter.emit('confirm-change-avatar');
+                    }
+                });
+            }
+
+            // await apiClient.profile.updateAvatar(formData, () => {
+            //     console.log('avatar changed');
+            // })
         }
     }
 }

@@ -17,14 +17,14 @@ public class RemoteFileUploader {
 
     public String uploadFileOnServer(MultipartFile file, String fileNameOnServer, String nameOfFolder) {
 
-        String host = "192.168.68.124";
+        String host = "192.168.0.108";
         int port = 22; // порт для подключения по ssh
         String username = "jointadmin";
         String password = "12345";
 
         //String knownHostsPath = System.getProperty("user.home") + "/.ssh/known_hosts";
 
-        String knownHostsPath = "C:\\Users\\ASUS/.ssh/known_hosts";
+        String knownHostsPath = "/home/dva/.ssh/known_hosts";
 
         Session session = null;
         ChannelSftp channelSftp = null;

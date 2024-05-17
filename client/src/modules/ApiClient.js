@@ -60,6 +60,10 @@ class ApiClient {
         await this.request('post', url, callback, JSON.stringify(data), errorCallback);
     }
 
+    async put(url, data, callback, errorCallback) {
+        await this.request('put', url, callback, JSON.stringify(data), errorCallback);
+    }
+
     async delete(url, data, callback, errorCallback) {
         await this.request('delete', url, callback, JSON.stringify(data), errorCallback);
     }
@@ -69,6 +73,7 @@ class ApiClient {
         login: (data, callback, errorCallback) => this.post('/auth/login', data, callback, errorCallback),
         verifyCode: (data, callback, errorCallback) => this.post('/auth/verify-code', data, callback, errorCallback),
         getAll: (callback, errorCallback) => this.get('/auth/get-all', callback, errorCallback),
+        // getUser: (callback) => this.get('/auth/user', callback),
         getUserById: (callback, userId) => this.get('/auth/user/get?userId=' + userId, callback),
         // Two Factor Auth
         enableTwoFactorAuth: (data, callback, errorCallback) => this.post('/auth/two-factor/enable', data, callback, errorCallback),
@@ -82,6 +87,10 @@ class ApiClient {
         // Delete
         delete: (data, callback, errorCallback) => this.delete('/auth/delete', data, callback, errorCallback),
         confirmDelete: (data, callback, errorCallback) => this.delete('/auth/confirm-delete', data, callback, errorCallback),
+    }
+
+    profile = {
+        updateAvatar: (data, callback, errorCallback) => this.put('/profile/update-avatar', data, callback, errorCallback),
     }
 
     chat = {

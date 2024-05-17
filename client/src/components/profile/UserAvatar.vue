@@ -15,16 +15,23 @@
 </template>
 
 <script>
-import { getUserName } from '@/modules/auth';
+import { getUserAvatar, getUserName } from '@/modules/auth';
 
 export default {
     name: 'user-avatar',
-    props: ['url'],
-    // data() {
-    //     return {
-    //         url: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    //     }
-    // },
+    data() {
+        return {
+            url: null,
+            // url: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+        }
+    },
+    mounted() {
+        this.url = getUserAvatar();
+
+        this.emitter.on('confirm-change-avatar', () => {
+            this.url = getUserAvatar();
+        });
+    },
     methods: {
         getName() {
             return getUserName();
