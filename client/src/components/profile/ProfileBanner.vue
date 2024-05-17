@@ -2,8 +2,7 @@
     <div class="banner" :class="$store.state.theme">
         <div class="banner-main">
             <div class="banner-inner">
-                <img :src="url"
-                    alt="">
+                <img :src="url" alt="">
                 <div class="banner-content">
                     <filled-icon-button @click="change">Изменить обложку</filled-icon-button>
                 </div>
@@ -18,9 +17,23 @@
 </template>
 
 <script>
+import { getUserBanner } from '@/modules/auth';
+
 export default {
     name: 'profile-banner',
-    props: ['url'],
+    data() {
+        return {
+            url: null,
+            // url: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+        }
+    },
+    mounted() {
+        this.url = getUserBanner();
+
+        this.emitter.on('confirm-change-banner', () => {
+            this.url = getUserBanner();
+        });
+    },
     methods: {
         change() {
             this.emitter.emit('request-change-banner');
@@ -47,11 +60,6 @@ export default {
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.5);
     overflow: hidden;
-}
-
-img {
-    width: 100%;
-    height: 100%;
 }
 
 .banner.light-theme .banner-inner {

@@ -7,11 +7,13 @@ export function getToken() {
     return localStorage.getItem('jwtToken');
 }
 
-export function checkToken() {
+export async function checkToken() {
     const jwtToken = localStorage.getItem('jwtToken');
     const currentPath = window.location.pathname;
 
-    if (jwtToken && isTokenValid(jwtToken)) {
+    const tokenValid = await isTokenValid(jwtToken);
+
+    if (jwtToken && tokenValid) {
         if (currentPath === '/login' || currentPath === '/register') {
             window.location.href = '/';
         }
@@ -36,9 +38,11 @@ async function isTokenValid(token) {
 
         if (data['userId']) {
             saveUserData(data);
-        } else {
-            deleteSession();
+            return true;
         }
+        
+        deleteSession();
+        return false;
 
     } catch (error) {
         console.error(error);
@@ -79,6 +83,18 @@ export function getUserDescription() {
     const user = getUser();
     if (!user) return '-';
     return user.description;
+}
+
+export function getUserAvatar() {
+    const user = getUser();
+    if (!user) return '';
+    return user.avatar;
+}
+
+export function getUserBanner() {
+    const user = getUser();
+    if (!user) return '';
+    return user.banner;
 }
 
 export function deleteSession() {

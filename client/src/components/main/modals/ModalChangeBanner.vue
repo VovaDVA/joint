@@ -15,18 +15,19 @@
             <div class="title">Обложка профиля</div>
             <icon-button icon-name="close" @click="hideModal"></icon-button>
         </div>
-        <cropper class="photo" :src="url" :stencil-props="{
-            aspectRatio: 70 / 22,
+        <cropper ref="cropper" class="photo" :src="url" :stencil-props="{
+            aspectRatio: 77 / 22,
             resizable: false,
         }" :default-size="defaultSize" />
         <div class="buttons">
-            <modal-button>Сохранить</modal-button>
+            <modal-button @click="confirmChange">Сохранить</modal-button>
             <modal-button class="cancel" @click="returnToLoad">Назад</modal-button>
         </div>
     </modal-template>
 </template>
 
 <script>
+import { checkToken, getToken } from '@/modules/auth';
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.classic.css';
@@ -39,7 +40,7 @@ export default {
     },
     data() {
         return {
-            modal: 'preview',
+            modal: '',
             url: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
         }
     },
@@ -51,6 +52,7 @@ export default {
     methods: {
         loadImage(e) {
             const file = e.target.files[0];
+            this.file = file;
             this.url = URL.createObjectURL(file);
             this.modal = 'preview';
         },
@@ -60,12 +62,41 @@ export default {
         hideModal() {
             this.modal = '';
         },
-		defaultSize({ imageSize, visibleArea }) {
-			return {
-				width: (visibleArea || imageSize).width,
-				height: (visibleArea || imageSize).height,
-			};
-		}
+        defaultSize({ imageSize, visibleArea }) {
+            return {
+                width: (visibleArea || imageSize).width,
+                height: (visibleArea || imageSize).height,
+            };
+        },
+        async confirmChange() {
+            const { canvas } = this.$refs.cropper.getResult();
+
+            if (canvas) {
+                const formData = new FormData();
+                canvas.toBlob(async (blob) => {
+                    formData.append('banner', blob);
+
+                    const response = await fetch('/profile/update-banner', {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + getToken(),
+                        },
+                        body: formData
+                    });
+
+                    console.log(response);
+                    if (response.ok) {
+                        await checkToken();
+                        this.hideModal();
+                        this.emitter.emit('confirm-change-banner');
+                    }
+                });
+            }
+
+            // await apiClient.profile.updateAvatar(formData, () => {
+            //     console.log('avatar changed');
+            // })
+        }
     }
 }
 </script>

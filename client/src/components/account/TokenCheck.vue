@@ -7,9 +7,9 @@ import { checkToken } from '../../modules/auth';
 
 export default {
     name: 'token-check',
-    mounted() {
+    async mounted() {
         if (!['/login', '/register'].includes(this.$route.path)) {
-            checkToken();
+            await checkToken();
         }
     },
 }
