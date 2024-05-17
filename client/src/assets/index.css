@@ -155,8 +155,6 @@ button {
 /* Online Mark In Avatar */
 .online-mark.active {
     visibility: visible;
-    margin-top: 76%;
-    margin-left: 76%;
     width: 10px;
     height: 10px;
     border: 1px #85858579 solid;
@@ -166,4 +164,7 @@ button {
 
 .online-mark {
     visibility: hidden;
+    position: absolute;
+    top: 76%;
+    left: 76%;
 }

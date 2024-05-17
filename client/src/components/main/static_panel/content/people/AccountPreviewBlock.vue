@@ -1,6 +1,9 @@
 <template>
     <div class="chat-preview-block" :class="$store.state.theme">
-        <div class="avatar">
+        <div class="avatar-container">
+            <div class="avatar">
+                <img :src="person.avatar" alt="">
+            </div>
             <div class="online-mark" :class="{ active: isOnline }"></div>
         </div>
         <div class="chat-info">
@@ -30,6 +33,7 @@ export default {
         }
     },
     mounted() {
+        console.log(this.person)
         this.isOnline = this.person.id in this.$store.state.onlineUsers;
         this.$store.state.chatSocket.on('updateOnlineUsers', (onlineUsers) => {
             this.isOnline = this.person.id in onlineUsers;
@@ -74,17 +78,21 @@ export default {
     background: rgba(0, 0, 0, 0.1);
 }
 
+.avatar-container {
+    position: relative;
+    margin-right: 20px;
+    width: 60px;
+    height: 60px;
+}
+
 .avatar {
     width: 60px;
     height: 60px;
-    margin-right: 20px;
-    border: 1px #ffffff2f solid;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
 }
 
 .chat-preview-block.light-theme .avatar {
-    border: 1px #0000002f solid;
     background: rgba(0, 0, 0, 0.2);
 }
 

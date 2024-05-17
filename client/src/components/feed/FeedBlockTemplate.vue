@@ -1,7 +1,9 @@
 <template>
     <div class="feed-block" :class="$store.state.theme">
         <div class="header">
-            <div class="avatar"></div>
+            <div class="avatar">
+                <img :src="avatar" alt="">
+            </div>
             <div class="author">
                 <div class="username">{{ post ? post.author_name : '-' }}</div>
                 <div class="date">{{ post ? $formatDate(post.created_at) : '-' }}</div>
@@ -12,9 +14,22 @@
 </template>
 
 <script>
+import { getUserById } from '@/modules/auth';
+
 export default {
     name: 'feed-block-template',
-    props: ['post']
+    props: ['post'],
+    async mounted() {
+        if (this.post) {
+            const user = await getUserById(this.post.author_id);
+            this.avatar = user.avatar;
+        }
+    },
+    data() {
+        return {
+            avatar: '',
+        }
+    }
 }
 </script>
 
@@ -51,10 +66,16 @@ export default {
 .avatar {
     width: 45px;
     height: 45px;
-    border: 1px #ffffff2f solid;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
+    overflow: hidden;
 }
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
 .feed-block.light-theme .avatar {
     border: 1px #0000002f solid;
     background: rgba(0, 0, 0, 0.2);
@@ -64,6 +85,7 @@ export default {
     font-size: 12px;
     color: #ffffff7c;
 }
+
 .feed-block.light-theme .date {
     font-size: 12px;
     color: #0000007c;
