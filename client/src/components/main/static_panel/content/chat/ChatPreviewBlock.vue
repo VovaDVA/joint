@@ -1,11 +1,6 @@
 <template>
     <div class="chat-preview-block" :class="$store.state.theme">
-        <div class="avatar-container">
-            <div class="avatar">
-                <img :src="otherUser.avatar" alt="">
-            </div>
-            <div class="online-mark" :class="{ active: isOnline }"></div>
-        </div>
+        <user-avatar :photo="photo" :online="isOnline"></user-avatar>
         <div class="chat-info">
             <div class="chat-header">
                 <div class="chat-title">{{ getUserName() }}</div>
@@ -13,7 +8,7 @@
             </div>
             <div class="messages">
                 <div class="last-message">
-                    <div class="last-message-avatar"></div>
+                    <user-avatar></user-avatar>
                     <div class="last-message-text" :class="{ typing: isTyping }">{{ status ?? ellipsify(lastMessage) }}
                     </div>
                 </div>
@@ -32,9 +27,8 @@ export default {
     props: ['chat'],
     data() {
         return {
-            otherUser: {
-                avatar: '',
-            },
+            otherUser: null,
+            photo: require('@/assets/user.png'),
             isOnline: false,
             lastMessage: this.chat.last_message,
             lastMessageAt: formatTime(this.chat.last_message_at),
@@ -46,6 +40,7 @@ export default {
     async mounted() {
         const otherUserId = this.chat.members.find(id => isUserIdEqual(id));
         this.otherUser = await getUserById(otherUserId);
+        this.photo = this.otherUser.avatar ?? this.photo;
 
         this.socket = this.$store.state.chatSocket;
         console.log(this.socket)
@@ -99,6 +94,7 @@ export default {
     display: flex;
     gap: 15px;
     flex: 0 0 100px;
+    height: 100px;
     width: auto;
     margin: 10px;
     padding: 20px;
@@ -118,35 +114,6 @@ export default {
 
 .chat-preview-block.light-theme:hover {
     background: rgba(0, 0, 0, 0.1);
-}
-
-.avatar-container {
-    position: relative;
-    width: 60px;
-    height: 60px;
-}
-
-.avatar,
-.last-message-avatar {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-img {
-    width: 100%;
-    height: 100%;
-}
-
-.chat-preview-block.light-theme .avatar {
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.chat-preview-block.light-theme .last-message-avatar {
-    border: 1px #0000002f solid;
-    background: rgba(0, 0, 0, 0.2);
 }
 
 .chat-info {
@@ -173,13 +140,9 @@ img {
 
 .last-message {
     display: flex;
-    align-items: center;
-}
-
-.last-message-avatar {
-    width: 30px;
+    gap: 10px;
     height: 30px;
-    margin-right: 10px;
+    align-items: center;
 }
 
 .last-message-text,

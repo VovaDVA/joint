@@ -7,7 +7,7 @@
                     <filled-icon-button @click="change">Изменить обложку</filled-icon-button>
                 </div>
             </div>
-            <user-avatar></user-avatar>
+            <user-info-banner></user-info-banner>
         </div>
         <div class="banner-promo">
             <div class="banner-ad"></div>
