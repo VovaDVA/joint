@@ -88,11 +88,42 @@
 			<version>2.5.0</version>
 		</dependency>
 
-	</dependencies>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.11.0</version>
+			<scope>test</scope>
+		</dependency>
 
-	<dependencyManagement>
-		<dependencies>
-			<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.10.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!--  для запуска тестов, написанных с использованием JUnit Jupiter -->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-engine</artifactId>
+			<version>1.10.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.2.224</version>
+			<scope>test</scope>
+		</dependency>
+
+
+
+            </dependencies>
+
+            <dependencyManagement>
+                <dependencies>
+                    <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
@@ -122,4 +153,42 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>unit-tests</id>
+				<build>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<version>3.2.5</version>
+
+							<configuration>
+								<excludes>
+									<exclude>**/controller/*IntegrationTest.java</exclude>
+								</excludes>
+							</configuration>
+
+						</plugin>
+					</plugins>
+				</build>
+	</profile>
+		<profile>
+			<id>integration-tests</id>
+				<build>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<version>3.2.5</version>
+							<configuration>
+								<includes>
+									<include>**/controller/*IntegrationTest.java</include>
+								</includes>
+							</configuration>
+						</plugin>
+					</plugins>
+				</build>
+		</profile>
+	</profiles>
 </project>

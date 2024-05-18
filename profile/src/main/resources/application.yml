@@ -6,9 +6,9 @@ spring:
     allow-bean-definition-overriding: true
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/postgres
-    username: postgres
-    password: 12345
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/joint_account
+    username: joint_account_admin
+    password: p;rXG1Y75E
 
   jpa:
     open-in-view: false
@@ -21,3 +21,9 @@ server:
 connector:
   auth:
     url: localhost:8080/auth
+
+ssh:
+  host: 192.168.68.124
+  port: 22
+  username: jointadmin
+  password: 12345

@@ -7,22 +7,31 @@ import java.io.InputStream;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /* класс необходимый  для загрузки файла на удаленный сервер через SFTP и возвращения URL для доступа к этому файлу
 и сохранения этого URL в БД */
+
+
 @Service
 public class RemoteFileUploader {
 
+    @Value("${ssh.host}")
+    private String host;
+
+    @Value("${ssh.port}")
+    private int port;
+
+    @Value("${ssh.username}")
+    private String username;
+
+    @Value("${ssh.password}")
+    private String password;
+
+
     public String uploadFileOnServer(MultipartFile file, String fileNameOnServer, String nameOfFolder) {
-
-        String host = "192.168.68.124";
-        int port = 22; // порт для подключения по ssh
-        String username = "jointadmin";
-        String password = "12345";
-
-        //String knownHostsPath = System.getProperty("user.home") + "/.ssh/known_hosts";
 
         String knownHostsPath = "C:\\Users\\ASUS/.ssh/known_hosts";
 
