@@ -87,13 +87,13 @@ export function getUserDescription() {
 
 export function getUserAvatar() {
     const user = getUser();
-    if (!user) return '';
+    if (!user) return null;
     return user.avatar;
 }
 
 export function getUserBanner() {
     const user = getUser();
-    if (!user) return '';
+    if (!user) return null;
     return user.banner;
 }
 

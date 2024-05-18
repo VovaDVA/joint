@@ -37,9 +37,10 @@ import StrokeIconButton from "./main/buttons/StrokeIconButton.vue";
 import ModalButton from "./main/buttons/ModalButton.vue";
 import FileInputButton from "./main/buttons/FileInputButton.vue";
 // Profile
+import UserAvatar from "./profile/UserAvatar.vue";
 import ProfileBanner from "@/components/profile/ProfileBanner.vue";
 import PageHeader from "@/components/main/page/PageHeader.vue";
-import UserAvatar from "@/components/profile/UserAvatar.vue";
+import UserInfoBanner from "@/components/profile/UserInfoBanner.vue";
 import ProfileContent from "./profile/ProfileContent.vue";
 // Feed
 import FeedBlock from "./feed/FeedBlock.vue";
@@ -85,7 +86,7 @@ export default [
     // Buttons
     SingleIcon, IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton, ModalButton, FileInputButton,
     // Profile
-    ProfileBanner, UserAvatar, ProfileContent,
+    UserAvatar, ProfileBanner, UserInfoBanner, ProfileContent,
     // Feed
     FeedBlock, FeedBlockTemplate, FeedBlockPost, FeedBlockMedia, FeedBlockMusic,
     // News

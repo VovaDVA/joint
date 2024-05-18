@@ -1,9 +1,7 @@
 <template>
     <div class="feed-block" :class="$store.state.theme">
         <div class="header">
-            <div class="avatar">
-                <img :src="avatar" alt="">
-            </div>
+            <user-avatar :photo="avatar"></user-avatar>
             <div class="author">
                 <div class="username">{{ post ? post.author_name : '-' }}</div>
                 <div class="date">{{ post ? $formatDate(post.created_at) : '-' }}</div>
@@ -53,6 +51,7 @@ export default {
 }
 
 .header {
+    height: 45px;
     display: flex;
     gap: 10px;
 }
@@ -61,24 +60,6 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-}
-
-.avatar {
-    width: 45px;
-    height: 45px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-img {
-    width: 100%;
-    height: 100%;
-}
-
-.feed-block.light-theme .avatar {
-    border: 1px #0000002f solid;
-    background: rgba(0, 0, 0, 0.2);
 }
 
 .date {

@@ -1,11 +1,6 @@
 <template>
     <div class="chat-preview-block" :class="$store.state.theme">
-        <div class="avatar-container">
-            <div class="avatar">
-                <img :src="person.avatar" alt="">
-            </div>
-            <div class="online-mark" :class="{ active: isOnline }"></div>
-        </div>
+        <user-avatar :photo="photo" :online="isOnline"></user-avatar>
         <div class="chat-info">
             <div class="chat-header">
                 <div class="chat-title">{{ person.firstName + " " + person.lastName }}</div>
@@ -33,7 +28,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.person)
         this.isOnline = this.person.id in this.$store.state.onlineUsers;
         this.$store.state.chatSocket.on('updateOnlineUsers', (onlineUsers) => {
             this.isOnline = this.person.id in onlineUsers;
