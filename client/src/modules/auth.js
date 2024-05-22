@@ -26,7 +26,7 @@ export async function checkToken() {
 
 async function isTokenValid(token) {
     try {
-        const response = await fetch('/auth/user', {
+        const response = await fetch('http://127.0.0.1:8080/auth/user', {
             headers: {
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'  // Пример добавления других заголовков
