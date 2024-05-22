@@ -3,6 +3,10 @@ const ObjectId = mongoose.Schema.ObjectId;
 
 const postSchema = new mongoose.Schema({
   author_id: {
+    type: Number,
+    required: true
+  },
+  title: {
     type: String,
     required: true
   },

@@ -96,18 +96,18 @@ class ApiClient {
     }
 
     chat = {
-        getUserChats: (callback) => this.get('/chat/getUserChats?user_id=' + getUserId(), callback),
-        createChat: (data, callback) => this.post('/chat/createChat', data, callback),
+        getUserChats: (callback) => this.get(`${BASE_URL}:3000/chat/getUserChats?user_id=` + getUserId(), callback),
+        createChat: (data, callback) => this.post(`${BASE_URL}:3000/chat/createChat`, data, callback),
     }
 
     message = {
-        editMessage: (data, callback) => this.post('/message/editMessage', data, callback),
+        editMessage: (data, callback) => this.post(`${BASE_URL}:3000/message/editMessage`, data, callback),
     }
 
     content = {
-        getAllPosts: (callback) => this.get('/post/getAllPosts', callback),
-        getPostsByAuthor: (callback) => this.get('/post/getPostsByAuthor?author_id=' + getUserId(), callback),
-        createPost: (data, callback) => this.post('/post/createPost', data, callback),
+        getAllPosts: (callback) => this.get(`${BASE_URL}:3001/post/getAllPosts`, callback),
+        getPostsByAuthor: (callback) => this.get(`${BASE_URL}:3001/post/getPostsByAuthor?author_id=` + getUserId(), callback),
+        createPost: (data, callback) => this.post(`${BASE_URL}:3001/post/createPost`, data, callback),
     }
 }
 

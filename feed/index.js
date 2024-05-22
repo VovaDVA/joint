@@ -1,4 +1,7 @@
 const express = require('express');
+const cors = require('cors');
+const app = express();
+
 const mongoose = require('mongoose');
 const {MONGO_URI, PORT} = require('./config/index');
 const connectDB = require('./config/db');
@@ -6,11 +9,12 @@ const http = require('http');
 const socketIO = require('socket.io');
 const sockets = require('./sockets');
 
+app.use(cors());
+
 const postRouter = require('./routes/postRoutes');
 const commentRouter = require('./routes/commentRoutes');
 const reactionRouter = require('./routes/reactionRoutes');
 
-const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 

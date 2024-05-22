@@ -3,7 +3,7 @@
         <div class="header">
             <user-avatar :photo="avatar"></user-avatar>
             <div class="author">
-                <div class="username">{{ post ? post.author_name : '-' }}</div>
+                <div class="username">{{ post ? this.author : '-' }}</div>
                 <div class="date">{{ post ? $formatDate(post.created_at) : '-' }}</div>
             </div>
         </div>
@@ -21,6 +21,7 @@ export default {
         if (this.post) {
             const user = await getUserById(this.post.author_id);
             this.avatar = user.avatar;
+            this.author = user.firstName + ' ' + user.lastName;
         }
     },
     data() {
