@@ -1,5 +1,7 @@
 import { getToken, getUserId } from "./auth";
 
+const BASE_URL = 'http://127.0.0.1';
+
 class ApiClient {
     constructor() {
         if (!ApiClient.instance) {
@@ -69,24 +71,24 @@ class ApiClient {
     }
 
     auth = {
-        register: (data, callback, errorCallback) => this.post('/auth/register', data, callback, errorCallback),
-        login: (data, callback, errorCallback) => this.post('/auth/login', data, callback, errorCallback),
-        verifyCode: (data, callback, errorCallback) => this.post('/auth/verify-code', data, callback, errorCallback),
-        getAll: (callback, errorCallback) => this.get('/auth/get-all', callback, errorCallback),
+        register: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/register`, data, callback, errorCallback),
+        login: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/login`, data, callback, errorCallback),
+        verifyCode: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/verify-code`, data, callback, errorCallback),
+        getAll: (callback, errorCallback) => this.get(`${BASE_URL}:8080/auth/get-all`, callback, errorCallback),
         // getUser: (callback) => this.get('/auth/user', callback),
-        getUserById: (callback, userId) => this.get('/auth/user/get?userId=' + userId, callback),
+        getUserById: (callback, userId) => this.get(`${BASE_URL}:8080/auth/user/get?userId=` + userId, callback),
         // Two Factor Auth
-        enableTwoFactorAuth: (data, callback, errorCallback) => this.post('/auth/two-factor/enable', data, callback, errorCallback),
-        disableTwoFactorAuth: (data, callback, errorCallback) => this.post('/auth/two-factor/disable', data, callback, errorCallback),
+        enableTwoFactorAuth: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/two-factor/enable`, data, callback, errorCallback),
+        disableTwoFactorAuth: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/two-factor/disable`, data, callback, errorCallback),
         // Password Reset
-        sendPasswordResetCode: (data, callback, errorCallback) => this.post('/auth/request-reset-password?email=' + data.email, data, callback, errorCallback),
-        confirmPasswordReset: (data, callback, errorCallback) => this.post('/auth/confirm-reset-password', data, callback, errorCallback),
+        sendPasswordResetCode: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/request-reset-password?email=` + data.email, data, callback, errorCallback),
+        confirmPasswordReset: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/confirm-reset-password`, data, callback, errorCallback),
         // Password Change
-        changePassword: (data, callback, errorCallback) => this.post('/auth/change-password', data, callback, errorCallback),
-        confirmChangePassword: (data, callback, errorCallback) => this.post('/auth/confirm-change-password', data, callback, errorCallback),
+        changePassword: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/change-password`, data, callback, errorCallback),
+        confirmChangePassword: (data, callback, errorCallback) => this.post(`${BASE_URL}:8080/auth/confirm-change-password`, data, callback, errorCallback),
         // Delete
-        delete: (data, callback, errorCallback) => this.delete('/auth/delete', data, callback, errorCallback),
-        confirmDelete: (data, callback, errorCallback) => this.delete('/auth/confirm-delete', data, callback, errorCallback),
+        delete: (data, callback, errorCallback) => this.delete(`${BASE_URL}:8080/auth/delete`, data, callback, errorCallback),
+        confirmDelete: (data, callback, errorCallback) => this.delete(`${BASE_URL}:8080/auth/confirm-delete`, data, callback, errorCallback),
     }
 
     profile = {
