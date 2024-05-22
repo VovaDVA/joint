@@ -34,7 +34,6 @@ export default {
 
             await apiClient.content.createPost({
                 author_id: getUser().userId,
-                author_name: getUserName(),
                 title: this.title,
                 content: this.content
             }, () => this.$router.push('/'));

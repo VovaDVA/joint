@@ -52,13 +52,14 @@ export default {
     margin-left: 2.2vw;
 
     /* border: 3px #2d3544 solid; */
-    border: 2px #ffffff7c solid;
+    border: 1px #ffffff7c solid;
     border-radius: 50%;
     background: #555555;
 }
 
 .user-info.light-theme .avatar-container {
-    border: 3px #d4d4d4 solid;
+    /* border: 3px #d4d4d4 solid; */
+    border: 1px #0000007c solid;
 }
 
 .cover {

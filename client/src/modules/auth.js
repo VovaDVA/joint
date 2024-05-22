@@ -108,7 +108,7 @@ export function deleteSession() {
 
 export async function getUserById(userId) {
     try {
-        const response = await fetch('/auth/user/get?userId=' + userId, {
+        const response = await fetch('http://127.0.0.1:8080/auth/user/get?userId=' + userId, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + getToken(),
