@@ -7,11 +7,13 @@ export function getToken() {
     return localStorage.getItem('jwtToken');
 }
 
-export function checkToken() {
+export async function checkToken() {
     const jwtToken = localStorage.getItem('jwtToken');
     const currentPath = window.location.pathname;
 
-    if (jwtToken && isTokenValid(jwtToken)) {
+    const tokenValid = await isTokenValid(jwtToken);
+
+    if (jwtToken && tokenValid) {
         if (currentPath === '/login' || currentPath === '/register') {
             window.location.href = '/';
         }
@@ -24,7 +26,7 @@ export function checkToken() {
 
 async function isTokenValid(token) {
     try {
-        const response = await fetch('/auth/user', {
+        const response = await fetch('http://127.0.0.1:8080/auth/user', {
             headers: {
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'  // Пример добавления других заголовков
@@ -36,9 +38,11 @@ async function isTokenValid(token) {
 
         if (data['userId']) {
             saveUserData(data);
-        } else {
-            deleteSession();
+            return true;
         }
+        
+        deleteSession();
+        return false;
 
     } catch (error) {
         console.error(error);
@@ -81,6 +85,18 @@ export function getUserDescription() {
     return user.description;
 }
 
+export function getUserAvatar() {
+    const user = getUser();
+    if (!user) return null;
+    return user.avatar;
+}
+
+export function getUserBanner() {
+    const user = getUser();
+    if (!user) return null;
+    return user.banner;
+}
+
 export function deleteSession() {
     const user = getUser();
     if (user) {
@@ -92,7 +108,7 @@ export function deleteSession() {
 
 export async function getUserById(userId) {
     try {
-        const response = await fetch('/auth/user/get?userId=' + userId, {
+        const response = await fetch('http://127.0.0.1:8080/auth/user/get?userId=' + userId, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + getToken(),

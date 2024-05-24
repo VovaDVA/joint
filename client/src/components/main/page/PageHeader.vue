@@ -46,12 +46,11 @@
                         <icon-button icon-name="right-from-bracket" @click="logoutUser()"></icon-button>
                     </div>
 
-                    <router-link to="/" class="username">{{ getName() }}</router-link>
+                    <router-link to="/" class="username">{{ username }}</router-link>
                 </div>
 
-                <router-link to="/" @click="changePage()">
-                    <div class="profile_photo" style="background: #555555 center no-repeat; background-size: cover">
-                    </div>
+                <router-link style="height: 45px;" to="/" @click="changePage()">
+                    <user-avatar :photo="avatar"></user-avatar>
                 </router-link>
             </div>
         </div>
@@ -59,7 +58,7 @@
 </template>
 
 <script>
-import { deleteSession, getUserName } from '../../../modules/auth';
+import { deleteSession, getUserAvatar, getUserName } from '../../../modules/auth';
 
 export default {
     name: 'page-header',
@@ -67,7 +66,17 @@ export default {
         return {
             selectedTab: null,
             isActive: false,
+            username: '',
+            avatar: ''
         }
+    },
+    mounted() {
+        this.username = getUserName();
+        this.avatar = getUserAvatar();
+
+        this.emitter.on('confirm-change-avatar', () => {
+            this.avatar = getUserAvatar();
+        });
     },
     methods: {
         changePage() {
@@ -88,9 +97,6 @@ export default {
         changeTheme() {
             this.$store.commit('changeTheme');
         },
-        getName() {
-            return getUserName();
-        }
     }
 }
 </script>
@@ -183,6 +189,7 @@ export default {
 
 .user_info {
     display: flex;
+    gap: 10px;
     align-items: center;
     z-index: 101;
 }
@@ -191,22 +198,12 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-right: 20px;
     text-align: right;
 }
 
 .user_icons {
     display: flex;
     justify-content: right;
-}
-
-.profile_photo {
-    width: 40px;
-    height: 40px;
-
-    background-color: #555555;
-    border: 1px #FFFFFF solid;
-    border-radius: 50%;
 }
 
 .username {

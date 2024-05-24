@@ -5,12 +5,12 @@ class postService {
 		this.Post = Post;
 	}
 
-	async createPost(author_id, content){
-		let date = new Date();
+	async createPost(data){
 		const post = new Post({
-			"author_id": author_id,
-			"content": content,
-			"created_at": date,
+			"author_id": data.author_id,
+			"title": data.title,
+			"content": data.content,
+			"created_at": new Date(),
 			"likes": [],
 			"comments": []
 		});

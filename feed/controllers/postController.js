@@ -2,17 +2,17 @@ const postService = require('../services/postService');
 
 class postController {
 	constructor(postService) {
-    this.postService = postService;
+		this.postService = postService;
 	}
 
 	async createPost(req, res) {
 		try {
-			const {author_id, content} = req.body;
-			const post = await postService.createPost(author_id, content);
+			const data = req.body;
+			const post = await postService.createPost(data);
 			return res.status(201).json(post);
-		} 
+		}
 		catch (error) {
-			return res.status(500).json({message: error.message});
+			return res.status(500).json({ message: error.message });
 		}
 	}
 
@@ -22,13 +22,13 @@ class postController {
 			const post = await postService.getPostById(postId);
 
 			if (!post) {
-				return res.status(404).json({message: "Post not found"});
+				return res.status(404).json({ message: "Post not found" });
 			}
 
 			return res.status(200).json(post);
-		} 
+		}
 		catch (error) {
-			return res.status(500).json({message: error.message});
+			return res.status(500).json({ message: error.message });
 		}
 	}
 
@@ -39,7 +39,7 @@ class postController {
 			return res.status(200).json(posts);
 		}
 		catch (error) {
-			return res.status(500).json({message: error.message});
+			return res.status(500).json({ message: error.message });
 		}
 	}
 
@@ -49,23 +49,23 @@ class postController {
 			return res.status(200).json(posts);
 		}
 		catch (error) {
-			return res.status(500).json({message: error.message});
+			return res.status(500).json({ message: error.message });
 		}
 	}
 
 	async editPost(req, res) {
 		try {
-			const {post_id, content} = req.body;
+			const { post_id, content } = req.body;
 
 			if (!await postService.getPostById(post_id)) {
-				return res.status(404).json({message: "Post not found"});
+				return res.status(404).json({ message: "Post not found" });
 			}
 
 			const post = await postService.editPost(post_id, content);
 			return res.status(201).json(post);
 		}
 		catch (error) {
-			return res.status(500).json({message: error.message});
+			return res.status(500).json({ message: error.message });
 		}
 	}
 
@@ -73,9 +73,9 @@ class postController {
 		try {
 			const postId = req.query.id;
 			const Post = await postService.getPostById(postId);
-			
+
 			if (!Post) {
-				return res.status(404).json({message: "Post not found"});
+				return res.status(404).json({ message: "Post not found" });
 			}
 
 			const comments_id = Post.comments;
@@ -94,7 +94,7 @@ class postController {
 			return res.status(200).json(post);
 		}
 		catch (error) {
-			return res.status(500).json({message: error.message});
+			return res.status(500).json({ message: error.message });
 		}
 	}
 }

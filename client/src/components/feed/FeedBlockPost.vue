@@ -40,7 +40,7 @@ export default {
 .feed-preview {
     aspect-ratio: 16/9;
     border: 1px #ffffff4e solid;
-    border-radius: 20px;
+    border-radius: 10px;
     background: rgba(0, 0, 0, 0.5);
 }
 

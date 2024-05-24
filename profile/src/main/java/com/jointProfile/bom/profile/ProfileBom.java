@@ -1,4 +1,4 @@
-package com.jointProfile.bom;
+package com.jointProfile.bom.profile;
 
 import lombok.Data;
 

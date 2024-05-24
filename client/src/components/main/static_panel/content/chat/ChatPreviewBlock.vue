@@ -1,8 +1,6 @@
 <template>
     <div class="chat-preview-block" :class="$store.state.theme">
-        <div class="avatar">
-            <div class="online-mark" :class="{ active: isOnline }"></div>
-        </div>
+        <user-avatar :photo="photo" :online="isOnline"></user-avatar>
         <div class="chat-info">
             <div class="chat-header">
                 <div class="chat-title">{{ getUserName() }}</div>
@@ -10,8 +8,9 @@
             </div>
             <div class="messages">
                 <div class="last-message">
-                    <div class="last-message-avatar"></div>
-                    <div class="last-message-text" :class="{ typing: isTyping }">{{ status ?? ellipsify(lastMessage) }}</div>
+                    <user-avatar></user-avatar>
+                    <div class="last-message-text" :class="{ typing: isTyping }">{{ status ?? ellipsify(lastMessage) }}
+                    </div>
                 </div>
                 <div v-if="unreadMessages > 0" class="unread-messages">{{ unreadMessages }}</div>
             </div>
@@ -29,6 +28,7 @@ export default {
     data() {
         return {
             otherUser: null,
+            photo: require('@/assets/user.png'),
             isOnline: false,
             lastMessage: this.chat.last_message,
             lastMessageAt: formatTime(this.chat.last_message_at),
@@ -40,6 +40,7 @@ export default {
     async mounted() {
         const otherUserId = this.chat.members.find(id => isUserIdEqual(id));
         this.otherUser = await getUserById(otherUserId);
+        this.photo = this.otherUser.avatar ?? this.photo;
 
         this.socket = this.$store.state.chatSocket;
         console.log(this.socket)
@@ -91,7 +92,9 @@ export default {
 <style scoped>
 .chat-preview-block {
     display: flex;
+    gap: 15px;
     flex: 0 0 100px;
+    height: 100px;
     width: auto;
     margin: 10px;
     padding: 20px;
@@ -111,26 +114,6 @@ export default {
 
 .chat-preview-block.light-theme:hover {
     background: rgba(0, 0, 0, 0.1);
-}
-
-.avatar,
-.last-message-avatar {
-    width: 60px;
-    height: 60px;
-    margin-right: 20px;
-    border: 1px #ffffff2f solid;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-}
-
-.chat-preview-block.light-theme .avatar {
-    border: 1px #0000002f solid;
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.chat-preview-block.light-theme .last-message-avatar {
-    border: 1px #0000002f solid;
-    background: rgba(0, 0, 0, 0.2);
 }
 
 .chat-info {
@@ -157,13 +140,9 @@ export default {
 
 .last-message {
     display: flex;
-    align-items: center;
-}
-
-.last-message-avatar {
-    width: 30px;
+    gap: 10px;
     height: 30px;
-    margin-right: 10px;
+    align-items: center;
 }
 
 .last-message-text,
@@ -185,5 +164,12 @@ export default {
 
 .chat-preview-block.light-theme .unread-messages {
     background: #0000003b;
+}
+
+
+@media (max-width: 500px) {
+    .chat-title {
+        font-size: 14px;
+    }
 }
 </style>

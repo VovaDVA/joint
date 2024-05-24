@@ -1,7 +1,5 @@
 package com.jointProfile.entity;
 
-
-
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.relational.core.mapping.Table;
