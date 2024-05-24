@@ -36,7 +36,8 @@ export default {
 }
 
 .icon-button:hover {
-    color: #ffa600;
+    color: #ffa600 !important;
     transition: color .2s linear;
+    cursor: pointer;
 }
 </style>

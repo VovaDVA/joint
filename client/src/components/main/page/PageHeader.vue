@@ -12,24 +12,24 @@
             <div class="nav" :class="{ 'active': isActive }">
                 <router-link to="/about" class="nav-item" :class="{ selected: selectedTab === 1 }"
                     @click="selectTab(1)">
-                    <div>О нас</div>
                     <div class="tab-circle"></div>
+                    <div>О нас</div>
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 2 }" @click="selectTab(2)">
-                    Новости
                     <div class="tab-circle"></div>
+                    Новости
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 3 }" @click="selectTab(3)">
-                    Сервисы
                     <div class="tab-circle"></div>
+                    Сервисы
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 4 }" @click="selectTab(4)">
-                    Сотрудничество
                     <div class="tab-circle"></div>
+                    Сотрудничество
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 5 }" @click="selectTab(5)">
-                    Магазин
                     <div class="tab-circle"></div>
+                    Магазин
                 </router-link>
             </div>
 
@@ -167,6 +167,10 @@ export default {
     color: #000;
 }
 
+.header.light-theme .username:hover {
+    color: #d47800fd;
+}
+
 .header.light-theme .profile_photo {
     background: #b9b9b9 !important;
     border: 1px #000000 solid;
@@ -268,8 +272,9 @@ export default {
 
 .nav-item {
     display: flex;
-    flex-direction: column;
+    gap: 10px;
     justify-content: center;
+    align-items: center;
     padding: 0 15px;
 
     color: #FFFFFF;
@@ -299,7 +304,6 @@ export default {
     width: 10px;
     height: 10px;
     border-radius: 10px;
-    margin-top: 10px;
     background: #ffbf6c;
 }
 

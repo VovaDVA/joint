@@ -13,7 +13,7 @@ class postService {
 			"created_at": new Date(),
 			"likes": [],
 			"comments": []
-		});
+		});л
 		await post.save();
 		return post;
 	}
