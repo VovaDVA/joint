@@ -6,4 +6,4 @@ WORKDIR /joint/notifications
 
 COPY . .
 
-CMD node Index.js
+CMD node index.js

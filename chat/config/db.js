@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://joint_chat_db:27017/joint_chat';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://joint_chat_admin:abcd@joint_chat_db:27017/joint_chat?authSource=admin&directConnection=true';
+
 
 const connectDB = async () => {
   try {
@@ -16,3 +17,4 @@ const connectDB = async () => {
 };
 
 module.exports = {MONGO_URI, connectDB};
+
