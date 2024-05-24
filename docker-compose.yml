@@ -28,23 +28,15 @@ services:
     container_name: joint_chat_db
     image: mongo
     environment:
-      MONGO_INITDB_DATABASE: joint_chat
       MONGO_INITDB_ROOT_USERNAME: joint_chat_admin
-      MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
-
+      MONGO_INITDB_ROOT_PASSWORD: abcd
+      MONGO_INITDB_DATABASE: joint_chat
+      
     volumes:
-      - joint_data:/data/db
+      - joint_data:/data/db_chat
 
     healthcheck:
-      test: [
-        "CMD", 
-        "mongo",
-        "--quiet",
-        "127.0.0.1/joint_chat",
-        "--username", "joint_chat_admin",
-        "--password", "p;rXG1Y75E",
-        "--eval",
-        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/joint_chat --quiet
       interval: 10s
       timeout: 10s
       retries: 5
@@ -66,18 +58,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
 
     volumes:
-      - joint_data:/data/db
+      - joint_data:/data/db_feed
 
     healthcheck:
-      test: [
-        "CMD",
-        "mongo",
-        "--quiet",
-        "127.0.0.1/joint_feed",
-        "--username", "joint_feed_admin",
-        "--password", "p;rXG1Y75E",
-        "--eval",
-        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'" ]
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/joint_feed --quiet
       interval: 10s
       timeout: 10s
       retries: 5
@@ -99,18 +83,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: p;rXG1Y75E
 
     volumes:
-      - joint_data:/data/db
+      - joint_data:/data/db_notifications
 
     healthcheck:
-      test: [
-        "CMD",
-        "mongo",
-        "--quiet",
-        "127.0.0.1/joint_notifications",
-        "--username", "joint_notifications_admin",
-        "--password", "p;rXG1Y75E",
-        "--eval",
-        "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'" ]
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/joint_notifications --quiet
       interval: 10s
       timeout: 10s
       retries: 5

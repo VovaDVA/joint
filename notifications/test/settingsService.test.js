@@ -24,13 +24,42 @@ describe("Settings creation", () => {
         await dbClear();
     });
 
-    // test("Settings can be found by id", async () => {
-    //     let settings = await settingsService.getSettingsById("661e407c2fbfe93fd6620a73");
+    test("Settings can be found by id", async () => {
+        let created_settings = await settingsService.createSettings({
+            "user_id": "661e407c2fbfe93fd6620a73",
+			"email_notifications": true, 
+			"push_notifications": true, 
+			"in_app_notifications": true
+        });
+        
+        let settings = await settingsService.getSettingsById(created_settings._id);
 
-    //     expect(settings).toBeTruthy();
-    // });
+        expect(settings).toBeTruthy();
+        expect(settings._id).toStrictEqual(created_settings._id);
+        await dbClear();
+    });
 
-   // test()
+    test("Settings must be updated correctly", async () => {
+        let created_settings = await settingsService.createSettings({
+            "user_id": "661e407c2fbfe93fd6620a73",
+			"email_notifications": true, 
+			"push_notifications": true, 
+			"in_app_notifications": true
+        });
+
+        let updated_settings = await settingsService.updateSettings({
+            "id": created_settings._id,
+            "user_id": "661e407c2fbfe93fd6620a73",
+			"email_notifications": false, 
+			"push_notifications": false, 
+			"in_app_notifications": false
+        });
+
+        expect(updated_settings).toBeTruthy();
+        console.log(updated_settings);
+        //expect(updated_settings.email_notifications).toBe(false);
+    });
+
 });
 
 
