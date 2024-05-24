@@ -14,7 +14,7 @@
 
 <script>
 import apiClient from '@/modules/ApiClient';
-import { checkToken, getUser, getUserName } from '@/modules/auth';
+import { checkToken, getUser } from '@/modules/auth';
 
 export default {
     data() {

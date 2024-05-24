@@ -108,6 +108,10 @@ class ApiClient {
         getAllPosts: (callback) => this.get(`${BASE_URL}:3001/post/getAllPosts`, callback),
         getPostsByAuthor: (callback) => this.get(`${BASE_URL}:3001/post/getPostsByAuthor?author_id=` + getUserId(), callback),
         createPost: (data, callback) => this.post(`${BASE_URL}:3001/post/createPost`, data, callback),
+        deletePost: (data, callback) => this.post(`${BASE_URL}:3001/post/deletePost`, data, callback),
+        // Reactions
+        react: (data, callback) => this.post(`${BASE_URL}:3001/reaction/createReaction`, data, callback),
+        deleteReaction: (data, callback) => this.post(`${BASE_URL}:3001/reaction/deleteReaction`, data, callback),
     }
 }
 
