@@ -6,10 +6,14 @@ import ContentBlockText from "@/components/main/ContentBlockText.vue";
 
 import ContentGrid from "@/components/main/page/ContentGrid.vue";
 import PostGrid from "@/components/main/page/PostGrid.vue";
-// import ModalChangeBanner from "@/components/main/modals/ModalChangeBanner.vue";
-// import ModalChangeAvatar from "@/components/main/modals/ModalChangeAvatar.vue";
+// Modals
+import ModalTemplate from "@/components/main/modals/ModalTemplate.vue";
+import ModalChangeBanner from "@/components/main/modals/ModalChangeBanner.vue";
+import ModalChangeAvatar from "@/components/main/modals/ModalChangeAvatar.vue";
 import ModalDeleteAccount from "@/components/main/modals/ModalDeleteAccount.vue";
 import ModalChangePassword from "@/components/main/modals/ModalChangePassword.vue";
+// Crop
+import { CircleStencil } from "vue-advanced-cropper";
 
 // Input
 import FormInput from '@/components/account/FormInput.vue';
@@ -30,10 +34,13 @@ import SingleIcon from "./main/buttons/SingleIcon.vue";
 import FilledIconButton from "./main/buttons/FilledIconButton.vue";
 import ContentStatsButton from "./main/buttons/ContentStatsButton.vue";
 import StrokeIconButton from "./main/buttons/StrokeIconButton.vue";
+import ModalButton from "./main/buttons/ModalButton.vue";
+import FileInputButton from "./main/buttons/FileInputButton.vue";
 // Profile
+import UserAvatar from "./profile/UserAvatar.vue";
 import ProfileBanner from "@/components/profile/ProfileBanner.vue";
 import PageHeader from "@/components/main/page/PageHeader.vue";
-import UserAvatar from "@/components/profile/UserAvatar.vue";
+import UserInfoBanner from "@/components/profile/UserInfoBanner.vue";
 import ProfileContent from "./profile/ProfileContent.vue";
 // Feed
 import FeedBlock from "./feed/FeedBlock.vue";
@@ -66,16 +73,20 @@ import MusicPreviewBlock from "./main/static_panel/content/music/MusicPreviewBlo
 import NotificationPreviewBlock from "./main/static_panel/content/notifications/NotificationPreviewBlock.vue";
 
 export default [
-    PageHeader, ContentGrid, PostGrid, ModalDeleteAccount, ModalChangePassword,//ModalChangeAvatar, ModalChangeBanner,
+    PageHeader, ContentGrid, PostGrid, 
+    // Modals
+    ModalTemplate, ModalDeleteAccount, ModalChangePassword, ModalChangeAvatar, ModalChangeBanner,
+    // Crop 
+    CircleStencil,
     FormBlock,
     ContentBlockTitle, ContentBlockText,
     BarChart, CalendarBlock,
     ContentBlock, FormInput, FormTextArea, AuthBlock, PasswordInput, EmailInput, NumberInput, DateInput, SubmitButton,
     TokenCheck,
     // Buttons
-    SingleIcon, IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton,
+    SingleIcon, IconButton, FilledIconButton, StrokeIconButton, ContentStatsButton, ModalButton, FileInputButton,
     // Profile
-    ProfileBanner, UserAvatar, ProfileContent,
+    UserAvatar, ProfileBanner, UserInfoBanner, ProfileContent,
     // Feed
     FeedBlock, FeedBlockTemplate, FeedBlockPost, FeedBlockMedia, FeedBlockMusic,
     // News

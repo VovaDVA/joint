@@ -1,6 +1,6 @@
 package com.jointProfile.connector;
 
-import com.jointProfile.bom.ProfileBom;
+import com.jointProfile.bom.profile.ProfileBom;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;

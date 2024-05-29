@@ -25,6 +25,7 @@ export default {
     },
     computed: {
         currentSectionComponent() {
+            // this.currentSection = 'chats';
             // Возвращаем компонент для текущего выбранного раздела
             switch (this.currentSection) {
                 case 'messenger':
@@ -45,6 +46,7 @@ export default {
         },
         onOpenChatList() {
             this.currentSection = 'chats';
+            this.emitter.emit('close-chat');
         }
     }
 }

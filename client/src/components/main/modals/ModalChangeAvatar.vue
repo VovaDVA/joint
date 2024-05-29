@@ -1,128 +1,141 @@
 <template>
-    <div class="modal-change-avatar">
-        <div class="window">
-            <div class="content">
-                <div class="head">
-                    Фотография на вашей странице
-                </div>
-                <icon-button icon-name="close"></icon-button>
-            </div>
-            <div class="content">
-                <div class="photo">
-                    <div class="square">
-
-                    </div>
-                </div>
-            </div>
-            <div class="buttons">
-                <div class="block">
-                    <div class="button" id="load">
-                        Загрузить фото
-                    </div>
-                    <div class="button">
-                        Сохранить
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="button" id="back">
-                        Назад
-                    </div>
-                </div>
-            </div>
+    <modal-template v-if="modal == 'load'">
+        <content-block-title>Изменение фотографии</content-block-title>
+        <content-block-text class="text">Загрузите вашу настоящую фотографию, чтобы пользователям было проще вас
+            узнать</content-block-text>
+        <div class="buttons">
+            <form enctype="multipart/form-data" @submit.prevent="loadImage">
+                <file-input-button @change="loadImage">Загрузить фото</file-input-button>
+            </form>
+            <modal-button class="cancel" @click="hideModal">Отмена</modal-button>
         </div>
-    </div>
+    </modal-template>
+    <modal-template v-if="modal == 'preview'">
+        <div class="header">
+            <div class="title">Аватар профиля</div>
+            <icon-button icon-name="close" @click="hideModal"></icon-button>
+        </div>
+        <cropper ref="cropper" class="photo" :src="url" :stencil-component="stencil" />
+        <div class="buttons">
+            <modal-button @click="confirmChange">Сохранить</modal-button>
+            <modal-button class="cancel" @click="returnToLoad">Назад</modal-button>
+        </div>
+    </modal-template>
 </template>
 
 <script>
+import { checkToken, getToken } from '@/modules/auth';
+import { CircleStencil, Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
+import 'vue-advanced-cropper/dist/theme.classic.css';
+
 export default {
+    components: {
+        Cropper
+    },
     name: 'modal-change-avatar',
     props: ['name'],
+    data() {
+        return {
+            modal: '',
+            url: 'https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+            stencil: CircleStencil,
+        }
+    },
+    mounted() {
+        this.emitter.on('request-change-avatar', () => {
+            this.modal = 'load';
+        });
+    },
+    methods: {
+        loadImage(e) {
+            const file = e.target.files[0];
+            this.file = file;
+            this.url = URL.createObjectURL(file);
+            this.modal = 'preview';
+        },
+        returnToLoad() {
+            this.modal = 'load';
+        },
+        hideModal() {
+            this.modal = '';
+        },
+        async confirmChange() {
+            const { canvas } = this.$refs.cropper.getResult();
+
+            if (canvas) {
+                const formData = new FormData();
+                canvas.toBlob(async (blob) => {
+                    formData.append('avatar', blob);
+
+                    const response = await fetch('/profile/update-avatar', {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + getToken(),
+                        },
+                        body: formData
+                    });
+
+                    console.log(response);
+                    if (response.ok) {
+                        await checkToken();
+                        this.hideModal();
+                        this.emitter.emit('confirm-change-avatar');
+                    }
+                });
+            }
+
+            // await apiClient.profile.updateAvatar(formData, () => {
+            //     console.log('avatar changed');
+            // })
+        }
+    }
 }
 </script>
 
 <style scoped>
-.modal-change-avatar {
+.header {
     display: flex;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.512);
-    border-radius: 15px;
-    transition: background .2s linear;
-    z-index: 200;
-}
-
-.window {
-    display: flex;
-    margin: auto;
-    border: 1px #ffffff2f solid;
-    background: rgb(36, 43, 54);
-    border-radius: 20px;
-    flex-direction: column;
-    padding: 5px;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .content {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin: 5px 10px 5px 10px;
-    font-size: 15px;
-
-
-}
-
-.head {
-    font-size: 15px;
-}
-
-.photo {
-    display: flex;
-    align-items: center;
-    height: 360px;
+    height: 400px;
     width: 400px;
     background-color: rgba(0, 0, 0, 0.437);
     border-radius: 15px;
 }
 
+.photo {
+    max-width: 600px;
+    max-height: 400px;
+    background: #444444;
+}
+
 .buttons {
     display: flex;
+    justify-content: center;
     align-items: center;
-    margin: 5px 10px 5px 10px;
-    font-size: 15px;
-    justify-content: space-between;
+    gap: 10px;
 }
 
-.block {
+.button-container {
     display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
-.button {
-    padding: 5px 10px 5px 10px;
-    margin: 5px;
-    border: 1px #ffffff2f solid;
-    border-radius: 100px;
-    background: rgb(238, 238, 238);
-    color: rgb(11, 10, 10);
+.text {
+    max-width: 500px;
+    text-align: center;
 }
 
-#back {
-
-    color: rgb(239, 237, 237);
-    background: rgb(66, 66, 76);
-    margin: 5px 0px 5px 50px;
-}
-
-#load {
-    margin: 5px 5px 5px 0px;
-}
-
-.square {
-    width: 300px;
-    height: 300px;
-    margin: auto;
-    border: 1px #adadad8a solid;
+form {
+    width: 100%;
+    max-width: 200px;
 }
 </style>

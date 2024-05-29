@@ -27,7 +27,7 @@
 			<password-input v-model="newPassword" data="Новый пароль">Новый пароль</password-input>
 			<input :class="$store.state.theme" type="submit" name="submit" value="Подтвердить">
 		</form>
-		<div class="lost-password recall" @click="resetForm = false">Вспомнили пароль?</div>
+		<div class="lost-password recall" @click="returnToLogin">Вспомнили пароль?</div>
 	</auth-block>
 
 	<auth-block v-if="form == 'two-factor'">
@@ -104,9 +104,13 @@ export default {
 				this.errorMessage = data['message'];
 			});
 		},
-		confirmLogin(data) {
-			saveToken(data['token']);
+		async confirmLogin(data) {
+			await saveToken(data['token']);
 			this.$router.push('/');
+		},
+		returnToLogin() {
+			this.resetForm = false;
+			this.errorMessage = '';
 		}
 	}
 };

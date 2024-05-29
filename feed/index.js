@@ -1,3 +1,5 @@
+const cors = require('cors');
+
 const mongoose = require('mongoose');
 const {MONGO_URI, PORT} = require('./config/index');
 const connectDB = require('./config/db');
@@ -6,6 +8,9 @@ const socketIO = require('socket.io');
 const sockets = require('./sockets');
 
 const app = require('./app');
+
+app.use(cors());
+
 const server = http.createServer(app);
 const io = socketIO(server);
 

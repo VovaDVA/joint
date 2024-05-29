@@ -1,7 +1,7 @@
 package com.jointProfile.service;
 
 import com.jointProfile.converter.ProfileConverter;
-import com.jointProfile.bom.ProfileBom;
+import com.jointProfile.bom.profile.ProfileBom;
 import com.jointProfile.entity.ProfileDTO;
 import com.jointProfile.entity.Profiles;
 import com.jointProfile.repository.ProfileRepository;
@@ -27,7 +27,7 @@ public class ProfileService {
     public ProfileBom updateProfile(Profiles currentProfile, ProfileDTO updatedProfile) {
 
         Profiles currentUpdatedProfile = profileRepository.findById(currentProfile.getId()).orElseThrow(() ->
-                new EntityNotFoundException("Profile not found"));
+                new EntityNotFoundException("Профиль не найден"));
 
         if (updatedProfile.getDescription() != null) {
             currentUpdatedProfile.setDescription(updatedProfile.getDescription());
@@ -45,23 +45,34 @@ public class ProfileService {
             currentUpdatedProfile.setPhone(updatedProfile.getPhone());
         }
 
-        currentProfile.setLastEdited(new Date());
+        currentUpdatedProfile.setLastEdited(new Date());
 
-        profileRepository.save(currentProfile);
+        Profiles finalUpdatedProfile = profileRepository.save(currentUpdatedProfile);
 
-        return ProfileConverter.converterToBom(currentProfile);
+        return ProfileConverter.converterToBom(finalUpdatedProfile);
     }
 
     public ProfileBom updateAvatar(MultipartFile avatar, Profiles profile) {
 
         // создание нового экзепляра объекта внутри метода
         Profiles currentProfile = profileRepository.findById(profile.getId()).orElseThrow(() ->
-                new EntityNotFoundException("Profile not found"));
+                new EntityNotFoundException("Профиль не найден"));
 
 
         // Проверка наличия загруженного файла
         if (avatar == null || avatar.isEmpty()) {
-            throw new IllegalArgumentException("Avatar file is missing or empty.");
+            throw new IllegalArgumentException("Файл аватара отсутствует или пуст.");
+        }
+
+        // Проверка, есть ли в профиле старая аватарка
+        String theOldAvatar = currentProfile.getAvatar();
+
+        try {
+            if (theOldAvatar != null && !theOldAvatar.isEmpty()) {
+                fileUploader.deleteFileFromServer(theOldAvatar, "avatars");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при удалении старого аватара.", e);
         }
 
         String fileNameOnServer = UUID.randomUUID() + ".jpg"; // каждый файл имеет свой UUID
@@ -77,7 +88,7 @@ public class ProfileService {
             return ProfileConverter.converterToBom(currentProfile);
         } catch (Exception e) {
             // Обработка других непредвиденных исключений
-            throw new RuntimeException("An error occurred while updating avatar.", e);
+            throw new RuntimeException("Ошибка при обновлении аватара.", e);
         }
 
     }
@@ -85,11 +96,22 @@ public class ProfileService {
     public ProfileBom updateBanner(MultipartFile banner, Profiles profile) {
         // создание нового экзепляра объекта внутри метода
         Profiles currentProfile = profileRepository.findById(profile.getId()).orElseThrow(() ->
-                new EntityNotFoundException("Profile not found"));
+                new EntityNotFoundException("Профиль не найден."));
 
         // Проверка наличия загруженного файла
         if (banner == null || banner.isEmpty()) {
-            throw new IllegalArgumentException("Banner file is missing or empty.");
+            throw new IllegalArgumentException("Файл баннера отсутствует или пуст.");
+        }
+
+        // Проверка, есть ли в профиле старый баннер
+        String theOldBanner = currentProfile.getBanner();
+
+        try {
+            if (theOldBanner != null && !theOldBanner.isEmpty()) {
+                fileUploader.deleteFileFromServer(theOldBanner, "banners");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при удалении старого баннера.", e);
         }
 
         String fileNameOnServer = UUID.randomUUID() + ".jpg";
@@ -105,11 +127,10 @@ public class ProfileService {
             return ProfileConverter.converterToBom(currentProfile);
         } catch (Exception e) {
             // Обработка других непредвиденных исключений
-            throw new RuntimeException("An error occurred while updating banner.", e);
+            throw new RuntimeException("Ошибка при обновлении баннера.", e);
         }
 
     }
-
 
 
 }

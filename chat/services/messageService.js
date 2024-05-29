@@ -1,10 +1,10 @@
 const Message = require('../models/message');
-//const Chat = require('../models/chat');
+const Chat = require('../models/chat');
 
 class messageService {
     constructor(Message, Chat){
         this.Message = Message;
-        //this.Chat = Chat;
+        // this.Chat = Chat;
     }
 
     async deleteMessage(message_id){
@@ -13,7 +13,7 @@ class messageService {
     }
 
     async editMessage(message_id, new_text){
-        const message = await Message.findByIdAndUpdate(message_id, {"text": new_text}, {new: true});
+        const message = await Message.findByIdAndUpdate(message_id, {"text": new_text, "edited": true}, {new: true});
         return message;
     }
 
@@ -31,6 +31,8 @@ class messageService {
             "text": data.text,
             "created_at": today
         });
+
+        await Chat.findByIdAndUpdate(data.chat_id, {"last_message": data.text, "last_message_at": today}, {new: true});
         
         await message.save();
         return message;

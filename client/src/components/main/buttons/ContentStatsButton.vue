@@ -3,7 +3,7 @@
         <div class="icon">
             <font-awesome-icon :icon="iconName" />
         </div>
-        <span class="icon-button-text">
+        <span v-if="textExists" class="icon-button-text">
             <slot></slot>
         </span>
     </div>
@@ -11,6 +11,7 @@
 
 <script>
 import { FontAwesomeIcon } from '@/fontawesome';
+import { useSlots } from 'vue';
 
 export default {
     name: 'content-stats-button',
@@ -22,6 +23,11 @@ export default {
             type: String, // Ожидаем строковое значение для имени иконки
             default: 'pen' // Значение по умолчанию
         }
+    },
+    methods: {
+        textExists() {
+            return !!useSlots();
+        }
     }
 }
 </script>
@@ -29,8 +35,9 @@ export default {
 <style scoped>
 .content-stats-button {
     display: flex;
+    gap: 10px;
     width: auto;
-    /* padding: 10px; */
+    padding: 10px;
     font-family: 'Montserrat';
     font-size: 15px;
     line-height: 15px;
@@ -49,10 +56,18 @@ export default {
     color: #000;
 }
 
+.content-stats-button.marked {
+    background-color: rgba(0, 140, 255, 0.747);
+}
+
 .content-stats-button:hover {
     color: black;
     background-color: white;
     transition: color, background .3s linear;
+}
+
+.content-stats-button.marked:hover {
+    color: rgba(0, 0, 0, 1);
 }
 
 .content-stats-button.light-theme:hover {
@@ -62,13 +77,15 @@ export default {
 
 .icon-button-text {
     white-space: nowrap;
-    margin-right: 10px;
+}
+
+.content-stats-button.marked {
+    color: #ffffff;
 }
 
 .icon {
     display: flex;
     justify-content: center;
-    margin: 10px;
     width: 15px;
     height: 15px;
 }

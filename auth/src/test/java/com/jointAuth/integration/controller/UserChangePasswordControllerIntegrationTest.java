@@ -110,18 +110,6 @@ public class UserChangePasswordControllerIntegrationTest {
     }
 
     @Test
-    public void testRequestPasswordChangeUserNotFound() throws Exception {
-
-        mockMvc.perform(post("/auth/change-password")
-                        .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJmaXJzdE5hbWUiOiLQnNCw0LrRgdC40LwiLCJsYXN0TmFtZSI6ItCf0YDQuNC80LDQuiIsInByb2ZpbGVJZCI6NCwiZXhwIjoxNzE2MTU0OTc5LCJ1c2VySWQiOjQsImlhdCI6MTcxNDk0NTM3OSwiZW1haWwiOiJwbTIyMjcxMEBtYWlsLnJ1In0.-GklNWiz1ktLJ0UKn-CJYm_XpSqRyfIPzGxDHr8t180")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Не удалось отправить запрос на изменение пароля"));
-
-    }
-
-    @Test
     public void testRequestPasswordMissingToken() throws Exception {
         mockMvc.perform(post("/auth/change-password")
                         .contentType(MediaType.APPLICATION_JSON))

@@ -7,19 +7,58 @@
                 <div class="description">{{ post.content }}</div>
             </div>
             <div class="feed-stats">
-                <content-stats-button icon-name="eye">1.4k</content-stats-button>
-                <content-stats-button icon-name="heart">15k</content-stats-button>
-                <content-stats-button icon-name="comment">234</content-stats-button>
-                <content-stats-button icon-name="share">93</content-stats-button>
+                <content-stats-button icon-name="eye"></content-stats-button>
+                <content-stats-button :class="{ marked: reacted }" icon-name="heart" @click="toggleReaction">{{
+                    (likes > 0) ? likes :
+                        null }}</content-stats-button>
+                <content-stats-button icon-name="comment">{{ (post.comments.length > 0) ? post.comments.length : null
+                    }}</content-stats-button>
+                <content-stats-button icon-name="share"></content-stats-button>
             </div>
         </div>
     </feed-block-template>
 </template>
 
 <script>
+import apiClient from '@/modules/ApiClient';
+import { getUserId } from '@/modules/auth';
+
 export default {
     name: 'feed-block-post',
-    props: ['post']
+    props: ['post'],
+    data() {
+        return {
+            reacted: false,
+            likes: this.post.likes.length,
+        }
+    },
+    mounted() {
+        const like = this.post.likes.find(userId => userId == getUserId());
+        if (like) {
+            this.reacted = true;
+        }
+    },
+    methods: {
+        async toggleReaction() {
+            if (this.reacted) {
+                await apiClient.content.deleteReaction({
+                    "post_id": this.post._id,
+                    "user_id": this.post.author_id
+                }, () => {
+                    this.reacted = false;
+                    this.likes--;
+                });
+            } else {
+                await apiClient.content.react({
+                    "post_id": this.post._id,
+                    "user_id": this.post.author_id
+                }, () => {
+                    this.reacted = true;
+                    this.likes++;
+                });
+            }
+        }
+    }
 }
 </script>
 
@@ -40,7 +79,7 @@ export default {
 .feed-preview {
     aspect-ratio: 16/9;
     border: 1px #ffffff4e solid;
-    border-radius: 20px;
+    border-radius: 10px;
     background: rgba(0, 0, 0, 0.5);
 }
 

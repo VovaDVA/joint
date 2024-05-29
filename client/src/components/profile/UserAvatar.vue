@@ -1,89 +1,68 @@
 <template>
-    <div class="user-info" :class="$store.state.theme">
-        <div class="avatar"></div>
-        <div class="user-info-text">
-            <div class="username">{{ getName() }}</div>
+    <div class="avatar-container">
+        <div class="avatar">
+            <img :src="photo || basePhoto" :onerror="onError">
         </div>
+        <slot></slot>
+        <div class="online-mark" :class="[{ active: isOnline || online }, $store.state.theme]"></div>
     </div>
 </template>
 
 <script>
-import { getUserName } from '@/modules/auth';
+// import { getUserAvatar } from '@/modules/auth';
 
 export default {
     name: 'user-avatar',
-    methods: {
-        getName() {
-            return getUserName();
+    props: ['photo', 'online'],
+    data() {
+        return {
+            basePhoto: require('@/assets/user.png'),
+            isOnline: false,
         }
+    },
+    onError() {
+        this.basePhoto = require('@/assets/user.png');
     }
 }
 </script>
 
 <style scoped>
-.user-info {
-    margin-left: -20px;
-    display: flex;
+.avatar-container {
+    position: relative;
+    height: 100%;
+    aspect-ratio: 1;
 }
 
 .avatar {
-    width: 5.5vw;
-    height: 5.5vw;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
 
-    margin-top: -2.75vw;
-    margin-left: 2.2vw;
-
-    border: 1px #ffffff7c solid;
+.avatar {
+    background: #555555;
     border-radius: 50%;
-
-    background: #555555 center no-repeat;
-    background-size: cover;
-    transition: background .3s linear;
+    overflow: hidden;
 }
 
-.user-info.light-theme {
-    color: #000;
+img {
+    width: 100%;
+    height: 100%;
 }
 
-.user-info.light-theme .avatar {
-    border: 1px #0000007c solid;
-    background: #a3a3a3 center no-repeat;
-    background-size: cover;
+.online-mark.active {
+    visibility: visible;
+    width: 15%;
+    height: 15%;
+    /* border: 2px #818181 solid; */
+    background: rgb(94, 255, 0);
+    border-radius: 50%;
 }
 
-.avatar:hover {
-    background-color: rgba(0, 0, 0, 1);
-    transition: background .3s linear;
-}
-
-.user-info-text {
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
-    margin-left: 10px;
-}
-
-
-@media (max-width: 1300px) {
-    .avatar {
-        width: 80px;
-        height: 80px;
-        margin-top: -40px;
-        margin-left: 50px;
-    }
-}
-
-
-@media (max-width: 800px) {
-    .avatar {
-        margin: auto;
-        margin-top: -40px;
-    }
-
-    .user-info {
-        margin: 0;
-        text-align: center;
-        flex-direction: column;
-    }
+.online-mark {
+    visibility: hidden;
+    position: absolute;
+    top: 78%;
+    left: 78%;
 }
 </style>

@@ -12,24 +12,24 @@
             <div class="nav" :class="{ 'active': isActive }">
                 <router-link to="/about" class="nav-item" :class="{ selected: selectedTab === 1 }"
                     @click="selectTab(1)">
-                    <div>О нас</div>
                     <div class="tab-circle"></div>
+                    <div>О нас</div>
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 2 }" @click="selectTab(2)">
-                    Новости
                     <div class="tab-circle"></div>
+                    Новости
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 3 }" @click="selectTab(3)">
-                    Сервисы
                     <div class="tab-circle"></div>
+                    Сервисы
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 4 }" @click="selectTab(4)">
-                    Сотрудничество
                     <div class="tab-circle"></div>
+                    Сотрудничество
                 </router-link>
                 <router-link to="/news" class="nav-item" :class="{ selected: selectedTab === 5 }" @click="selectTab(5)">
-                    Магазин
                     <div class="tab-circle"></div>
+                    Магазин
                 </router-link>
             </div>
 
@@ -46,12 +46,11 @@
                         <icon-button icon-name="right-from-bracket" @click="logoutUser()"></icon-button>
                     </div>
 
-                    <router-link to="/" class="username">{{ getName() }}</router-link>
+                    <router-link to="/" class="username">{{ username }}</router-link>
                 </div>
 
-                <router-link to="/" @click="changePage()">
-                    <div class="profile_photo" style="background: #555555 center no-repeat; background-size: cover">
-                    </div>
+                <router-link style="height: 45px;" to="/" @click="changePage()">
+                    <user-avatar :photo="avatar"></user-avatar>
                 </router-link>
             </div>
         </div>
@@ -59,7 +58,7 @@
 </template>
 
 <script>
-import { deleteSession, getUserName } from '../../../modules/auth';
+import { deleteSession, getUserAvatar, getUserName } from '../../../modules/auth';
 
 export default {
     name: 'page-header',
@@ -67,11 +66,22 @@ export default {
         return {
             selectedTab: null,
             isActive: false,
+            username: '',
+            avatar: ''
         }
+    },
+    mounted() {
+        this.username = getUserName();
+        this.avatar = getUserAvatar();
+
+        this.emitter.on('confirm-change-avatar', () => {
+            this.avatar = getUserAvatar();
+        });
     },
     methods: {
         changePage() {
             this.$store.commit('hideStaticPanel');
+            this.emitter.emit('close-chat');
         },
         selectTab(index) {
             this.selectedTab = index;
@@ -87,9 +97,6 @@ export default {
         changeTheme() {
             this.$store.commit('changeTheme');
         },
-        getName() {
-            return getUserName();
-        }
     }
 }
 </script>
@@ -160,6 +167,10 @@ export default {
     color: #000;
 }
 
+.header.light-theme .username:hover {
+    color: #d47800fd;
+}
+
 .header.light-theme .profile_photo {
     background: #b9b9b9 !important;
     border: 1px #000000 solid;
@@ -182,6 +193,7 @@ export default {
 
 .user_info {
     display: flex;
+    gap: 10px;
     align-items: center;
     z-index: 101;
 }
@@ -190,22 +202,12 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-right: 20px;
     text-align: right;
 }
 
 .user_icons {
     display: flex;
     justify-content: right;
-}
-
-.profile_photo {
-    width: 40px;
-    height: 40px;
-
-    background-color: #555555;
-    border: 1px #FFFFFF solid;
-    border-radius: 50%;
 }
 
 .username {
@@ -270,8 +272,9 @@ export default {
 
 .nav-item {
     display: flex;
-    flex-direction: column;
+    gap: 10px;
     justify-content: center;
+    align-items: center;
     padding: 0 15px;
 
     color: #FFFFFF;
@@ -301,7 +304,6 @@ export default {
     width: 10px;
     height: 10px;
     border-radius: 10px;
-    margin-top: 10px;
     background: #ffbf6c;
 }
 

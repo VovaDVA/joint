@@ -1,6 +1,6 @@
 package com.jointProfile.converter;
 
-import com.jointProfile.bom.ProfileBom;
+import com.jointProfile.bom.profile.ProfileBom;
 import com.jointProfile.entity.Profiles;
 
 import java.util.Date;

@@ -4,12 +4,20 @@ module.exports = defineConfig({
 	transpileDependencies: true,
 	devServer: {
 		port: 9000,
+		headers: { "Access-Control-Allow-Origin": "*" },
 		proxy: {
 			'/auth': {
 				target: 'http://localhost:8080',
 				changeOrigin: true,
 				pathRewrite: {
 					'^/auth': '/auth'
+				}
+			},
+			'/profile': {
+				target: 'http://localhost:8081',
+				changeOrigin: true,
+				pathRewrite: {
+					'^/profile': '/profile'
 				}
 			},
 			'/chat': {

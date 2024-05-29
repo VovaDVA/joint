@@ -1,9 +1,9 @@
 <template>
     <static-panel-header>
-        <messenger-action-icon icon-name="arrow-left" @click="openChatList"></messenger-action-icon>
-        <static-panel-search-bar></static-panel-search-bar>
+        <!-- <messenger-action-icon icon-name="arrow-left" @click="openChatList"></messenger-action-icon> -->
+        <!-- <static-panel-search-bar></static-panel-search-bar> -->
+        <chat-title :status="status" @close-chat="openChatList">{{ chatName }}</chat-title>
     </static-panel-header>
-    <chat-title :status="status">{{ chatName }}</chat-title>
     <static-panel-content>
         <div class="message-container">
             <single-message v-for="message in messages" :key="message._id" :message="message"
@@ -13,7 +13,7 @@
     <div class="chat-input" :class="$store.state.theme">
         <icon-button icon-name="paperclip"></icon-button>
         <input class="message-input" type="text" placeholder="Напишите сообщение..." v-model="newMessage"
-            @keyup.enter="sendMessage" @input="type()">
+            @keyup.enter="inputAction()" @input="type()">
         <icon-button icon-name="face-smile"></icon-button>
         <icon-button v-if="!messageEdited" class="right" icon-name="paper-plane" @click="sendMessage"></icon-button>
         <icon-button v-if="messageEdited" class="right" icon-name="check" @click="editMessage"></icon-button>
@@ -24,9 +24,9 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js";
 import apiClient from '@/modules/ApiClient';
 import { getUser, isUserIdEqual, getUserById } from '@/modules/auth';
-import { io } from 'socket.io-client';
 
 export default {
     props: ['chat'],
@@ -44,7 +44,8 @@ export default {
                 // },
             ],
             newMessage: '',
-            status: 'Был(а) в сети недавно',
+            isOnline: false,
+            status: this.getStatus(),
             typingTimeout: null,
             showMenu: false,
             menuTop: 0,
@@ -72,6 +73,7 @@ export default {
     async mounted() {
         const otherUserId = this.chat.members.find(id => isUserIdEqual(id));
         this.otherUser = await getUserById(otherUserId);
+
         if (this.otherUser) {
             this.chatName = this.otherUser.firstName + ' ' + this.otherUser.lastName;
         }
@@ -93,30 +95,41 @@ export default {
             console.error(error);
         }
 
-        this.socket = io('http://192.168.0.107:3000', {
-            query: {
-                chatId: this.chat._id
-            }
-        });
+        this.socket = this.$store.state.chatSocket;
+        this.socket.emit('joinChat', this.chat._id);
+
         this.socket.on('message', (message) => {
             this.messages.unshift(message);
         });
         this.socket.on('typing', () => {
-            this.status = 'Печатает...';
+            this.status = `${this.otherUser.firstName} печатает...`;
         });
         this.socket.on('stopTyping', () => {
-            this.status = 'Был(а) в сети недавно';
+            this.status = this.getStatus();
         });
+
+        this.showStatus(this.$store.state.onlineUsers, otherUserId);
+        this.socket.on('updateOnlineUsers', (onlineUsers) => this.showStatus(onlineUsers, otherUserId));
     },
     methods: {
-        sendMessage() {
-            const messageData = {
-                "chat_id": this.chat._id,
-                "sender_id": getUser().userId,
-                "text": this.newMessage,
+        inputAction() {
+            if (this.messageEdited) {
+                this.editMessage();
+            } else {
+                this.sendMessage();
             }
-            console.log(messageData);
+        },
+        sendMessage() {
             if (this.newMessage !== '') {
+                const encryptedMessage = CryptoJS.AES.encrypt(this.newMessage, 'secret').toString();
+
+                const messageData = {
+                    "chat_id": this.chat._id,
+                    "sender_id": getUser().userId,
+                    "text": encryptedMessage,
+                    "created_at": new Date()
+                }
+
                 this.socket.emit('sendMessage', messageData);
                 this.newMessage = '';
             }
@@ -139,10 +152,10 @@ export default {
         },
         type() {
             clearTimeout(this.typingTimeout);
-            this.socket.emit('typing');
+            this.socket.emit('typing', this.chat._id);
 
             this.typingTimeout = setTimeout(() => {
-                this.socket.emit('stopTyping');
+                this.socket.emit('stopTyping', this.chat._id);
             }, 1000);
         },
         selectMessage(message) {
@@ -167,6 +180,13 @@ export default {
                 window.removeEventListener('click', this.handleClickOutside);
             }
         },
+        getStatus() {
+            return this.isOnline ? 'В сети' : 'Был(а) в сети недавно';
+        },
+        showStatus(onlineUsers, userId) {
+            this.isOnline = userId in onlineUsers;
+            this.status = this.getStatus();
+        }
     }
 }
 </script>
@@ -249,5 +269,11 @@ export default {
 
 .icon-button {
     font-size: 20px;
+}
+
+@media (max-width: 380px) {
+    .message-input {
+        font-size: 14px;
+    }
 }
 </style>

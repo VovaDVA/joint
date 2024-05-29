@@ -14,7 +14,7 @@
 
 <script>
 import apiClient from '@/modules/ApiClient';
-import { checkToken, getUser, getUserName } from '@/modules/auth';
+import { checkToken, getUser } from '@/modules/auth';
 
 export default {
     data() {
@@ -34,7 +34,6 @@ export default {
 
             await apiClient.content.createPost({
                 author_id: getUser().userId,
-                author_name: getUserName(),
                 title: this.title,
                 content: this.content
             }, () => this.$router.push('/'));
