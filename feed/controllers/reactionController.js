@@ -24,7 +24,7 @@ class reactionController {
             const reaction = await reactionService.getReactionById(reaction_id);
     
             if (!reaction) {
-                return res.status(404).json("Reaction not found");
+                return res.status(404).json({message: "Reaction not found"});
             }
     
             return res.status(200).json(reaction);
@@ -40,7 +40,7 @@ class reactionController {
             const reaction = await reactionService.getReactionByUser(user_id);
 
             if (!reaction) {
-                return res.status(404).json("Reaction not found");
+                return res.status(404).json({message: "Reaction not found"});
             } 
 
             return res.status(200).json(reaction);
@@ -56,7 +56,7 @@ class reactionController {
             const postId = req.query.post_id;
 
             if (!await reactionService.getReactionById(reactionId)) {
-                return res.status(404).json("Reaction not found");
+                return res.status(404).json({message: "Reaction not found"});
             }
 
             const post = await postService.getPostById(postId);

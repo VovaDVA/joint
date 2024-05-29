@@ -1,10 +1,13 @@
 const postService = require('../services/postService');
+const Comment = require('../models/comment');
+const Reaction = require('../models/reaction');
 
 class postController {
 	constructor(postService) {
 		this.postService = postService;
 	}
 
+	
 	async createPost(req, res) {
 		try {
 			const data = req.body;
@@ -35,7 +38,7 @@ class postController {
 	async getPostsByAuthor(req, res) {
 		try {
 			const author_id = req.query.author_id;
-			const posts = await postService.getPostsByAuthor(author_id);
+			const posts = await postService.getPostsByAuthor(author_id);			
 			return res.status(200).json(posts);
 		}
 		catch (error) {
@@ -72,23 +75,17 @@ class postController {
 	async deletePost(req, res) {
 		try {
 			const postId = req.query.id;
-			const Post = await postService.getPostById(postId);
-
-			if (!Post) {
-				return res.status(404).json({ message: "Post not found" });
+			const post1 = await postService.getPostById(postId);
+			
+			if (!post1) {
+				return res.status(404).json({message: "Post not found"});
 			}
 
-			const comments_id = Post.comments;
-			const likes_auth_id = Post.likes;
+			const comments_id = post1.comments;
+			const likes_auth_id = post1.likes;
 
-			for (let i in comments_id) {
-				await commentService.deleteComment(comments_id[i]);
-			}
-
-			for (let i in likes_auth_id) {
-				const reaction = await reactionService.getReactionByUser(likes_auth_id[i]);
-				await reactionService.deleteReaction(reaction._id);
-			}
+			await Comment.deleteMany({"post_id": post1._id})
+			await Reaction.deleteMany({"post_id": post1._id})
 
 			const post = await postService.deletePost(postId);
 			return res.status(200).json(post);
