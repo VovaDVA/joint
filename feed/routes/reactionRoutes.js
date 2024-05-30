@@ -5,6 +5,6 @@ const reactionController = require('../controllers/reactionController');
 router.post('/createReaction', reactionController.createReaction);
 router.get('/getReaction', reactionController.getReactionById);
 router.get('/getReactionByUser', reactionController.getReactionByUser);
-router.get('/deleteReaction', reactionController.deleteReaction);
+router.post('/deleteReaction', reactionController.deleteReaction);
 
 module.exports = router;

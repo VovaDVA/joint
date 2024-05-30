@@ -7,7 +7,7 @@
     </div>
     <div v-if="!postDeleted" class="feed-block" :class="$store.state.theme">
         <div class="header">
-            <div class="header-user">
+            <div class="header-user" @click="goToProfile">
                 <user-avatar :photo="avatar"></user-avatar>
                 <div class="author">
                     <div class="username">{{ post ? this.author : '-' }}</div>
@@ -18,13 +18,13 @@
             <icon-button class="date toggle" icon-name="ellipsis-vertical" @click="toggleMenu"></icon-button>
         </div>
         <slot></slot>
-        <div v-if="menuVisible && profile" class="menu" :class="$store.state.theme">
+        <div v-if="menuVisible && profile && isProfilePage()" class="menu" :class="$store.state.theme">
             <div class="menu-item">В избранное</div>
             <div class="menu-item">Закрепить</div>
             <div class="menu-item">Редактировать</div>
             <div class="menu-item red" @click="deletePost">Удалить</div>
         </div>
-        <div v-if="menuVisible && !profile" class="menu" :class="$store.state.theme">
+        <div v-if="menuVisible && (!isProfilePage() || !profile)" class="menu" :class="$store.state.theme">
             <div class="menu-item">В избранное</div>
             <div class="menu-item">Скрыть</div>
             <div class="menu-item">Пожаловаться</div>
@@ -43,12 +43,14 @@ export default {
         return {
             avatar: '',
             menuVisible: false,
-            profile: this.post.author_id == getUserId(),
+            profile: false,
             postDeleted: false,
         }
     },
     async mounted() {
         if (this.post) {
+            this.profile = this.post.author_id == getUserId();
+
             const user = await getUserById(this.post.author_id);
             this.avatar = user.avatar;
             this.author = user.firstName + ' ' + user.lastName;
@@ -62,10 +64,22 @@ export default {
                 this.postDeleted = true;
             });
         },
+        showMenu() {
+            this.menuVisible = true;
+        },
+        hideMenu() {
+            this.menuVisible = false;
+        },
         toggleMenu() {
             this.menuVisible = !this.menuVisible;
+        },
+        isProfilePage() {
+            return this.$route.path == '/';
+        },
+        goToProfile() {
+            this.$router.push('/');
         }
-    } 
+    }
 }
 </script>
 
@@ -89,7 +103,8 @@ export default {
     color: #000;
 }
 
-.header, .header-user {
+.header,
+.header-user {
     height: 45px;
     display: flex;
     gap: 10px;
@@ -97,6 +112,22 @@ export default {
 
 .header {
     justify-content: space-between;
+}
+
+.header-user {
+    padding-right: 20px;
+    border-radius: 50px;
+    transition: background .2s linear;
+}
+
+.header-user:hover {
+    cursor: pointer;
+    background: #ffffff1f;
+    transition: background .2s linear;
+}
+
+.feed-block.light-theme .header-user:hover {
+    background: #0000001f;
 }
 
 .author {
@@ -173,8 +204,10 @@ export default {
     font-size: 30px;
 }
 
+
 @media (max-width: 500px) {
-    .header, .header-user {
+    .header,
+    .header-user {
         height: 40px;
     }
 

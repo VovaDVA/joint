@@ -112,6 +112,10 @@ class ApiClient {
         // Reactions
         react: (data, callback) => this.post(`${BASE_URL}:3001/reaction/createReaction`, data, callback),
         deleteReaction: (data, callback) => this.post(`${BASE_URL}:3001/reaction/deleteReaction`, data, callback),
+        // Comments
+        getPostComments: (callback, postId) => this.get(`${BASE_URL}:3001/comment/getPostComments?postId=${postId}`, callback),
+        comment: (data, callback) => this.post(`${BASE_URL}:3001/comment/createComment`, data, callback),
+        deleteComment: (data, callback) => this.post(`${BASE_URL}:3001/comment/deleteComment`, data, callback),
     }
 }
 

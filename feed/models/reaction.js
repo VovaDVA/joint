@@ -7,7 +7,7 @@ const reactionSchema = new mongoose.Schema({
     required: true
   },
   user_id : {
-    type: String,
+    type: Number,
     required: true
   },
   created_at: {

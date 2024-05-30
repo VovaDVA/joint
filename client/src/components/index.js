@@ -48,6 +48,7 @@ import FeedBlockTemplate from "./feed/FeedBlockTemplate.vue";
 import FeedBlockPost from "./feed/FeedBlockPost.vue";
 import FeedBlockMedia from "./feed/FeedBlockMedia.vue";
 import FeedBlockMusic from "@/components/feed/FeedBlockMusic.vue";
+import PostComment from "@/components/feed/PostComment.vue";
 // News
 import NewsBlock from "@/components/news/NewsBlock.vue";
 // Static Panel
@@ -88,7 +89,7 @@ export default [
     // Profile
     UserAvatar, ProfileBanner, UserInfoBanner, ProfileContent,
     // Feed
-    FeedBlock, FeedBlockTemplate, FeedBlockPost, FeedBlockMedia, FeedBlockMusic,
+    FeedBlock, FeedBlockTemplate, FeedBlockPost, FeedBlockMedia, FeedBlockMusic, PostComment,
     // News
     NewsBlock,
     // Static Panel
