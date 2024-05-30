@@ -7,6 +7,7 @@ class postController {
 		this.postService = postService;
 	}
 
+	
 	async createPost(req, res) {
 		try {
 			const data = req.body;
@@ -37,7 +38,7 @@ class postController {
 	async getPostsByAuthor(req, res) {
 		try {
 			const author_id = req.query.author_id;
-			const posts = await postService.getPostsByAuthor(author_id);
+			const posts = await postService.getPostsByAuthor(author_id);			
 			return res.status(200).json(posts);
 		}
 		catch (error) {

@@ -66,10 +66,10 @@ class commentController {
 
     async editComment(req, res) {
         try {
-            const {comment_id, post_id, content} = req.body;
+            const {comment_id, content} = req.body;
 
-            if (!await postService.getPostById(post_id)) {
-				return res.status(404).json({message: "Post not found"});
+            if (!await commentService.getCommentById(comment_id)) {
+				return res.status(404).json({message: "Comment not found"});
 			}
 
             const comment = await commentService.editComment(comment_id, content);
