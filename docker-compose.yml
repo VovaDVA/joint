@@ -1,4 +1,13 @@
 services:
+  client:
+      container_name: joint_client
+      image: joint_client:test
+      build: ./client
+      ports:
+        - "9000:80"
+      networks:
+        - joint_net
+
   account_postgres:
     container_name: joint_account_db
     image: postgres
