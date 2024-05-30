@@ -1,3 +1,5 @@
+import { BASE_URL } from "./ApiClient";
+
 export async function saveToken(token) {
     localStorage.setItem('jwtToken', token);
     await isTokenValid(token);
@@ -26,7 +28,7 @@ export async function checkToken() {
 
 async function isTokenValid(token) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/auth/user', {
+        const response = await fetch(`http://${BASE_URL}:8080/auth/user`, {
             headers: {
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'  // Пример добавления других заголовков
@@ -108,7 +110,7 @@ export function deleteSession() {
 
 export async function getUserById(userId) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/auth/user/get?userId=' + userId, {
+        const response = await fetch(`http://${BASE_URL}:8080/auth/user/get?userId=` + userId, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + getToken(),
