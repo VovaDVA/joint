@@ -1,4 +1,6 @@
 const postService = require('../services/postService');
+const reactionService = require('../services/reactionService');
+const commentService = require('../services/commentService');
 
 class postController {
 	constructor(postService) {
@@ -71,26 +73,25 @@ class postController {
 
 	async deletePost(req, res) {
 		try {
-			const postId = req.query.id;
-			const Post = await postService.getPostById(postId);
+			const postId = req.body.postId;
+			const post = await postService.getPostById(postId);
 
-			if (!Post) {
+			if (!post) {
 				return res.status(404).json({ message: "Post not found" });
 			}
 
-			const comments_id = Post.comments;
-			const likes_auth_id = Post.likes;
+			const comments = post.comments;
+			const likes = post.likes;
 
-			for (let i in comments_id) {
-				await commentService.deleteComment(comments_id[i]);
-			}
+			comments.forEach( async (userId) => {
+				await commentService.deleteComment(userId);
+			});
+			
+			likes.forEach( async (userId) => {
+				await reactionService.deleteReaction(userId);
+			});
 
-			for (let i in likes_auth_id) {
-				const reaction = await reactionService.getReactionByUser(likes_auth_id[i]);
-				await reactionService.deleteReaction(reaction._id);
-			}
-
-			const post = await postService.deletePost(postId);
+			await postService.deletePost(postId);
 			return res.status(200).json(post);
 		}
 		catch (error) {

@@ -18,7 +18,7 @@ const postSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  likes: [String],
+  likes: [Number],
   comments: [ObjectId]
 });
 

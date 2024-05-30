@@ -5,11 +5,11 @@ class reactionService {
         this.Reaction = Reaction;
     }
 
-    async createReaction(post_id, user_id) {
+    async createReaction(data) {
         const date = new Date();
         const reaction = new Reaction({
-            "post_id": post_id,
-            "user_id": user_id,
+            "post_id": data.post_id,
+            "user_id": data.user_id,
             "created_at": date
         })
         await reaction.save();
@@ -24,8 +24,8 @@ class reactionService {
         return await Reaction.findOne({"user_id": userId});
     }
 
-    async deleteReaction(reactionId) {
-        return await Reaction.findByIdAndDelete(reactionId);
+    async deleteReaction(userId) {
+        return await Reaction.findOneAndDelete({"user_id": userId});
     }
 }
 

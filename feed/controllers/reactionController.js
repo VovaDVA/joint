@@ -8,9 +8,9 @@ class reactionController {
 
     async createReaction(req, res) {
         try {
-            const {post_id, user_id} = req.body;
-            const reaction = await reactionService.createReaction(post_id, user_id);
-            const post = await postService.newLike(post_id, user_id)
+            const data = req.body;
+            const reaction = await reactionService.createReaction(data);
+            const post = await postService.newLike(data.post_id, data.user_id)
             return res.status(201).json(reaction);
         }
         catch (error) {
@@ -52,18 +52,19 @@ class reactionController {
 
     async deleteReaction(req, res) {
         try {
-            const reactionId = req.query.id;
-            const postId = req.query.post_id;
+            const data = req.body;
 
-            if (!await reactionService.getReactionById(reactionId)) {
+            if (!await reactionService.getReactionByUser(data.user_id)) {
                 return res.status(404).json("Reaction not found");
             }
 
-            const post = await postService.getPostById(postId);
-            const reaction_index = post.likes.indexOf(reactionId);
+            console.log(data);
+
+            const post = await postService.getPostById(data.post_id);
+            const reaction_index = post.likes.indexOf(data.user_id);
             post.likes.splice(reaction_index, 1);
             await post.save();
-            const reaction = await reactionService.deleteReaction(reactionId);
+            const reaction = await reactionService.deleteReaction(data.user_id);
             return res.status(200).json(reaction);
         }
         catch (error) {

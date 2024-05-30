@@ -36,7 +36,7 @@
     </div>
     <div class="icon-container profile" v-if="isProfilePage">
         <router-link to="/post-creation">
-            <filled-icon-button icon-name="plus">Об авторе</filled-icon-button>
+            <filled-icon-button icon-name="plus">Создать пост</filled-icon-button>
         </router-link>
         <router-link to="/">
             <filled-icon-button icon-name="user">Об авторе</filled-icon-button>

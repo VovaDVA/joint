@@ -8,10 +8,29 @@ class commentController {
 
     async createComment(req, res) {
         try {
-            const {post_id, author_id, content} = req.body;
-            const comment = await commentService.createComment(post_id, author_id, content);
-            const post = await postService.newComment(post_id, comment._id)
+            const data = req.body;
+            console.log(data);
+            const comment = await commentService.createComment(data);
+            await postService.newComment(data.post_id, comment._id)
             return res.status(201).json(comment);
+        }
+        catch (error) {
+            return res.status(500).json({message: error.message});
+        }
+    }
+
+    async getPostComments(req, res) {
+        try {
+            const postId = req.query.postId;
+            const post = await postService.getPostById(postId);
+
+            if (!post) {
+                return res.status(404).json({message: "Post not found"});
+            }
+
+            const comments =  await commentService.getPostComments(postId);
+
+            return res.status(200).json(comments);
         }
         catch (error) {
             return res.status(500).json({message: error.message});
