@@ -83,6 +83,7 @@ export default {
 }
 
 .banner-ad {
+    display: block !important;
     flex: 1;
     aspect-ratio: 2;
     border: 1px #ffffff7c solid;

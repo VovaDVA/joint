@@ -20,9 +20,12 @@
         </form>
 
         <div class="toggle-wrapper">
-            <input name="terms" id="terms" type="checkbox" v-model="twoFactorEnabled" :value="user.twoFactorEnabled">
-            <label for="terms">Включить двухфакторнуй аутентификацию</label>
-        <submit-button data="Включить" @click="toggleTwoFactorAuth"></submit-button>
+            <div>
+                <input name="terms" id="terms" type="checkbox" v-model="twoFactorEnabled"
+                    :value="user.twoFactorEnabled">
+                <label for="terms">Включить двухфакторнуй аутентификацию</label>
+            </div>
+            <submit-button data="Включить" @click="toggleTwoFactorAuth"></submit-button>
         </div>
         <submit-button class="submit" data="Сохранить"></submit-button>
         <div class="text-button-container" :class="$store.state.theme">
@@ -84,6 +87,8 @@ export default {
 
 .toggle-wrapper {
     display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
     margin-left: 20px;
     text-align: left;
 }
