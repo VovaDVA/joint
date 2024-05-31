@@ -299,7 +299,6 @@ export default {
 }
 
 .tab-circle {
-    margin: 0 auto;
     display: none;
     width: 10px;
     height: 10px;

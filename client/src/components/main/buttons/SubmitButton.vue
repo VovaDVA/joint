@@ -13,7 +13,6 @@ export default {
 
 <style scoped>
 input {
-    margin: 0 15px;
     padding: 5px 30px;
 
     border: 1px #ffffff solid;

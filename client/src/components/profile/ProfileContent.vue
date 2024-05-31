@@ -1,8 +1,7 @@
 <template>
     <div class='profile-content'>
         <router-view></router-view>
-        <div class="profile-inner">
-        </div>
+        <div class="profile-inner"></div>
     </div>
 </template>
 
