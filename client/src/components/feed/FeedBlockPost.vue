@@ -7,14 +7,19 @@
                 <div class="description">{{ post.content }}</div>
             </div>
             <div class="feed-stats">
-                <content-stats-button icon-name="eye"></content-stats-button>
-                <content-stats-button :class="{ marked: reacted }" icon-name="heart" @click="toggleReaction">{{
-                    (likes > 0) ? likes :
-                        null }}</content-stats-button>
-                <content-stats-button icon-name="comment" @click="toggleComments">{{ (post.comments.length > 0) ?
-                    post.comments.length : null
-                    }}</content-stats-button>
-                <content-stats-button icon-name="share"></content-stats-button>
+                <div class="stats">
+                    <content-stats-button :class="{ marked: reacted }" icon-name="heart" @click="toggleReaction">{{
+                        (likes > 0) ? likes :
+                            null }}</content-stats-button>
+                    <content-stats-button icon-name="comment" @click="toggleComments">{{ (post.comments.length > 0) ?
+                        post.comments.length : null
+                        }}</content-stats-button>
+                    <content-stats-button icon-name="share"></content-stats-button>
+                </div>
+                <div class="views">
+                    <single-icon icon-name="eye"></single-icon>
+                    <div>0</div>
+                </div>
             </div>
         </div>
         <div v-if="commentVisible">
@@ -29,7 +34,7 @@
                 </div>
             </div>
             <div class="comments">
-                <post-comment v-for="comment in comments" :key="comment._id" :post="post">{{ comment.content }}</post-comment>
+                <post-comment v-for="comment in comments" :key="comment._id" :comment="comment"></post-comment>
             </div>
         </div>
     </feed-block-template>
@@ -147,12 +152,26 @@ export default {
 
 .feed-stats {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 10px;
 }
 
-.feed-stats-container.cost * {
-    width: 100%;
-    margin-bottom: 0;
+.stats {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.views {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff7c;
+}
+
+.feed-block.light-theme .views {
+    color: #0000007c;
 }
 
 .comments {

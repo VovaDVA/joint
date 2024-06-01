@@ -178,7 +178,7 @@ export default {
 
 .menu-item {
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 7px;
     transition: background .2s linear;
 }
 

@@ -64,6 +64,7 @@ export default {
     color: black;
     background-color: white;
     transition: color, background .3s linear;
+    cursor: pointer;
 }
 
 .content-stats-button.marked:hover {
