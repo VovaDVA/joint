@@ -1,5 +1,4 @@
-module.exports = {
-    PORT: process.env.PORT || 3001,
-    MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/joint_feed'
-};
+const db = require("./db")
+const PORT = process.env.PORT || 3001;
 
+module.exports = {db, PORT};
