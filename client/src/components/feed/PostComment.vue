@@ -1,13 +1,12 @@
 <template>
-    <div class="post-comment">
+    <div class="post-comment" :class="$store.state.theme">
         <div class="avatar">
             <user-avatar></user-avatar>
         </div>
         <div class="user-info">
-            <div class="username" :class="$store.state.theme">{{ username }}</div>
-            <div class="comment">
-                <slot></slot>
-            </div>
+            <div class="username">{{ username }}</div>
+            <div class="comment">{{ comment.content }}</div>
+            <div class="date">{{ $formatDate(comment.created_at) }}</div>
         </div>
     </div>
 </template>
@@ -17,15 +16,15 @@ import { getUserById } from '@/modules/auth';
 
 export default {
     name: 'post-comment',
-    props: ['post'],
+    props: ['comment'],
     data() {
         return {
             username: '-'
         }
     },
     async mounted() {
-        if (this.post) {
-            const user = await getUserById(this.post.author_id);
+        if (this.comment) {
+            const user = await getUserById(this.comment.author_id);
             this.username = user.firstName + ' ' + user.lastName;
         }
     }
@@ -49,7 +48,7 @@ export default {
     color: #ffbf6c;
 }
 
-.username.light-theme {
+.post-comment.light-theme .username {
     color: #af5d00;
 }
 
@@ -59,5 +58,14 @@ export default {
 
 .comment {
     font-size: 13px;
+}
+
+.date {
+    font-size: 12px;
+    color: #ffffff7c;
+}
+
+.post-comment.light-theme .date {
+    color: #0000007c;
 }
 </style>
