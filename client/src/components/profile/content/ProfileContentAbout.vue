@@ -1,9 +1,7 @@
 <template>
     <content-block>
         <content-block-title>Об авторе</content-block-title>
-        <content-block-text>{{ getDescription() }}
-            <p>Меня зовут Владимир и я занимаюсь разработкой соцсети Joint.</p>
-        </content-block-text>
+        <content-block-text>{{ getDescription() }}</content-block-text>
     </content-block>
     <post-grid>
         <feed-block-post v-for="post in posts" :key="post._id" :post="post"></feed-block-post>

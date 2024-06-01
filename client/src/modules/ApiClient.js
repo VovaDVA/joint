@@ -92,6 +92,7 @@ class ApiClient {
     }
 
     profile = {
+        update: (data, callback, errorCallback) => this.put('/profile/update', data, callback, errorCallback),
         updateAvatar: (data, callback, errorCallback) => this.put('/profile/update-avatar', data, callback, errorCallback),
     }
 
