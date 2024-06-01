@@ -21,3 +21,7 @@ export const formatTime = (dateString) => {
     const formattedTime = `${hours}:${minutes}`;
     return formattedTime;
 }
+
+export const isSpaceString = (str) => {
+    return !str.trim();
+}

@@ -43,6 +43,7 @@
 <script>
 import apiClient from '@/modules/ApiClient';
 import { getUserId } from '@/modules/auth';
+import { isSpaceString } from '@/modules/utils';
 
 export default {
     name: 'feed-block-post',
@@ -91,6 +92,8 @@ export default {
             }
         },
         async sendComment() {
+            if (isSpaceString(this.newComment)) return;
+    
             await apiClient.content.comment({
                 "post_id": this.post._id,
                 "author_id": this.post.author_id,

@@ -4,17 +4,17 @@
         <content-block-title>Настройки</content-block-title>
 
         <form class="settings-form" enctype="multipart/form-data">
-            <form-text-area class="full-width" v-model="firstName" :value="user.description"
+            <form-text-area class="full-width" v-model="user.description" :value="user.description"
                 :data="'Расскажите о себе...'">Краткая информация</form-text-area>
             <post-grid>
-                <form-input v-model="firstName" :value="user.firstName">Имя</form-input>
-                <form-input v-model="firstName" :value="user.lastName">Фамилия</form-input>
-                <form-input v-model="firstName" :value="user.birthday">Пол</form-input>
-                <date-input v-model="firstName" :value="user.birthday">Дата рождения</date-input>
-                <form-input v-model="firstName" :value="user.country" data="Укажите страну">Страна</form-input>
-                <form-input v-model="firstName" :value="user.city" data="Укажите город">Город</form-input>
-                <email-input v-model="firstName" :data="user.email" style="pointer-events: none;">Почта</email-input>
-                <password-input class="password" v-model="firstName" data="**********"
+                <form-input v-model="user.firstName" :value="user.firstName">Имя</form-input>
+                <form-input v-model="user.lastName" :value="user.lastName">Фамилия</form-input>
+                <form-input v-model="user.birthday" :value="user.birthday">Пол</form-input>
+                <date-input v-model="user.birthday" :value="user.birthday">Дата рождения</date-input>
+                <form-input v-model="user.country" :value="user.country" data="Укажите страну">Страна</form-input>
+                <form-input v-model="user.city" :value="user.city" data="Укажите город">Город</form-input>
+                <email-input v-model="user.email" :data="user.email" style="pointer-events: none;">Почта</email-input>
+                <password-input class="password" v-model="user.password" data="**********"
                     style="pointer-events: none;">Пароль</password-input>
             </post-grid>
         </form>
@@ -27,7 +27,7 @@
             </div>
             <submit-button data="Включить" @click="toggleTwoFactorAuth"></submit-button>
         </div>
-        <submit-button class="submit" data="Сохранить"></submit-button>
+        <submit-button class="submit" data="Сохранить" @click="updateData"></submit-button>
         <div class="text-button-container" :class="$store.state.theme">
             <div class="text-button" @click="changePasswordRequest">Изменить пароль</div>
             <div class="text-button delete" @click="deleteAccountRequest">Удалить аккаунт</div>
@@ -37,11 +37,16 @@
 
 <script>
 import apiClient from '@/modules/ApiClient';
-import { getUser } from '@/modules/auth';
+import { checkToken, getUser } from '@/modules/auth';
 export default {
     data() {
         return {
             user: {},
+            description: '',
+            birthday: '',
+            country: '',
+            city: '',
+            phone: '',
             twoFactorEnabled: false
         }
     },
@@ -58,10 +63,21 @@ export default {
         async toggleTwoFactorAuth() {
             const enabled = this.twoFactorEnabled;
             if (enabled) {
-                apiClient.auth.enableTwoFactorAuth();
+                await apiClient.auth.enableTwoFactorAuth();
             } else {
-                apiClient.auth.disableTwoFactorAuth();
+                await apiClient.auth.disableTwoFactorAuth();
             }
+        },
+        async updateData() {
+            await apiClient.profile.update({
+                description: this.user.description,
+                birthday: this.user.birthday,
+                country: this.user.country,
+                city: this.user.city,
+                phone: this.user.phone ?? ''
+            }, () => {
+                checkToken();
+            });
         }
     }
 }
