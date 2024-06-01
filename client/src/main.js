@@ -14,6 +14,7 @@ const app = createApp(App);
 
 import { formatDate } from '@/modules/utils';
 import { io } from 'socket.io-client';
+import { BASE_URL } from './modules/ApiClient';
 app.config.globalProperties.$formatDate = formatDate;
 
 const store = createStore({
@@ -21,7 +22,7 @@ const store = createStore({
         return {
             staticPanelVisible: false,
             theme: localStorage.getItem('ui_theme') ?? 'light-theme',
-            chatSocket: io('http://192.168.0.107:3000'),
+            chatSocket: io(`http://${BASE_URL}:3000`),
             onlineUsers: {}
         }
     },
