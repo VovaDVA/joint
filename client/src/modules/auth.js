@@ -28,7 +28,7 @@ export async function checkToken() {
 
 async function isTokenValid(token) {
     try {
-        const response = await fetch(`http://${BASE_URL}:8080/auth/user`, {
+        const response = await fetch(`${BASE_URL}:8080/auth/user`, {
             headers: {
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'  // Пример добавления других заголовков
@@ -110,7 +110,7 @@ export function deleteSession() {
 
 export async function getUserById(userId) {
     try {
-        const response = await fetch(`http://${BASE_URL}:8080/auth/user/get?userId=` + userId, {
+        const response = await fetch(`${BASE_URL}:8080/auth/user/get?userId=` + userId, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + getToken(),

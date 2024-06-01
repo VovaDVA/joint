@@ -1,22 +1,18 @@
-const cors = require('cors');
-
-const mongoose = require('mongoose');
-const {MONGO_URI, PORT} = require('./config/index');
-const connectDB = require('./config/db');
-const http = require('http');
-const socketIO = require('socket.io');
-const sockets = require('./sockets');
-
 const app = require('./app');
-
-app.use(cors());
-
+const http = require('http');
 const server = http.createServer(app);
-const io = socketIO(server);
+const sockets = require('./sockets');
+const { db, PORT } = require('./config');
+const { Server } = require("socket.io");
 
-connectDB(); 
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  }
+});
 
 sockets(io);
+db.connectDB();
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
