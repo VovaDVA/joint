@@ -10,7 +10,7 @@
             <div class="header-user" @click="goToProfile">
                 <user-avatar :photo="avatar"></user-avatar>
                 <div class="author">
-                    <div class="username">{{ post ? this.author : '-' }}</div>
+                    <div class="username">{{ author }}</div>
                     <div class="date">{{ post ? $formatDate(post.created_at) : '-' }}</div>
                 </div>
             </div>
@@ -45,15 +45,20 @@ export default {
             menuVisible: false,
             profile: false,
             postDeleted: false,
+            author: '-'
         }
     },
     async mounted() {
         if (this.post) {
             this.profile = this.post.author_id == getUserId();
 
-            const user = await getUserById(this.post.author_id);
-            this.avatar = user.avatar;
-            this.author = user.firstName + ' ' + user.lastName;
+            try {
+                const user = await getUserById(this.post.author_id);
+                this.avatar = user.avatar;
+                this.author = user.firstName + ' ' + user.lastName;
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
         }
     },
     methods: {
@@ -206,6 +211,7 @@ export default {
 
 
 @media (max-width: 500px) {
+
     .header,
     .header-user {
         height: 40px;
