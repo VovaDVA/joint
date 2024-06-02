@@ -32,9 +32,18 @@ public class ProfileService {
         if (updatedProfile.getDescription() != null) {
             currentUpdatedProfile.setDescription(updatedProfile.getDescription());
         }
+
         if (updatedProfile.getBirthday() != null) {
-            currentUpdatedProfile.setBirthday(updatedProfile.getBirthday());
+            String birthdayStr = updatedProfile.getBirthday();
+            String pattern = "^\\d{2}\\.\\d{2}\\.\\d{4}$"; // регулярное выражение для определенного формата
+
+            if (birthdayStr.matches(pattern)) {
+                currentUpdatedProfile.setBirthday(birthdayStr);
+            } else {
+                throw new IllegalArgumentException("Дата рождения должна быть в формате dd.MM.yy");
+            }
         }
+
         if (updatedProfile.getCountry() != null) {
             currentUpdatedProfile.setCountry(updatedProfile.getCountry());
         }
@@ -87,6 +96,7 @@ public class ProfileService {
 
             return ProfileConverter.converterToBom(currentProfile);
         } catch (Exception e) {
+
             // Обработка других непредвиденных исключений
             throw new RuntimeException("Ошибка при обновлении аватара.", e);
         }

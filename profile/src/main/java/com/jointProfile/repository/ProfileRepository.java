@@ -7,10 +7,9 @@ import io.micrometer.common.lang.NonNullApi;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 
 @Repository
 @NonNullApi
 public interface ProfileRepository extends JpaRepository<Profiles, Long> {
-    Optional<Profiles> findByUserId(Long userId);
+
 }
