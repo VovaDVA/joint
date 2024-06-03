@@ -25,7 +25,7 @@
 
 <script>
 import CryptoJS from "crypto-js";
-import apiClient from '@/modules/ApiClient';
+import apiClient, { BASE_URL } from '@/modules/ApiClient';
 import { getUser, isUserIdEqual, getUserById } from '@/modules/auth';
 
 export default {
@@ -80,7 +80,7 @@ export default {
 
         const chat = this.chat;
         try {
-            const response = await fetch('/chat/getMessages?chat_id=' + chat._id, {
+            const response = await fetch(`${BASE_URL}:3000/chat/getMessages?chat_id=` + chat._id, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
