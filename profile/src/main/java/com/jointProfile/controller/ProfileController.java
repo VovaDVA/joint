@@ -24,7 +24,7 @@ public class ProfileController {
     private ProfileService profileService;
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateProfile(@RequestHeader(name = "Authorization", required = false) String token,
+    public ResponseEntity<?> updateProfile(@RequestHeader(name = "Authorization") String token,
                                                     @RequestBody ProfileDTO updatedProfile) {
 
         try {
@@ -47,7 +47,7 @@ public class ProfileController {
 
 
     @PutMapping("/update-avatar")
-    public ResponseEntity<?> updateAvatar(@RequestHeader(name = "Authorization", required = false) String token,
+    public ResponseEntity<?> updateAvatar(@RequestHeader(name = "Authorization") String token,
                                                    @RequestParam("avatar") MultipartFile avater) {
         try {
             ProfileBom currentBomProfile = authConnector.getCurrentProfile(token);
@@ -69,7 +69,7 @@ public class ProfileController {
     }
 
     @PutMapping("/update-banner")
-    public ResponseEntity<?> updateBanner(@RequestHeader(name = "Authorization", required = false) String token,
+    public ResponseEntity<?> updateBanner(@RequestHeader(name = "Authorization") String token,
                                                    @RequestParam("banner") MultipartFile banner) {
 
        try {

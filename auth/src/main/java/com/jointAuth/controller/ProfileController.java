@@ -19,7 +19,7 @@ public class ProfileController {
     }
 
     @GetMapping("/getCurrentProfile")
-    public ProfileBom getCurrentUser(@RequestHeader(name = "Authorization", required = false) String token) {
+    public ProfileBom getCurrentUser(@RequestHeader(name = "Authorization") String token) {
         return profileService.getCurrentProfile(token);
     }
 }
