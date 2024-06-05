@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { BASE_URL } from '@/modules/ApiClient';
 import { checkToken, getToken } from '@/modules/auth';
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
@@ -76,7 +77,7 @@ export default {
                 canvas.toBlob(async (blob) => {
                     formData.append('banner', blob);
 
-                    const response = await fetch('/profile/update-banner', {
+                    const response = await fetch(`${BASE_URL}:8081/profile/update-banner`, {
                         method: 'PUT',
                         headers: {
                             'Authorization': 'Bearer ' + getToken(),
