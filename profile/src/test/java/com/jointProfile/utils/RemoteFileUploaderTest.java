@@ -156,4 +156,77 @@ public class RemoteFileUploaderTest {
         verify(channelSftp).put(mockInputStream, "testFileName");
     }
 
+    @Test
+    public void testDeleteFileOnServer_Success() throws Exception {
+
+        // Мокаем ожидаемое поведение JSch, Session и ChannelSftp
+        when(jsch.getSession(username, host, port)).thenReturn(session);
+        doNothing().when(session).setPassword(password);
+        doNothing().when(session).setConfig(anyString(), anyString());
+        doNothing().when(session).connect();
+        when(session.openChannel("sftp")).thenReturn(channelSftp);
+        doNothing().when(channelSftp).connect();
+
+        // Мокаем поведение файла
+        InputStream mockInputStream = mock(InputStream.class);
+        when(file.getInputStream()).thenReturn(mockInputStream);
+
+        // Мокаем поведение удаления
+        doNothing().when(channelSftp).rm(anyString());
+
+        // Вызываем тестируемый метод
+        remoteFileUploader.deleteFileFromServer("testFileName", "testFolder");
+
+        // Проверяем, что метод был вызван с ожидаемыми параметрами
+        verify(jsch).getSession(username, host, port);
+        verify(session).setPassword(password);
+        verify(session).setConfig("StrictHostKeyChecking", "yes");
+        verify(session).connect();
+        verify(session).openChannel("sftp");
+        verify(channelSftp).connect();
+        verify(channelSftp).rm("/home/jointadmin/images/testFolder/testFileName");
+
+    }
+
+    @Test
+    public void testDeleteFileOnServer_JSchException() throws Exception {
+        when(jsch.getSession(username, "invalidHost", 23))
+                .thenThrow(new JSchException("Connection refused"));
+
+        assertThrows(RuntimeException.class,
+                () -> remoteFileUploader.deleteFileFromServer( "testFileName", "testFolder"));
+
+        verify(session, never()).setPassword(password);
+        verify(session, never()).setConfig(anyString(), anyString());
+        verify(session, never()).connect();
+        verify(session, never()).openChannel("sftp");
+        verify(channelSftp, never()).connect();
+        verify(channelSftp, never()).rm(anyString());
+
+
+    }
+
+    @Test
+    public void testDeleteFileOnServer_SFTPFailure() throws Exception {
+
+        when(jsch.getSession(username, host, port)).thenReturn(session);
+        doNothing().when(session).setPassword(password);
+        doNothing().when(session).setConfig(anyString(), anyString());
+        doNothing().when(session).connect();
+        when(session.openChannel("sftp")).thenReturn(channelSftp);
+        doNothing().when(channelSftp).connect();
+
+        // Мокаем поведение файла
+        InputStream mockInputStream = mock(InputStream.class);
+        when(file.getInputStream()).thenReturn(mockInputStream);
+
+        // Ошибка при поведении загрузки через SFTP
+        doThrow(new SftpException(1, "Не удалось удалить файл"))
+                .when(channelSftp).rm(anyString());
+
+        assertThrows(RuntimeException.class, () ->
+                remoteFileUploader.deleteFileFromServer("testFileName", "testFolder"));
+
+    }
+
 }
