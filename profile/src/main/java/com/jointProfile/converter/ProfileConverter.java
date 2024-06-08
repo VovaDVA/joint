@@ -41,7 +41,6 @@ public class ProfileConverter {
         profile.setCity(profileBom.getCity());
         profile.setPhone(profileBom.getPhone());
         profile.setLastEdited(new Date());
-
         profile.setAvatar(profileBom.getAvatar());
         profile.setBanner(profileBom.getBanner());
 

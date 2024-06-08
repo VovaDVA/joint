@@ -2,6 +2,7 @@ package com.jointProfile.bom.profile;
 
 import lombok.Data;
 
+
 @Data
 public class ProfileBom {
     private Long profileId;
