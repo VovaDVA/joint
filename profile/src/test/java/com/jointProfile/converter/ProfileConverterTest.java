@@ -49,5 +49,43 @@ public class ProfileConverterTest {
         assertNull(profileBom);
     }
 
-    
+
+    @Test
+    public void testConverterToEntity() {
+      ProfileBom profileBom = new ProfileBom();
+
+        profileBom.setProfileId(1L);
+        profileBom.setAvatar("avatar.jpg");
+        profileBom.setBanner("banner.jpg");
+        profileBom.setDescription("This is a profile description.");
+        profileBom.setBirthday("21.01.2003");
+        profileBom.setCountry("USA");
+        profileBom.setCity("New York");
+        profileBom.setPhone("1234567890");
+        profileBom.setLastEdited("2023-04-25T12:34:56");
+
+        Profiles profile = ProfileConverter.converterToEntity(profileBom);
+
+        assertNotNull(profile);
+        assertEquals(profileBom.getProfileId(), profile.getId());
+        assertEquals(profileBom.getUserId(), profile.getUserId());
+        assertEquals(profileBom.getAvatar(), profile.getAvatar());
+        assertEquals(profileBom.getBanner(), profile.getBanner());
+        assertEquals(profileBom.getDescription(), profile.getDescription());
+        assertEquals(profileBom.getBirthday(), profile.getBirthday());
+        assertEquals(profileBom.getCountry(), profile.getCountry());
+        assertEquals(profileBom.getCity(), profile.getCity());
+        assertEquals(profileBom.getPhone(), profile.getPhone());
+        assertNotNull(profile.getLastEdited());
+    }
+
+    @Test
+    void testConverterToEntityWithNullProfileBom() {
+        Profiles profile = ProfileConverter.converterToEntity(null);
+
+        assertNull(profile);
+    }
+
+
+
 }
