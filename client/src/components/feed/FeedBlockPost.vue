@@ -96,7 +96,7 @@ export default {
     
             await apiClient.content.comment({
                 "post_id": this.post._id,
-                "author_id": this.post.author_id,
+                "author_id": getUserId(),
                 "content": this.newComment,
             }, (data) => {
                 this.newComment = '';
