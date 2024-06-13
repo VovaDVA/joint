@@ -1,0 +1,32 @@
+pipeline{
+    agent any
+    stages{
+        stage("Installing reqirements"){
+            steps{
+                dir("chat"){
+                    sh 'npm install'
+                }
+                dir("notifications"){
+                    sh 'npm install'
+                }
+                dir("feed"){
+                    sh 'npm install'
+                }
+            }
+        }
+        stage("Run tests for the chat service"){
+            steps {
+                dir("chat"){
+                    sh 'npm test'
+                }
+            }
+        }
+        stage("Run tests for the notifications service"){
+            steps {
+                dir("notifications"){
+                    sh 'npm test'
+                }
+            }
+        }
+    }
+}
