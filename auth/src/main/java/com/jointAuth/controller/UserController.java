@@ -219,30 +219,6 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/get-all")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        try {
-            List<User> users = userService.getAllUsers();
-
-            if (users.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-
-            List<UserDTO> userDTOs = users.stream()
-                    .map(user -> {
-                        UserDTO dto = new UserDTO();
-                        BeanUtils.copyProperties(user, dto);
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(userDTOs);
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
     @PostMapping(path = "/change-password")
     public ResponseEntity<?> requestPasswordChange(@RequestHeader("Authorization") String token) {
         Long userId = jwtTokenUtils.getCurrentUserId(token);
