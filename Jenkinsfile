@@ -31,5 +31,13 @@ pipeline{
                 }
             }
         }
+        stage("Run tests for the auth service"){
+            steps {
+                dir("auth"){
+                    sh 'mvn clean test'
+                }
+            }
+        }
+        
     }
 }
