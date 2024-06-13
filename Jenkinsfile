@@ -1,5 +1,8 @@
 pipeline{
     agent any
+    tools {
+        nodejs '20.11.1'
+    }
     stages{
         stage("Installing reqirements"){
             steps{
