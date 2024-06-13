@@ -331,10 +331,6 @@ public class UserService {
         }
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
     public boolean changePassword(Long userId, String verificationCode, String newPassword, String currentPassword) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
