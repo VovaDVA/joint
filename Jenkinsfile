@@ -1,6 +1,11 @@
 pipeline{
     agent any
     
+    environment {
+        TOKEN = credentials('BOT_TOKEN')
+        CHAT = credentials('CHAT_ID')
+    }
+
     tools {
         nodejs '20.11.1'
     }
@@ -40,6 +45,22 @@ pipeline{
                 }
             }
         }
+
+        stage("Run test for the feed service"){
+            steps {
+                dir("feed"){
+                    sh 'npm test'
+                }
+            }
+        }     
+    }
+    post {
+        success{
+           sh '''curl -X POST -H "Content-Type: application/json" -d \'{"chat_id": '$CHAT', "text": "[SUCCES] all tests were successful", "disable_notification": false}\' "https://api.telegram.org/bot$TOKEN/sendMessage"'''
+        }
         
+        failure{
+            sh '''curl -X POST -H "Content-Type: application/json" -d \'{"chat_id": '$CHAT', "text": "[FAIL] something went wrong", "disable_notification": false}\' "https://api.telegram.org/bot$TOKEN/sendMessage"'''
+        }
     }
 }
