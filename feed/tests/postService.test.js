@@ -9,21 +9,26 @@ afterAll(async () => await dbDisconnect());
 describe('Post', () => {
     describe('Create', () => {
         test('create post', async() => {
-            let author_id = "1";
-            let content = "Hello Joint!";
-            const post = await postService.createPost(author_id, content);
+            let data = {
+                "author_id": 1,
+                "title": "title",
+                "content": "Hello Joint!"
+            };
+            const post = await postService.createPost(data);
 
             expect(post).toBeTruthy();
             expect(post).toHaveProperty("author_id");
             expect(post).toHaveProperty("content");
-            expect(post.author_id).toEqual("1");
+            expect(post).toHaveProperty("title");
+            expect(post.author_id).toEqual(1);
             expect(post.content).toEqual("Hello Joint!");
+            expect(post.title).toEqual("title")
         });
     });
 
     describe('Find', () => {
         test('find all posts by author', async() => {
-            let author_id = "1";
+            let author_id = 1;
             let content = "Hello Joint!";
 
             const posts = await postService.getPostsByAuthor(author_id);
@@ -36,9 +41,12 @@ describe('Post', () => {
         });
 
         test('find post by ID', async() => {
-            let author_id = "2";
-            let content = "<3";
-            const Post = await postService.createPost(author_id, content);
+            let data = {
+                "author_id": 2,
+                "title": "title",
+                "content": "<3"
+            };
+            const Post = await postService.createPost(data);
 
             let id = Post._id;
             const post = await postService.getPostById(id);
@@ -46,7 +54,7 @@ describe('Post', () => {
             expect(post).toBeTruthy();
             expect(post).toHaveProperty("author_id");
             expect(post).toHaveProperty("content");
-            expect(post.author_id).toEqual("2");
+            expect(post.author_id).toEqual(2);
             expect(post.content).toEqual("<3");
         });
 
@@ -60,16 +68,22 @@ describe('Post', () => {
 
     describe('Add', () => {
         test('add new comment for post', async() => {
-            let author_id = "4";
-            let content = "Do you like Joint? Yes, of course";
-            let post = await postService.createPost(author_id, content);
+            let data = {
+                "author_id": 4,
+                "title": "title",
+                "content": "Do you like Joint? Yes, of course"
+            };
+            let post = await postService.createPost(data);
 
-            let post_id = post._id;
-            let user_id = "123";
-            const comment = await commentService.createComment(post_id, user_id, "How did you know it??");
+            let comment_data = {
+                "post_id": post._id,
+                "author_id": "123",
+                "content": "How did you know it??"
+            }
+            const comment = await commentService.createComment(comment_data);
 
             let comment_id = comment._id;
-            post = await postService.newComment(post_id, comment_id);
+            post = await postService.newComment(post._id, comment_id);
             expect(post).toBeTruthy();
             expect(post).toHaveProperty("comments");
             expect(post.comments[0]).toEqual(comment_id);
@@ -78,12 +92,15 @@ describe('Post', () => {
         });
 
         test('add new reaction for post', async() => {
-            let author_id = "4";
-            let content = "Do you like Joint? Yes, of course";
-            let post = await postService.createPost(author_id, content);
+            let data = {
+                "author_id": 4,
+                "title": "title",
+                "content": "Do you like Joint? Yes, of course"
+            };
+            let post = await postService.createPost(data);
 
             let post_id = post._id;
-            let user_id = "123";
+            let user_id = 123;
             
             post = await postService.newLike(post_id, user_id);
             expect(post).toBeTruthy();
@@ -96,17 +113,20 @@ describe('Post', () => {
 
     describe('Edit', () => {
         test('edit the post', async() => {
-            let author_id = "2";
-            let content = "<3";
-            const Post = await postService.createPost(author_id, content);
+            let data = {
+                "author_id": 2,
+                "title": "title",
+                "content": "<3"
+            };
+            const Post = await postService.createPost(data);
 
             let post_id = Post._id;
             let new_content = "Something";
             const post = await postService.editPost(post_id, new_content);
 
             expect(post).toBeTruthy();
-            expect(post.author_id).toEqual(author_id);
-            expect(post.content).not.toEqual(content);
+            expect(post.author_id).toEqual(2);
+            expect(post.content).not.toEqual("<3");
             expect(post.content).toEqual(new_content);
 
             await dbClear();
@@ -115,9 +135,12 @@ describe('Post', () => {
 
     describe('Delete', () => {
         test('delete the post', async() => {
-            let author_id = "2";
-            let content = "<3";
-            const Post = await postService.createPost(author_id, content);
+            let data = {
+                "author_id": 2,
+                "title": "title",
+                "content": "<3"
+            };
+            const Post = await postService.createPost(data);
 
             let post_id = Post._id;
             const deleted_post = await postService.deletePost(post_id);

@@ -8,31 +8,35 @@ afterAll(async () => await dbDisconnect());
 describe('Reaction', () => {
     
     test('create reaction OK - code 201', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const res = await req(app).post('/reaction/createReaction').send({
             "post_id": post_id,
-            "user_id": "999"
+            "user_id": 999
         });
 
         expect(res.statusCode).toBe(201);
         expect(res.body).toHaveProperty("post_id");
         expect(res.body.post_id).toEqual(post_id);
         expect(res.body).toHaveProperty("user_id");
-        expect(res.body.user_id).toEqual("999");
+        expect(res.body.user_id).toEqual(999);
 
         await dbClear();
     });
 
     test('error in request parameters for creating reaction', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const res = await req(app).post('/reaction/createReaction').send({
@@ -44,15 +48,17 @@ describe('Reaction', () => {
     });
 
     test('get reaction by ID OK - code 200', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const reaction = await req(app).post('/reaction/createReaction').send({
             "post_id": post_id,
-            "user_id": "999"
+            "user_id": 999
         });
 
         let reaction_id = reaction.body._id;
@@ -77,23 +83,25 @@ describe('Reaction', () => {
     });
 
     test('get reaction by user OK - code 200', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const reaction = await req(app).post('/reaction/createReaction').send({
             "post_id": post_id,
-            "user_id": "999"
+            "user_id": 999
         });
 
         const res = await req(app).get('/reaction/getReactionByUser').query({
-            "user_id": "999"
+            "user_id": 999
         });
 
         expect(res.statusCode).toBe(200);
-        expect(res.body.user_id).toEqual("999");
+        expect(res.body.user_id).toEqual(999);
         expect(res.body._id).toEqual(reaction.body._id);
 
         await dbClear();
@@ -110,25 +118,27 @@ describe('Reaction', () => {
     });
 
     test('delete reaction OK - code 200', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const reaction = await req(app).post('/reaction/createReaction').send({
             "post_id": post_id,
-            "user_id": "999"
+            "user_id": 999
         });
 
-        let id = reaction.body._id;
-        const res = await req(app).get('/reaction/deleteReaction').query({
+        let id = reaction.body.user_id;
+        const res = await req(app).post('/reaction/deleteReaction').send({
             "post_id": post_id,
-            "id": id
+            "user_id": id
         });
 
         const deleted_reaction = await req(app).get('/reaction/getReaction').query({
-            "id": id
+            "user_id": id
         });
 
         expect(res.statusCode).toBe(200);
@@ -139,7 +149,7 @@ describe('Reaction', () => {
 
     test('delete reaction Error (not found the reaction) - code 404', async() => {
         const id = "6643904d7097c59c3a4d68bb";
-        const res = await req(app).get('/reaction/deleteReaction').query({
+        const res = await req(app).post('/reaction/deleteReaction').send({
             "id": id
         });
 
