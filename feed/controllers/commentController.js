@@ -92,9 +92,10 @@ class commentController {
             const post = await postService.getPostById(postId);
             const comment_index = post.comments.indexOf(commentId);
             post.comments.splice(comment_index, 1);
-            await post.save();    
-            const comment = await commentService.deleteComment(commentId);
-            return res.status(200).json(comment);
+            await post.save();
+            const comment = await commentService.getCommentById(commentId);    
+            const deleted_comment = await commentService.deleteComment(comment.author_id);
+            return res.status(200).json(deleted_comment);
         }
         catch (error) {
             return res.status(500).json({message: error.message});

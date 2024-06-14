@@ -38,7 +38,7 @@ class commentService {
     }
 
     async deleteComment(userId) {
-        return await Comment.findOneAndDelete({ "user_id": userId });
+        return await Comment.findOneAndDelete({ "author_id": userId });
     }
 }
 
