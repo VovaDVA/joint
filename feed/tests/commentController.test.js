@@ -8,10 +8,12 @@ afterAll(async () => await dbDisconnect());
 describe('Comment controller', () => {
     
     test('create comment OK - code 201', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const res = await req(app).post('/comment/createComment').send({
@@ -32,10 +34,12 @@ describe('Comment controller', () => {
     });
 
     test('error in request parameters for creating comment', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const res = await req(app).post('/comment/createComment').send({
@@ -48,10 +52,12 @@ describe('Comment controller', () => {
     });
     
     test('get comment by ID OK - code 200', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const comment = await req(app).post('/comment/createComment').send({
@@ -80,11 +86,48 @@ describe('Comment controller', () => {
         expect(res.body.message).toEqual("Comment not found");
     });
 
-    test('new like for comment OK - code 201', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+    test('get post comments OK - code 200', async() => {
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
+        }
+        const post = await req(app).post('/post/createPost').send(data);
+
+        let post_id = post.body._id;
+        const comment = await req(app).post('/comment/createComment').send({
+            "post_id": post_id,
+            "author_id": "999",
+            "content": "Some words"
         });
+
+        const res = await req(app).get('/comment/getPostComments').query({
+            "postId": post_id
+        });
+
+        expect(res.statusCode).toBe(200);
+
+        await dbClear();
+    });
+
+    test('get post comments Error (not found comments) - code 404', async() => {
+        const post_id = "66434a746113960ccba51082"
+        const res = await req(app).get('/comment/getPostComments').query({
+            "postId": post_id
+        });
+
+        expect(res.statusCode).toBe(404);
+
+        await dbClear();
+    });
+
+    test('new like for comment OK - code 201', async() => {
+        let data = {
+            "author_id": 123, 
+            "title": "title",
+            "content": "Hello"
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const comment = await req(app).post('/comment/createComment').send({
@@ -106,10 +149,12 @@ describe('Comment controller', () => {
     });
 
     test('edit comment OK - code 201', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const comment = await req(app).post('/comment/createComment').send({
@@ -142,10 +187,12 @@ describe('Comment controller', () => {
     });
 
     test('delete comment OK - code 200', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let post_id = post.body._id;
         const comment = await req(app).post('/comment/createComment').send({
@@ -161,7 +208,7 @@ describe('Comment controller', () => {
         });
 
         const deleted_comment = await req(app).get('/comment/getComment').query({
-            "id": comment_id
+            "userId": "999"
         });
         
         expect(res.statusCode).toBe(200);

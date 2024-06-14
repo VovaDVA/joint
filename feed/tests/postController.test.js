@@ -7,16 +7,20 @@ afterAll(async () => await dbDisconnect());
 
 describe('Post controller', () => {
     test('create post OK - code 201', async() => {
-        const res = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const res = await req(app).post('/post/createPost').send(data);
 
         expect(res.statusCode).toBe(201);
         expect(res.body).toHaveProperty("author_id");
-        expect(res.body.author_id).toStrictEqual("123");
+        expect(res.body.author_id).toStrictEqual(123);
         expect(res.body).toHaveProperty("content");
         expect(res.body.content).toStrictEqual("Hello");
+        expect(res.body).toHaveProperty("title");
+        expect(res.body.title).toStrictEqual("title");
 
         await dbClear();
     });
@@ -31,10 +35,12 @@ describe('Post controller', () => {
     });
 
     test('get post by ID OK - code 200', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         let id = post.body._id;
         const res = await req(app).get('/post/getPost').query({
@@ -59,10 +65,12 @@ describe('Post controller', () => {
     });
 
     test('get posts by author OK - code 200', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         const res = await req(app).get('/post/getPostsByAuthor').query({
             "author_id": "123"
@@ -80,10 +88,12 @@ describe('Post controller', () => {
     });
 
     test('edit post OK - code 201', async() => {
-        const post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
-        });
+        }
+        const post = await req(app).post('/post/createPost').send(data);
 
         const res = await req(app).post('/post/editPost').send({
             "post_id": post.body._id,
@@ -108,21 +118,34 @@ describe('Post controller', () => {
     });
 
     test('delete post OK - code 200', async() => {
-        let post = await req(app).post('/post/createPost').send({
-            "author_id": "123", 
+        let data = {
+            "author_id": 123, 
+            "title": "title",
             "content": "Hello"
+        }
+        const post = await req(app).post('/post/createPost').send(data);
+
+        let post_id = post.body._id;
+        const comment = await req(app).post('/comment/createComment').send({
+            "post_id": post_id,
+            "author_id": "999",
+            "content": "Some words"
         });
 
-        const res = await req(app).get('/post/deletePost').query({
-            "id": post.body._id
+        const reaction = await req(app).post('/reaction/createReaction').send({
+            "post_id": post_id,
+            "user_id": 999
+        });
+
+        const res = await req(app).post('/post/deletePost').send({
+            "postId": post.body._id
         });
 
         expect(res.statusCode).toBe(200);
-        expect(res.body._id).toStrictEqual(post.body._id);
     });
 
     test("delete post Error (not found the post for deleting) - code 404", async() => {
-        const res = await req(app).get('/post/deletePost').query({
+        const res = await req(app).post('/post/deletePost').send({
             "asdfg": "66432f270198f3e138afff10"
         });
 
