@@ -36,7 +36,7 @@ public class RemoteFileUploader {
     }
 
     public String uploadFileOnServer(MultipartFile file, String fileNameOnServer, String nameOfFolder) {
-        String knownHostsPath = "/home/dva/.ssh/known_hosts";
+        String knownHostsPath = "/home/jointadmin/.ssh/known_hosts";
         //String knownHostsPath = "C:\\Users\\ASUS//.ssh/known_hosts";
 
         Session session = null;
@@ -95,7 +95,7 @@ public class RemoteFileUploader {
 
 
     public void deleteFileFromServer(String fileNameOnServer, String nameOfFolder) {
-        String knownHostsPath = "/home/dva/.ssh/known_hosts";
+        String knownHostsPath = "/home/jointadmin/.ssh/known_hosts";
 
         Session session = null;
         ChannelSftp channelSftp = null;
