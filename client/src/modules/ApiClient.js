@@ -5,7 +5,7 @@ const PORT_AUTH = '8080';
 const PORT_PROFILE = '8081';
 const PORT_CHAT = '3000';
 const PORT_FEED = '3001';
-const PORT_NOTIF = '3002';
+// const PORT_NOTIF = '3002';
 
 class ApiClient {
     constructor() {
