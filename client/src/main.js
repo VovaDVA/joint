@@ -22,7 +22,7 @@ const store = createStore({
         return {
             staticPanelVisible: false,
             theme: localStorage.getItem('ui_theme') ?? 'light-theme',
-            chatSocket: io(`http://${BASE_URL}:3000`),
+            chatSocket: io(`${BASE_URL}:3000`),
             onlineUsers: {}
         }
     },
