@@ -1035,6 +1035,54 @@ public class UserServiceTest {
         assertEquals("Новый пароль не соответствует требованиям к сложности", exception.getMessage());
     }
 
+    //получение всех пользователей
+    @Test
+    public void getAllUsersEmptyListReturnsEmpty() {
+        when(userRepository
+                .findAll())
+                .thenReturn(Collections.emptyList());
+
+        List<User> result = userService.getAllUsers();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void getAllUsersNonEmptyListReturnsListWithUsers() {
+        User firstUser = new User();
+        String password1 = "PassEm123+";
+        String encodedPassword1 = passwordEncoder.encode(password1);
+
+        User secondUser = new User();
+        String password2 = "PassJane12@";
+        String encodedPassword2 = passwordEncoder.encode(password2);
+
+        firstUser.setFirstName("Жанна");
+        firstUser.setLastName("Фарина");
+        firstUser.setEmail("JennieEm@gmail.com");
+        firstUser.setPassword(encodedPassword1);
+
+        secondUser.setFirstName("Джейн");
+        secondUser.setLastName("Провина");
+        secondUser.setEmail("janeSmith@gmail.com");
+        secondUser.setPassword(encodedPassword2);
+
+        List<User> users = List.of(
+                firstUser,
+                secondUser
+        );
+
+        when(userRepository
+                .findAll())
+                .thenReturn(users);
+
+        List<User> result = userService.getAllUsers();
+
+        assertFalse(result.isEmpty());
+        assertEquals(users.size(), result.size());
+        assertTrue(result.containsAll(users));
+    }
+
     //infoById
     @Test
     public void testGetUserInfoByIdSuccess() throws ParseException {
