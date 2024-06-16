@@ -1,6 +1,5 @@
 package com.jointProfile.integration.controller;
 
-
 import com.jointProfile.bom.profile.ProfileBom;
 import com.jointProfile.connector.AuthConnector;
 import com.jointProfile.entity.ProfileDTO;
@@ -261,4 +260,97 @@ public class ProfileControllerTest {
     }
 
 
+    @Test
+    void testUpdateBannerSuccess() throws Exception {
+
+        String token = "valid_token";
+
+        byte[] imageData = {1, 2, 3, 4, 5};
+        MockMultipartFile banner = new MockMultipartFile("banner", "test.jpg", "image/jpeg", imageData);
+
+        // Настройка поведения Mock-объектов
+        when(authConnector
+                .getCurrentProfile(token))
+                .thenReturn(new ProfileBom());
+
+        when(profileService
+                .updateBanner(eq(banner), any(Profiles.class)))
+                .thenReturn(new ProfileBom());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/update-banner")
+                        .file(banner)
+                        .header("Authorization", token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        }))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+        // Проверка ожидаемых результатов
+        verify(authConnector, times(1)).getCurrentProfile(token);
+        verify(profileService, times(1)).updateBanner(eq(banner), any(Profiles.class));
+    }
+
+    @Test
+    void testUpdateBannerRuntimeException() throws Exception {
+
+        String token = "valid_token";
+
+        byte[] imageData = {1, 2, 3, 4, 5};
+        MockMultipartFile banner = new MockMultipartFile("banner", "test.jpg", "image/jpeg", imageData);
+
+        // Настройка поведения Mock-объектов
+        when(authConnector
+                .getCurrentProfile(token))
+                .thenThrow(new RuntimeException("Профиль не найден"));
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/update-banner")
+                        .file(banner)
+                        .header("Authorization", token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        }))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Профиль не найден"));
+
+        // Проверка ожидаемых результатов
+        verify(authConnector, times(1)).getCurrentProfile(token);
+        verify(profileService, never()).updateBanner(eq(banner), any(Profiles.class));
+
+    }
+
+    @Test
+    void testUpdateBannerWithInvalidToken() throws Exception {
+
+        String token = "invalid_token";
+
+        byte[] imageData = {1, 2, 3, 4, 5};
+        MockMultipartFile banner = new MockMultipartFile("banner", "test.jpg", "image/jpeg", imageData);
+
+        // Настройка поведения Mock-объектов
+        when(authConnector
+                .getCurrentProfile(token))
+                .thenThrow(new RuntimeException("Профиль не найден"));
+
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/update-banner")
+                        .file(banner)
+                        .header("Authorization", token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        }))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Профиль не найден"));
+
+        // Проверка ожидаемых результатов
+        verify(authConnector, times(1)).getCurrentProfile(token);
+        verify(profileService, never()).updateBanner(eq(banner), any(Profiles.class));
+
+    }
 }
