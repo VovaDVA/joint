@@ -91,7 +91,7 @@ export default {
 			await apiClient.auth.confirmPasswordReset({
 				verificationCode: this.resetPasswordCode,
 				newPassword: this.newPassword
-			}, () => { }, (data) => {
+			}, () => checkToken(), (data) => {
 				this.errorMessage = data['message'];
 			});
 		},
