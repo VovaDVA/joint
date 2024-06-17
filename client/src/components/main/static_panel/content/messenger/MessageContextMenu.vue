@@ -46,7 +46,7 @@ export default {
         },
         async deleteMessage() {
             try {
-                const response = await fetch('/message/deleteMessage?message_id=' + this.message._id);
+                const response = await fetch('http://82.97.245.142:3000/message/deleteMessage?message_id=' + this.message._id);
                 const data = await response.json();
                 console.log(data);
                 this.emitter.emit('delete-message', this.message._id);
